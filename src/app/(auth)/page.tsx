@@ -1,11 +1,11 @@
 'use client';
 
 import Tag from '@/components/common/tag';
+import TestModal from '@/components/common/test_modal';
 
 export default function Home() {
   return (
     <div>
-      <h1>Login</h1>
       <div className="tag_container">
         <Tag
           label="Tag"
@@ -30,6 +30,7 @@ export default function Home() {
           }}
         />
       </div>
+      <TestModal />
     </div>
   );
 }
