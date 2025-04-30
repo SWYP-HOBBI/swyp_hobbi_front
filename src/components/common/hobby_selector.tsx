@@ -13,7 +13,7 @@ interface HobbySelectorProps {
 }
 
 // 수정된 드롭다운 버튼 컴포넌트
-const CustomDropdownButton = ({
+export const CustomDropdownButton = ({
   value,
   placeholder,
   isOpen,
@@ -66,7 +66,7 @@ const CustomDropdownButton = ({
 };
 
 // 수정된 드롭다운 아이템 컴포넌트
-const CustomDropdownItem = ({
+export const CustomDropdownItem = ({
   label,
   isSelected,
   onClick,
