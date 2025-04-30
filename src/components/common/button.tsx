@@ -1,9 +1,11 @@
 import React, { ButtonHTMLAttributes } from 'react';
 
 type ButtonVariant = 'primary' | 'outline' | 'secondary';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  size?: ButtonSize;
   fullWidth?: boolean;
   children: React.ReactNode;
   className?: string;
@@ -11,13 +13,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export default function Button({
   variant = 'primary',
+  size = 'lg',
   fullWidth = false,
   children,
   className = '',
   ...props
 }: ButtonProps) {
   const baseStyle =
-    'py-3 px-4 rounded-lg button_transition font-semibold text-center text-xl';
+    'py-3 px-4 rounded-lg button_transition font-semibold text-center cursor-pointer';
+
+  const sizeStyles = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg',
+    xl: 'text-xl',
+  };
 
   const variantStyles = {
     primary: 'bg-primary text-primary-b80 hover:bg-primary/80',
@@ -30,7 +40,7 @@ export default function Button({
 
   return (
     <button
-      className={`${baseStyle} ${variantStyles[variant]} ${widthStyle} ${className}`}
+      className={`${baseStyle} ${sizeStyles[size]} ${variantStyles[variant]} ${widthStyle} ${className}`}
       {...props}
     >
       {children}
