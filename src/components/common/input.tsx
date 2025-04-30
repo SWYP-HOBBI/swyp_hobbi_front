@@ -5,7 +5,7 @@ import SvgIcon from './svg_icon';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
+  error?: string | null;
   helperText?: string;
   className?: string;
   containerClassName?: string;
@@ -40,7 +40,10 @@ export default function Input({
   const clearInput = () => {
     if (onChange) {
       const event = {
-        target: { value: '' },
+        target: {
+          name: props.name,
+          value: '',
+        },
       } as React.ChangeEvent<HTMLInputElement>;
       onChange(event);
     }
