@@ -72,7 +72,7 @@ export default function Input({
         <input
           id={id}
           type={inputType}
-          className={`w-full p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed ${className}`}
+          className={`w-full p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed [-webkit-autofill:hover]:!bg-none [-webkit-autofill:focus]:!bg-none [-webkit-autofill:active]:!bg-none [-webkit-autofill]:!bg-none ${className}`}
           value={value}
           onChange={onChange}
           disabled={disabled}

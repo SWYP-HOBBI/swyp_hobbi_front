@@ -118,3 +118,12 @@ button {
   background: var(--primary-b20);
   border-radius: 12px;
 }
+
+/* 자동완성 스타일 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-clip: content-box !important;
+  -webkit-background-clip: text !important;
+}
