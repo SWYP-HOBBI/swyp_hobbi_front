@@ -1,5 +1,6 @@
 'use client';
 
+import Button from '@/components/common/button';
 import SvgIcon from '@/components/common/svg_icon';
 import Tag from '@/components/common/tag';
 import TestModal from '@/components/common/test_modal';
@@ -51,12 +52,16 @@ export default function Home() {
       <SvgIcon name="arrow_down" color="var(--grayscale-100)" />
       <SvgIcon name="delete" color="var(--grayscale-100)" />
       <SvgIcon name="meatball" color="var(--grayscale-100)" />
-      <SvgIcon
-        name="logo"
-        color="var(--grayscale-100)"
-        width={150}
-        height={44}
-      />
+      <SvgIcon name="logo" color="var(--grayscale-100)" width={150} height={44} />
+      <Button type="button" onClick={() => alert('click')} variant="primary">
+        Button
+      </Button>
+      <Button type="button" variant="outline" fullWidth>
+        Button
+      </Button>
+      <Button type="button" variant="secondary">
+        Button
+      </Button>
     </div>
   );
 }
