@@ -102,3 +102,19 @@ button {
 .button_transition {
   @apply transition-colors duration-200;
 }
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--grayscale-10);
+  border-radius: 12px;
+  margin: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-b20);
+  border-radius: 12px;
+}
