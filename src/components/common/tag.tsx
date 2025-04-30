@@ -1,5 +1,7 @@
 'use client';
 
+import SvgIcon from './svg_icon';
+
 export type TagVariant = 'primary' | 'white' | 'gray';
 
 interface TagProps {
@@ -39,7 +41,7 @@ export default function Tag({
           onClick={onDelete}
           className="text-primary-b80 hover:text-primary-b60"
         >
-          ×
+          <SvgIcon name="delete" size={12} color="var(--grayscale-80)" />
         </button>
       )}
     </span>
