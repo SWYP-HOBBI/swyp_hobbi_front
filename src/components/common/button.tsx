@@ -22,7 +22,7 @@ export default function Button({
   const variantStyles = {
     primary: 'bg-primary text-primary-b80 hover:bg-primary/80',
     outline:
-      'border-[1.5px] border-primary-b80 bg-grayscale-0 text-primary-b80 hover:bg-primary-b80 hover:text-white',
+      'border-[1.5px] border-primary-b80 bg-grayscale-0 text-primary-b80 hover:bg-primary-b80 hover:text-grayscale-0',
     secondary: 'bg-grayscale-10 text-grayscale-50 hover:bg-grayscale-20',
   };
 
