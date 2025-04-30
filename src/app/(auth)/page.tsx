@@ -4,8 +4,16 @@ import Button from '@/components/common/button';
 import SvgIcon from '@/components/common/svg_icon';
 import Tag from '@/components/common/tag';
 import TestModal from '@/components/common/test_modal';
+import Input from '@/components/common/input';
+import { useState } from 'react';
 
 export default function Home() {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
   return (
     <div>
       <div className="tag_container">
@@ -62,6 +70,38 @@ export default function Home() {
       <Button type="button" variant="secondary">
         Button
       </Button>
+
+      <Input
+        label="Label"
+        placeholder="TEXT"
+        value={inputValue}
+        required
+        onChange={handleInputChange}
+      />
+      <Input
+        placeholder="TEXT"
+        showClearButton
+        value={inputValue}
+        onChange={handleInputChange}
+      />
+      <Input
+        type="password"
+        placeholder="TEXT"
+        showPasswordToggle
+        showClearButton
+        value={inputValue}
+        disabled
+        onChange={handleInputChange}
+        helperText="helperText"
+      />
+      <Input
+        placeholder="TEXT"
+        error="*유효하지 않은 입력입니다."
+        showPasswordToggle
+        showClearButton
+        value={inputValue}
+        onChange={handleInputChange}
+      />
     </div>
   );
 }
