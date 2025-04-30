@@ -51,6 +51,12 @@ export default function Home() {
       <SvgIcon name="arrow_down" color="var(--grayscale-100)" />
       <SvgIcon name="delete" color="var(--grayscale-100)" />
       <SvgIcon name="meatball" color="var(--grayscale-100)" />
+      <SvgIcon
+        name="logo"
+        color="var(--grayscale-100)"
+        width={150}
+        height={44}
+      />
     </div>
   );
 }
