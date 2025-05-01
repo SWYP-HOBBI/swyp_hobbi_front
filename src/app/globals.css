@@ -1,15 +1,81 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #16ebc2;
+  --primary-w20: #45efce;
+  --primary-w40: #73f3da;
+  --primary-w60: #a2f7e7;
+  --primary-w80: #d0fbf3;
+  --primary-b20: #12bc9b;
+  --primary-b40: #0d8d74;
+  --primary-b60: #095e4e;
+  --primary-b80: #042f27;
+
+  --like: #eb165d;
+
+  --grayscale-0: #ffffff;
+  --grayscale-1: #f7f7f7;
+  --grayscale-5: #f2f2f2;
+  --grayscale-10: #e5e5e5;
+  --grayscale-20: #cccccc;
+  --grayscale-30: #b3b3b3;
+  --grayscale-40: #999999;
+  --grayscale-50: #808080;
+  --grayscale-60: #666666;
+  --grayscale-70: #4c4c4c;
+  --grayscale-80: #333333;
+  --grayscale-90: #1a1a1a;
+  --grayscale-100: #000000;
+
+  --shadow-sm: 4px 4px 2px 0 rgba(0, 0, 0, 0.08);
+  --shadow-md: 4px 4px 4px 0 rgba(0, 0, 0, 0.12);
+  --shadow-lg: 4px 4px 8px 2 rgba(0, 0, 0, 0.16);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 24px;
+
+  /* --font-pretendard: 'Pretendard Variable', sans-serif; */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-w20: var(--primary-w20);
+  --color-primary-w40: var(--primary-w40);
+  --color-primary-w60: var(--primary-w60);
+  --color-primary-w80: var(--primary-w80);
+  --color-primary-b20: var(--primary-b20);
+  --color-primary-b40: var(--primary-b40);
+  --color-primary-b60: var(--primary-b60);
+  --color-primary-b80: var(--primary-b80);
+
+  --color-grayscale-0: var(--grayscale-0);
+  --color-grayscale-1: var(--grayscale-1);
+  --color-grayscale-5: var(--grayscale-5);
+  --color-grayscale-10: var(--grayscale-10);
+  --color-grayscale-20: var(--grayscale-20);
+  --color-grayscale-30: var(--grayscale-30);
+  --color-grayscale-40: var(--grayscale-40);
+  --color-grayscale-50: var(--grayscale-50);
+  --color-grayscale-60: var(--grayscale-60);
+  --color-grayscale-70: var(--grayscale-70);
+  --color-grayscale-80: var(--grayscale-80);
+  --color-grayscale-90: var(--grayscale-90);
+  --color-grayscale-100: var(--grayscale-100);
+
+  --color-like: var(--like);
+
+  --color-shadow-sm: var(--shadow-sm);
+  --color-shadow-md: var(--shadow-md);
+  --color-shadow-lg: var(--shadow-lg);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  /* --font-pretendard: var(--font-pretendard); */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +88,33 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: var(--font-pretendard); */
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+.tag_container {
+  @apply flex items-center gap-2;
+}
+
+.button_transition {
+  @apply transition-colors duration-200;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--grayscale-10);
+  border-radius: 12px;
+  margin: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-b20);
+  border-radius: 12px;
 }
