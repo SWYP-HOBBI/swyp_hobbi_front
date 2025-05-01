@@ -42,9 +42,12 @@ export default function Profile({
       </div>
 
       <div
-        className={`${
-          isHorizontalSmall ? 'text-[14px]' : 'text-[18px]'
-        } text-grayscale-90 ${isVertical ? 'mt-[12px]' : 'ml-[12px]'}`}
+        className={`
+        ${
+          isHorizontalSmall
+            ? 'text-[14px] leading-[140%] tracking-[-0.1px] font-normal'
+            : 'text-[18px] leading-[150%] tracking-[-0.1px] font-medium'
+        } text-grayscale-100 ${isVertical ? 'mt-[12px]' : 'ml-[12px]'}`}
       >
         {nickname}
       </div>
