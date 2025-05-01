@@ -3,17 +3,17 @@
 import React from 'react';
 import SvgIcon from '@/components/common/svg_icon';
 
-interface ProfileProps {
+interface MyProfileProps {
   imageUrl?: string;
   editable?: boolean;
   onImageUpload?: () => void;
 }
 
-export default function Profile({
+export default function MyProfile({
   imageUrl,
   editable,
   onImageUpload,
-}: ProfileProps) {
+}: MyProfileProps) {
   return (
     <div className="relative w-[124px] h-[124px] rounded-full bg-grayscale-10 flex items-center justify-center">
       {imageUrl ? (
