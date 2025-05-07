@@ -6,6 +6,7 @@ export default function TabBar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isHome = pathname === '/posts';
   const isWrite = pathname === '/posts/write';
   const isMyPage = pathname === '/my_page';
 
@@ -17,15 +18,15 @@ export default function TabBar() {
       : 'text-[var(--grayscale-40)]';
 
   return (
-    <div className="w-[198px] h-[1024px] bg-white">
+    <div className="w-[198px] h-[1024px] bg-white sticky top-0">
       <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
         <SvgIcon name="logo" width={150} height={44} />
       </div>
 
       <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-[24px] mb-[411px]">
         <div className="w-[150px] flex items-center h-[52px] pt-[20px]">
-          <SvgIcon name="home" size={36} color="#999999" />
-          <span className="ml-[24px] text-[16px] text-[var(--grayscale-40)]">
+          <SvgIcon name="home" size={36} color={iconColor(isHome)} />
+          <span className={`ml-[24px] text-[16px] ${textColor(isHome)}`}>
             홈
           </span>
         </div>
