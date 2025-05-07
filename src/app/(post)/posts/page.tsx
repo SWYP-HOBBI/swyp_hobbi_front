@@ -91,22 +91,27 @@ export default function PostsPage() {
   if (status === 'error') return <div>에러가 발생했습니다.</div>;
 
   return (
-    <div className="min-w-[960px] my-12 mx-auto">
-      <div className="space-y-12">
-        {/* 게시글 목록 렌더링 */}
-        {data?.pages.flatMap((group: PostCardProps[]) =>
-          group.map((post) => (
-            <div key={post.postId}>
-              <PostCard {...post} />
-            </div>
-          )),
-        )}
-
-        {/* 무한 스크롤 옵저버 */}
-        <div ref={observerRef} className="h-4 flex items-center justify-center">
-          {isFetchingNextPage && (
-            <div className="text-grayscale-60">로딩 중...</div>
+    <div className="flex justify-center my-12 mx-auto">
+      <div className="w-[960px]">
+        <div className="space-y-12">
+          {/* 게시글 목록 렌더링 */}
+          {data?.pages.flatMap((group: PostCardProps[]) =>
+            group.map((post) => (
+              <div key={post.postId}>
+                <PostCard {...post} />
+              </div>
+            )),
           )}
+
+          {/* 무한 스크롤 옵저버 */}
+          <div
+            ref={observerRef}
+            className="h-4 flex items-center justify-center"
+          >
+            {isFetchingNextPage && (
+              <div className="text-grayscale-60">로딩 중...</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
