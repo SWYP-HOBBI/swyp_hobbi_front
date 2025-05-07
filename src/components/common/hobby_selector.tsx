@@ -1,6 +1,10 @@
 'use client';
 
-import { HOBBY_MAIN_CATEGORIES, HOBBY_SUB_CATEGORIES } from '@/types/hobby';
+import {
+  HOBBY_MAIN_CATEGORIES,
+  HOBBY_SUB_CATEGORIES,
+  HobbyTag,
+} from '@/types/hobby';
 import { useHobbyStore } from '@/store/hobby';
 import Tag, { TagVariant } from './tag';
 import Button from './button';
@@ -10,10 +14,11 @@ interface HobbySelectorProps {
   className?: string;
   maxCount?: number;
   variant?: TagVariant;
+  tags?: HobbyTag[];
 }
 
 // 수정된 드롭다운 버튼 컴포넌트
-const CustomDropdownButton = ({
+export const CustomDropdownButton = ({
   value,
   placeholder,
   isOpen,
@@ -34,7 +39,7 @@ const CustomDropdownButton = ({
         type="button"
         onClick={onToggle}
         disabled={disabled}
-        className={`flex items-center text-sm font-medium justify-between w-full p-5 rounded-lg ${
+        className={`flex items-center text-sm font-medium justify-between w-full p-5 rounded-lg h-[60px] ${
           disabled
             ? 'bg-grayscale-10 text-grayscale-40'
             : 'bg-grayscale-0 text-grayscale-60'
@@ -66,7 +71,7 @@ const CustomDropdownButton = ({
 };
 
 // 수정된 드롭다운 아이템 컴포넌트
-const CustomDropdownItem = ({
+export const CustomDropdownItem = ({
   label,
   isSelected,
   onClick,
@@ -120,12 +125,14 @@ export default function HobbySelector({
 
   // 선택된 대분류의 표시 텍스트
   const selectedMainCategoryLabel = selectedMainCategory
-    ? HOBBY_MAIN_CATEGORIES[selectedMainCategory]
+    ? HOBBY_MAIN_CATEGORIES[
+        selectedMainCategory as keyof typeof HOBBY_MAIN_CATEGORIES
+      ]
     : '';
 
   return (
     <div className={`${className}`}>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <div className="flex-1">
           <CustomDropdownButton
             value={selectedMainCategoryLabel}
@@ -159,7 +166,9 @@ export default function HobbySelector({
             disabled={!selectedMainCategory}
           >
             {selectedMainCategory &&
-              HOBBY_SUB_CATEGORIES[selectedMainCategory].map((subCategory) => (
+              HOBBY_SUB_CATEGORIES[
+                selectedMainCategory as keyof typeof HOBBY_SUB_CATEGORIES
+              ].map((subCategory) => (
                 <CustomDropdownItem
                   key={subCategory}
                   value={subCategory}
@@ -174,6 +183,7 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
+          className="flex-1"
           onClick={() => {
             if (
               !maxCount ||

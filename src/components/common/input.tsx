@@ -5,7 +5,7 @@ import SvgIcon from './svg_icon';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
+  error?: string | null;
   helperText?: string;
   className?: string;
   containerClassName?: string;
@@ -40,7 +40,10 @@ export default function Input({
   const clearInput = () => {
     if (onChange) {
       const event = {
-        target: { value: '' },
+        target: {
+          name: props.name,
+          value: '',
+        },
       } as React.ChangeEvent<HTMLInputElement>;
       onChange(event);
     }
@@ -69,7 +72,7 @@ export default function Input({
         <input
           id={id}
           type={inputType}
-          className={`w-full p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed ${className}`}
+          className={`w-full p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed [-webkit-autofill:hover]:!bg-none [-webkit-autofill:focus]:!bg-none [-webkit-autofill:active]:!bg-none [-webkit-autofill]:!bg-none ${className}`}
           value={value}
           onChange={onChange}
           disabled={disabled}
