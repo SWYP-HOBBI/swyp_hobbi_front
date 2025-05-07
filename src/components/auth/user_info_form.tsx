@@ -12,34 +12,54 @@ import Button from '@/components/common/button';
 import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 
+/**
+ * 회원가입 상세 정보 입력 폼 Props 인터페이스
+ * @param onSubmit - 회원가입 데이터 제출 핸들러
+ * @param onPrevStep - 이전 단계로 이동 핸들러
+ */
 interface UserInfoFormProps {
   onSubmit: (data: UserInfoFormData) => void;
   onPrevStep: () => void;
 }
 
+/**
+ * 회원가입 상세 정보 입력 폼 컴포넌트
+ *
+ * 주요 기능
+ * 1. 닉네임 입력 및 중복 검사
+ * 2. 생년월일 선택
+ * 3. 성별 선택
+ * 4. MBTI 선택
+ * 5. 취미 선택 (최대 15개)
+ * 6. 회원가입 완료 버튼
+ */
 export default function UserInfoForm({
   onSubmit,
   onPrevStep,
 }: UserInfoFormProps) {
   const {
-    signupData,
-    updateSignupData,
-    isNicknameVerified,
-    setIsNicknameVerified,
-    isLoading,
-    setIsLoading,
-    isError,
-    setIsError,
-    errorMessage,
-    setErrorMessage,
+    signupData, // 회원가입 데이터
+    updateSignupData, // 회원가입 데이터 업데이트
+    isNicknameVerified, // 닉네임 인증 상태
+    setIsNicknameVerified, // 닉네임 인증 상태 설정
+    isLoading, // 로딩 상태
+    setIsLoading, // 로딩 상태 설정
+    isError, // 에러 상태
+    setIsError, // 에러 상태 설정
+    errorMessage, // 에러 메시지
+    setErrorMessage, // 에러 메시지 설정
   } = useSignupStore();
 
-  const { selectedHobbyTags, resetSelections } = useHobbyStore();
-  const [isYearOpen, setIsYearOpen] = useState(false);
-  const [isMonthOpen, setIsMonthOpen] = useState(false);
-  const [isDayOpen, setIsDayOpen] = useState(false);
-  const [isMbtiOpen, setIsMbtiOpen] = useState(false);
+  const { selectedHobbyTags } = useHobbyStore(); // 선택된 취미 태그 상태
+  const [isYearOpen, setIsYearOpen] = useState(false); // 년도 선택 상태
+  const [isMonthOpen, setIsMonthOpen] = useState(false); // 월 선택 상태
+  const [isDayOpen, setIsDayOpen] = useState(false); // 일 선택 상태
+  const [isMbtiOpen, setIsMbtiOpen] = useState(false); // MBTI 선택 상태
 
+  /**
+   * 년도 선택 옵션 생성 (1900년 ~ 현재년도)
+   * useMemo를 사용하여 불필요한 재계산 방지
+   */
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     return Array.from(
@@ -48,20 +68,26 @@ export default function UserInfoForm({
     );
   }, []);
 
-  // 컴포넌트가 언마운트될 때 선택된 취미들을 초기화
-  useEffect(() => {
-    return () => {
-      resetSelections();
-    };
-  }, [resetSelections]);
+  // // 컴포넌트가 언마운트될 때 선택된 취미들을 초기화
+  // useEffect(() => {
+  //   return () => {
+  //     resetSelections();
+  //   };
+  // }, [resetSelections]);
 
-  // 선택된 취미 태그가 변경될 때마다 signupData 업데이트
+  /**
+   * 선택된 취미 태그가 변경될 때마다 signupData 업데이트
+   */
   useEffect(() => {
     updateSignupData({
       hobbyTags: selectedHobbyTags.map((tag) => tag.subCategory),
     });
   }, [selectedHobbyTags, updateSignupData]);
 
+  /**
+   * 입력 필드 변경 핸들러
+   * 닉네임 입력 시 검증 상태 초기화
+   */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -72,7 +98,10 @@ export default function UserInfoForm({
     updateSignupData({ [name]: value });
   };
 
-  // 닉네임 중복 확인
+  /**
+   * 닉네임 중복 검사 핸들러
+   * API 호출을 통해 닉네임 중복 여부 확인
+   */
   const handleNicknameCheck = async () => {
     try {
       setIsLoading(true);
@@ -83,12 +112,13 @@ export default function UserInfoForm({
         signupData.nickname,
       );
 
-      // 서버 응답이 중복 여부를 포함하는 경우 처리
+      console.log(response);
+
       if (
         response &&
         typeof response === 'object' &&
-        'duplicate' in response &&
-        response.duplicate
+        'isDuplicate' in response &&
+        response.isDuplicate
       ) {
         setIsError(true);
         setErrorMessage('이미 사용 중인 닉네임입니다.');
@@ -110,11 +140,18 @@ export default function UserInfoForm({
     }
   };
 
-  // 성별 선택
+  /**
+   * 성별 선택 핸들러
+   * 선택된 성별 업데이트
+   */
   const handleGenderSelect = (gender: Gender) => {
     updateSignupData({ gender });
   };
 
+  /**
+   * 폼 제출 핸들러
+   * 닉네임 검증 후 회원가입 데이터 제출
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -134,7 +171,12 @@ export default function UserInfoForm({
     });
   };
 
-  // 폼 유효성 검사 함수 추가
+  /**
+   * 폼 유효성 검사
+   * - 닉네임 검증
+   * - 생년월일 검증
+   * - 성별 선택 검증
+   */
   const isFormValid = () => {
     // 닉네임 검증 (닉네임 입력 및 중복확인 완료)
     const isNicknameValid =
@@ -156,12 +198,17 @@ export default function UserInfoForm({
     return isNicknameValid && isBirthValid && isGenderValid;
   };
 
+  /**
+   * 월 날짜 검증
+   * 주어진 년도와 월에 대한 월의 마지막 날짜 반환
+   */
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month, 0).getDate();
   };
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-0">
+      {/* 헤더 */}
       <div className="relative flex items-center justify-center mb-8">
         <div className="absolute left-0" onClick={onPrevStep}>
           <SvgIcon
@@ -182,7 +229,7 @@ export default function UserInfoForm({
         </label>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         <Input
           id="nickname"
           name="nickname"
@@ -244,6 +291,7 @@ export default function UserInfoForm({
                 key={year}
                 value={String(year)}
                 label={`${year}년`}
+                showCheckbox
                 isSelected={signupData.birthYear === year}
                 onClick={() => {
                   updateSignupData({ birthYear: year });
@@ -264,6 +312,7 @@ export default function UserInfoForm({
             {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
               <CustomDropdownItem
                 key={month}
+                showCheckbox
                 value={String(month)}
                 label={`${month}월`}
                 isSelected={signupData.birthMonth === month}
@@ -294,6 +343,7 @@ export default function UserInfoForm({
             ).map((day) => (
               <CustomDropdownItem
                 key={day}
+                showCheckbox
                 value={String(day)}
                 label={`${day}일`}
                 isSelected={signupData.birthDay === day}
@@ -315,7 +365,7 @@ export default function UserInfoForm({
         </label>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         <Button
           type="button"
           onClick={() => handleGenderSelect('남성')}
@@ -354,6 +404,7 @@ export default function UserInfoForm({
               value={mbti}
               label={mbti}
               isSelected={signupData.mbti === mbti}
+              showCheckbox
               onClick={() => {
                 updateSignupData({ mbti });
                 setIsMbtiOpen(false);

@@ -1,3 +1,4 @@
+// MBTI 옵션 타입
 export const MBTI_OPTIONS = [
   'ISTJ',
   'ISFJ',
@@ -17,17 +18,24 @@ export const MBTI_OPTIONS = [
   'ENTJ',
 ] as const;
 
+// 회원가입 단계
 export type SignupStep = 'signup' | 'userInfo';
 
+// MBTI 타입
 export type MBTIType = (typeof MBTI_OPTIONS)[number] | '';
 
+// 성별 타입
 export type Gender = '남성' | '여성';
 
+// 로그인 요청 타입
 export interface LoginRequest {
   email: string;
   password: string;
+  socialId?: string;
+  socialProvider?: 'kakao' | 'google';
 }
 
+// 로그인 응답 타입
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
@@ -35,6 +43,7 @@ export interface LoginResponse {
   hobbyTags: string[];
 }
 
+// 회원가입 폼 데이터 타입
 export interface SignupFormData {
   username: string;
   email: string;
@@ -42,6 +51,7 @@ export interface SignupFormData {
   passwordConfirm: string;
 }
 
+// 회원가입 폼 데이터 타입
 export interface UserInfoFormData {
   birthYear: number;
   birthMonth: number;
@@ -52,43 +62,48 @@ export interface UserInfoFormData {
   hobbyTags: string[];
 }
 
+// 소셜 로그인 응답 타입
+export interface SocialLoginResponse extends LoginResponse {
+  email: string;
+  socialId: string;
+  socialProvider: 'kakao' | 'google';
+}
+
+// 회원가입 요청 타입
 export interface SignupRequest {
   email: string;
-  username: string;
-  password: string;
-  passwordConfirm: string;
+  username?: string;
+  password?: string;
+  passwordConfirm?: string;
   birthYear: number;
   birthMonth: number;
   birthDay: number;
   gender: '남성' | '여성';
   nickname: string;
   mbti: MBTIType;
-  userImageUrl: string;
+  userImageUrl?: string;
   hobbyTags: string[];
+  socialId?: string;
+  socialProvider?: 'kakao' | 'google';
 }
 
 // store/auth.ts에서 사용하는 타입
 export interface AuthState {
+  accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean; // 로그인 상태 여부
-  accessToken: string | null; // 액세스 토큰
-  refreshToken: string | null; // 리프레쉬 토큰
   userId: number | null; // 유저 아이디
   isLoading: boolean; // 로딩 여부
   isError: boolean; // 에러 여부
   errorMessage: string | null; // 에러 메시지
   hobbyTags: string[]; // 취미 태그
 
-  setAuth: (params: {
-    accessToken: string;
-    refreshToken: string;
-    userId: number;
-    hobbyTags: string[];
-  }) => void;
-
+  setAuth: (params: LoginResponse) => void;
   logout: () => void;
-  setIsLoading: (loading: boolean) => void; // 로딩 여부 설정
-  setIsError: (error: boolean) => void; // 에러 여부 설정
-  setErrorMessage: (message: string | null) => void; // 에러 메시지 설정
+  setIsLoading: (loading: boolean) => void;
+  setIsError: (error: boolean) => void;
+  setErrorMessage: (message: string | null) => void;
+  reissueToken: () => Promise<boolean>;
 }
 
 // store/signup.ts에서 사용하는 타입

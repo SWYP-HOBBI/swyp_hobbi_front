@@ -2,52 +2,105 @@ import { AuthState } from '@/types/auth';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const initialState = {
+  isAuthenticated: false,
+  accessToken: null,
+  refreshToken: null,
+  userId: null,
+  isLoading: false,
+  isError: false,
+  errorMessage: null,
+  hobbyTags: [],
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      // 초기 상태
-      isAuthenticated: false,
-      accessToken: null,
-      refreshToken: null,
-      userId: null,
-      isLoading: false,
-      isError: false,
-      errorMessage: null,
-      hobbyTags: [],
+      ...initialState,
 
       // 통합 인증 설정
-      setAuth: (params) =>
-        set({
+      setAuth: (params) => {
+        // 상태 업데이트
+        set((state) => ({
+          ...state,
           isAuthenticated: true,
           accessToken: params.accessToken,
           refreshToken: params.refreshToken,
           userId: params.userId,
+          hobbyTags: params.hobbyTags || [],
           isLoading: false,
           isError: false,
           errorMessage: null,
-          hobbyTags: params.hobbyTags,
-        }),
+        }));
+      },
 
       // 로그아웃
-      logout: () =>
-        set({
-          isAuthenticated: false,
-          accessToken: null,
-          refreshToken: null,
-          userId: null,
-          isLoading: false,
-          isError: false,
-          errorMessage: null,
-          hobbyTags: [],
-        }),
+      logout: () => {
+        set(initialState);
+      },
 
-      setIsLoading: (loading: boolean) => set({ isLoading: loading }),
-      setIsError: (error: boolean) => set({ isError: error }),
+      setIsLoading: (loading: boolean) =>
+        set((state) => ({ ...state, isLoading: loading })),
+      setIsError: (error: boolean) =>
+        set((state) => ({ ...state, isError: error })),
       setErrorMessage: (message: string | null) =>
-        set({ errorMessage: message }),
-    }),
+        set((state) => ({ ...state, errorMessage: message })),
 
-    // 로컬 스토리지에 저장
+      setTokens: (accessToken: string, refreshToken: string) =>
+        set({ accessToken, refreshToken }),
+
+      reissueToken: async () => {
+        try {
+          const refreshToken = useAuthStore.getState().refreshToken;
+
+          if (!refreshToken) {
+            set(initialState);
+            return false;
+          }
+
+          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+          const response = await fetch(`${API_BASE_URL}/token/reissue`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              refreshToken: `${refreshToken}`,
+            },
+          });
+
+          // 401 상태 코드일 경우 리프레시 토큰이 만료된 것
+          if (response.status === 401) {
+            set(initialState);
+            window.location.href = '/';
+            return false;
+          }
+
+          // 다른 에러 상태 코드
+          if (!response.ok) {
+            throw new Error('토큰 재발급 실패');
+          }
+
+          const data = await response.json();
+
+          // accessToken만 새로 받아서 업데이트
+          if (data.accessToken) {
+            set((state) => ({
+              ...state,
+              accessToken: data.accessToken,
+              isAuthenticated: true,
+            }));
+            return true;
+          }
+
+          throw new Error('토큰 재발급 응답 형식 오류');
+        } catch (error) {
+          console.error('❌ 토큰 재발급 에러:', error);
+          set(initialState);
+          window.location.href = '/';
+          return false;
+        }
+      },
+    }),
     {
       name: 'auth-storage',
       partialize: (state) => ({

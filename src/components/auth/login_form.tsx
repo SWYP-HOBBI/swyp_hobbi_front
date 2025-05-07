@@ -8,54 +8,79 @@ import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 import Button from '../common/button';
 
+/**
+ * 로그인 폼 컴포넌트
+ *
+ * 주요 기능
+ * 1. 이메일/비밀번호 로그인
+ * 2.소셜 로그인 (카카오, 구글)
+ * 3. 비회원 접근
+ * 4. 회원가입 및 계정 찾기
+ */
 export default function LoginForm() {
   const router = useRouter();
+
   const {
-    setAuth,
-    isLoading,
-    setIsLoading,
-    isError,
-    setIsError,
-    errorMessage,
-    setErrorMessage,
+    setAuth, // 인증 상태 설정
+    isLoading, // 로딩 상태
+    setIsLoading, // 로딩 상태 설정
+    isError, // 에러 상태
+    setIsError, // 에러 상태 설정
+    errorMessage, // 에러 메시지
+    setErrorMessage, // 에러 메시지 설정
   } = useAuthStore();
+
+  // 로그인 폼 데이터 상태
   const [formData, setFormData] = useState<LoginRequest>({
     email: '',
     password: '',
   });
 
+  /**
+   * 입력 필드 변경 핸들러
+   * - 폼 데이터 업데이트
+   * - 에러 상태 초기화
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // 입력 시 에러 초기화
+    // 사용자가 입려을 시작하면 이전 에러 메시지 초기화
     if (isError) {
       setIsError(false);
       setErrorMessage(null);
     }
   };
 
+  /**
+   * 로그인 폼 제출 핸들러
+   * 1. 기본 이벤트 방지
+   * 2. 로딩 상태 설정
+   * 3. API 호출
+   * 4. 인증 정보 저장
+   * 5. 페이지 이동
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // 로딩 시작 및 에러 초기화
     setIsLoading(true);
     setIsError(false);
     setErrorMessage(null);
 
     try {
+      // 로그인 API 호출
       const userData = await authService.login(
         formData.email,
         formData.password,
       );
 
-      setAuth({
-        accessToken: userData.accessToken,
-        refreshToken: userData.refreshToken,
-        userId: userData.userId,
-        hobbyTags: userData.hobbyTags,
-      });
+      // 로그인 성공 시 인증 정보 저장
+      setAuth(userData);
 
+      // 페이지 이동
       router.push('/posts');
     } catch (error) {
       setIsError(true);
@@ -65,12 +90,23 @@ export default function LoginForm() {
           : '로그인 중 오류가 발생했습니다.',
       );
     } finally {
+      // 로딩 상태 종료
       setIsLoading(false);
     }
   };
 
+  /**
+   * 소셜 로그인 핸들러
+   * - 소셜 로그인 페이지로 리다이렉트
+   */
+  const handleSocialLogin = (provider: 'kakao' | 'google') => {
+    const url = authService.getSocialLoginUrl(provider);
+    window.location.href = url;
+  };
+
   return (
     <div className="w-full flex flex-col items-center">
+      {/* 로고 */}
       <SvgIcon name="logo" width={240} height={70} />
 
       {/* 로그인 */}
@@ -89,6 +125,7 @@ export default function LoginForm() {
           error={errorMessage}
         />
 
+        {/* 비밀번호 입력 */}
         <Input
           id="password"
           name="password"
@@ -103,6 +140,7 @@ export default function LoginForm() {
           error={errorMessage}
         />
 
+        {/* 로그인 버튼 */}
         <Button type="submit" disabled={isLoading} fullWidth>
           로그인
         </Button>
@@ -123,10 +161,20 @@ export default function LoginForm() {
         <p className="text-center text-grayscale-100 mb-11">소셜 로그인</p>
         <div className="flex justify-center space-x-3">
           {/* 소셜 로그인 버튼들 */}
-          <Button variant="outline" size="sm" fullWidth>
+          <Button
+            variant="outline"
+            size="sm"
+            fullWidth
+            onClick={() => handleSocialLogin('kakao')}
+          >
             카카오로 로그인
           </Button>
-          <Button variant="outline" size="sm" fullWidth>
+          <Button
+            variant="outline"
+            size="sm"
+            fullWidth
+            onClick={() => handleSocialLogin('google')}
+          >
             구글로 로그인
           </Button>
         </div>

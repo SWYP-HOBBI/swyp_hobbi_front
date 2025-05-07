@@ -3,6 +3,7 @@ import {
   HOBBY_MAIN_CATEGORIES,
   HobbyMainCategory,
   HobbyState,
+  HobbyTag,
 } from '@/types/hobby';
 
 export const useHobbyStore = create<HobbyState>((set) => ({
@@ -53,7 +54,7 @@ export const useHobbyStore = create<HobbyState>((set) => ({
       }
 
       const mainCategory = HOBBY_MAIN_CATEGORIES[
-        state.selectedMainCategory
+        state.selectedMainCategory as keyof typeof HOBBY_MAIN_CATEGORIES
       ] as HobbyMainCategory;
 
       const newTags = state.selectedSubCategories
@@ -97,5 +98,11 @@ export const useHobbyStore = create<HobbyState>((set) => ({
       selectedHobbyTags: [],
       isMainCategoryOpen: false,
       isSubCategoryOpen: false,
+    }),
+
+  // 취미 태그 직접 설정
+  setSelectedHobbyTags: (tags: HobbyTag[]) =>
+    set({
+      selectedHobbyTags: tags,
     }),
 }));
