@@ -70,3 +70,27 @@ export const validatePassword = (
 
   return validatePasswordMatch(password, confirmPassword);
 };
+
+// 비밀번호 유효성 검사
+export const getPasswordError = (password: string) => {
+  if (!password) return undefined;
+
+  const lengthCheck = validatePasswordLength(password);
+  if (!lengthCheck.isValid) return lengthCheck.message;
+
+  const complexityCheck = validatePasswordComplexity(password);
+  if (!complexityCheck.isValid) return complexityCheck.message;
+
+  return undefined;
+};
+
+// 비밀번호 확인 유효성 검사
+export const getPasswordConfirmError = (
+  password: string,
+  passwordConfirm: string,
+) => {
+  if (!passwordConfirm) return undefined;
+
+  const validation = validatePassword(password, passwordConfirm);
+  return validation.message;
+};
