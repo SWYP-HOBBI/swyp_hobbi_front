@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React from 'react';
 
 type ProfileVariant = 'vertical' | 'horizontal-large' | 'horizontal-small';
@@ -31,7 +32,7 @@ export default function Profile({
         className={`w-[${imageSize}px] h-[${imageSize}px] rounded-full bg-grayscale-10 flex items-center justify-center overflow-hidden`}
       >
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt="프로필 이미지"
             className="w-full h-full object-contain rounded-full"
