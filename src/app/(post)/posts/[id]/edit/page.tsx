@@ -76,12 +76,12 @@ export default function EditPostPage() {
   };
 
   if (isLoading) {
-    return <div className="max-w-[960px] mx-auto my-12 p-9">로딩 중...</div>;
+    return <div className="min-w-[960px] mx-auto my-12 p-9">로딩 중...</div>;
   }
 
   if (!post) {
     return (
-      <div className="max-w-[960px] mx-auto my-12 p-9">
+      <div className="min-w-[960px] mx-auto my-12 p-9">
         게시글을 찾을 수 없습니다.
       </div>
     );

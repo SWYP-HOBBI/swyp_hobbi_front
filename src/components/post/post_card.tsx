@@ -3,6 +3,7 @@ import Tag from '../common/tag';
 import { PostCardProps } from '@/types/post';
 import SvgIcon from '../common/svg_icon';
 import Image from 'next/image';
+import Profile from '../common/profile';
 
 /**
  *  게시글 카드 컴포넌트
@@ -27,15 +28,17 @@ export default function PostCard({
   likeCount,
   commentCount,
 }: PostCardProps) {
-  console.log(profileImageUrl);
   return (
     // 게시글 상세 페이지로 이동하는 링크
     <Link href={`/posts/${postId}`}>
       <div className="w-full bg-grayscale-0 rounded-xl shadow-md p-5">
         {/* 작성자 정보 (공통 컴포넌트로 교체될 예정) */}
         <div className="flex items-center space-x-3 mb-6">
-          <div className="w-[72px] h-[72px] rounded-full bg-grayscale-10" />
-          <span className="text-grayscale-100">{nickname}</span>
+          <Profile
+            imageUrl={profileImageUrl}
+            nickname={nickname}
+            variant="horizontal-large"
+          />
         </div>
 
         {/* 취미 태그 */}

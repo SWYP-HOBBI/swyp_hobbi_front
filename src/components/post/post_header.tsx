@@ -1,6 +1,6 @@
 import SvgIcon from '@/components/common/svg_icon';
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
+import Profile from '../common/profile';
 
 /**
  * 게시글 헤더 Props 인터페이스
@@ -54,21 +54,11 @@ export default function PostHeader({
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
-          <div className="flex items-center space-x-3">
-            <div className="relative w-[72px] h-[72px] rounded-full overflow-hidden bg-grayscale-10">
-              {profileImageUrl && (
-                <Image
-                  src={profileImageUrl}
-                  alt={`${nickname}의 프로필 이미지`}
-                  fill
-                  className="object-cover"
-                />
-              )}
-            </div>
-            <span className="text-grayscale-100 font-medium text-lg">
-              {nickname}
-            </span>
-          </div>
+          <Profile
+            imageUrl={profileImageUrl}
+            nickname={nickname}
+            variant="horizontal-large"
+          />
         </div>
       </div>
       {isOwner && (

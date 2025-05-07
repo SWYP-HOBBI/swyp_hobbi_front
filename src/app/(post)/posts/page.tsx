@@ -91,7 +91,7 @@ export default function PostsPage() {
   if (status === 'error') return <div>에러가 발생했습니다.</div>;
 
   return (
-    <div className="max-w-[960px] mx-auto my-12">
+    <div className="min-w-[960px] my-12 mx-auto">
       <div className="space-y-12">
         {/* 게시글 목록 렌더링 */}
         {data?.pages.flatMap((group: PostCardProps[]) =>

@@ -226,7 +226,7 @@ export default function PostForm({
   };
 
   return (
-    <div className="max-w-[960px] mx-auto my-12 space-y-6">
+    <div className="min-w-[960px] mx-auto my-12 space-y-6">
       {/* 1. 제목 입력 */}
       <div className="shadow-md rounded-lg">
         <Input
