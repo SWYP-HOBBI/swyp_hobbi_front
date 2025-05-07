@@ -5,6 +5,7 @@ import { useHobbyStore } from '@/store/hobby';
 import { postService } from '@/services/api';
 import PostForm from '@/components/post/post_form';
 import { useModalStore } from '@/store/modal';
+import { useEffect } from 'react';
 
 /**
  * 게시글 작성 페이지
@@ -20,11 +21,16 @@ import { useModalStore } from '@/store/modal';
 export default function PostWrite() {
   const router = useRouter();
   const { openModal } = useModalStore();
+  const resetSelections = useHobbyStore((state) => state.resetSelections);
+
+  // 컴포넌트 마운트 시 태그 초기화
+  useEffect(() => {
+    resetSelections();
+  }, [resetSelections]);
 
   const handleSubmit = async (formData: FormData) => {
     try {
       const { postId } = await postService.writePost(formData);
-      useHobbyStore.getState().resetSelections();
       openModal({
         title: '게시글이 등록되었습니다.',
         message: '상세페이지로 이동합니다.',
