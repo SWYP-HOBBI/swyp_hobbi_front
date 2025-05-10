@@ -13,7 +13,7 @@ import Button from '../common/button';
  *
  * 주요 기능
  * 1. 이메일/비밀번호 로그인
- * 2.소셜 로그인 (카카오, 구글)
+ * 2. 소셜 로그인 (카카오, 구글)
  * 3. 비회원 접근
  * 4. 회원가입 및 계정 찾기
  */
@@ -28,6 +28,7 @@ export default function LoginForm() {
     setIsError, // 에러 상태 설정
     errorMessage, // 에러 메시지
     setErrorMessage, // 에러 메시지 설정
+    logout, // 사용자 로그아웃 및 인증 정보 초기화
   } = useAuthStore();
 
   // 로그인 폼 데이터 상태
@@ -182,7 +183,7 @@ export default function LoginForm() {
 
       {/* 비회원 로그인 */}
       <div className="mt-15 w-full">
-        <Button fullWidth variant="secondary">
+        <Button fullWidth variant="secondary" onClick={() => logout()}>
           <Link href="/posts">비회원으로 둘러보기</Link>
         </Button>
       </div>

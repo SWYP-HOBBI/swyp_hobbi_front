@@ -7,6 +7,7 @@ import { Comment, PostCardProps, PostResponse, PostDetail } from '@/types/post';
 import { useAuthStore } from '@/store/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
 
 // API 요청 helper 함수
 export async function fetchApi<T>(
@@ -221,14 +222,14 @@ export const postService = {
     return fetchApi('/post', options);
   },
 
-  // 게시글 상세 조회
+  // 회원: 게시글 상세 조회
   getPostDetail: async (postId: number) => {
     return fetchApi<PostDetail>(`/post/${postId}`, {
       method: 'GET',
     });
   },
 
-  // 무한 스크롤 게시글 조회
+  // 회원: 무한 스크롤 게시글 조회
   getInfiniteScrollPosts: async (params: {
     tagExist: boolean;
     lastPostId?: number;
@@ -244,6 +245,39 @@ export const postService = {
     return fetchApi<PostCardProps[]>(`/post?${searchParams}`, {
       method: 'GET',
     });
+  },
+
+  // 비회원: 무한 스크롤 게시글 조회
+  getPublicPosts: async (params: { cursor_id?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams({
+      ...(params.cursor_id && { cursor_id: params.cursor_id.toString() }),
+      limit: (params.limit || 15).toString(),
+    });
+
+    const url = `${API_BASE_URL_PUBLIC}/posts/cursor?${searchParams}`;
+
+    const response = await fetch(url, { method: 'GET' });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '비회원 게시글 목록 조회 중 오류');
+    }
+
+    return data as PostCardProps[];
+  },
+
+  // 비회원: 게시글 상세 조회
+  getPublicPostDetail: async (postId: number) => {
+    const url = `${API_BASE_URL_PUBLIC}/posts/${postId}`;
+
+    const response = await fetch(url, { method: 'GET' });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '비회원 게시글 상세 조회 중 오류');
+    }
+
+    return data as PostDetail;
   },
 
   // 게시글 수정
