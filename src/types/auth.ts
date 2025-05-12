@@ -41,6 +41,7 @@ export interface LoginResponse {
   refreshToken: string;
   userId: number;
   hobbyTags: string[];
+  nickname: string;
 }
 
 // 회원가입 폼 데이터 타입
@@ -97,6 +98,7 @@ export interface AuthState {
   isError: boolean; // 에러 여부
   errorMessage: string | null; // 에러 메시지
   hobbyTags: string[]; // 취미 태그
+  nickname: string | null; // 닉네임
 
   setAuth: (params: LoginResponse) => void;
   logout: () => void;

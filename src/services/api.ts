@@ -3,7 +3,13 @@ import {
   SignupRequest,
   SocialLoginResponse,
 } from '@/types/auth';
-import { Comment, PostCardProps, PostResponse, PostDetail } from '@/types/post';
+import {
+  Comment,
+  PostCardProps,
+  PostResponse,
+  PostDetail,
+  PostLike,
+} from '@/types/post';
 import { useAuthStore } from '@/store/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -263,6 +269,26 @@ export const postService = {
       method: 'DELETE',
     });
   },
+
+  // 게시글 좋아요
+  likePost: async (postId: number): Promise<PostLike> => {
+    return fetchApi(`/like/post/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
+
+  // 게시글 좋아요 취소
+  unlikePost: async (postId: number): Promise<PostLike> => {
+    return fetchApi(`/unlike/post/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
 };
 
 // 댓글 관련 API 서비스
@@ -281,7 +307,7 @@ export const commentService = {
       pageSize: (params.pageSize || 15).toString(),
     });
 
-    return fetchApi(`/api/v1/comments?${searchParams}`, {
+    return fetchApi(`/comments?${searchParams}`, {
       method: 'GET',
     });
   },
@@ -308,19 +334,24 @@ export const commentService = {
   },
 
   // 댓글 수정
-  updateComment: async (commentId: number, content: string) => {
-    return fetchApi(`/post/comment/${commentId}`, {
+  updateComment: async (
+    commentId: number,
+    content: string,
+    postId: number,
+    userId: number | null,
+  ) => {
+    return fetchApi(`/comment/${commentId}`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'PUT',
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, postId, userId }),
     });
   },
 
   // 댓글 삭제
   deleteComment: async (commentId: number) => {
-    return fetchApi(`/post//comment/${commentId}`, {
+    return fetchApi(`/comment/${commentId}`, {
       method: 'DELETE',
     });
   },

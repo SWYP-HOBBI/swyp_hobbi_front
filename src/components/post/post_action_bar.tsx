@@ -1,4 +1,5 @@
 import SvgIcon from '@/components/common/svg_icon';
+import { formatDate } from '@/utils/date';
 
 /**
  * 게시글 액션 바 Props 인터페이스
@@ -14,10 +15,11 @@ interface PostActionBarProps {
   likeCount: number;
   commentCount: number;
   createdAt: string;
-  isLike: boolean;
+  liked: boolean;
   onLikeClick: () => void;
   onCommentClick: () => void;
   onShareClick: () => void;
+  postId: number;
 }
 
 /**
@@ -33,7 +35,7 @@ export default function PostActionBar({
   likeCount,
   commentCount,
   createdAt,
-  isLike,
+  liked,
   onLikeClick,
   onCommentClick,
   onShareClick,
@@ -45,8 +47,8 @@ export default function PostActionBar({
           <SvgIcon
             name="heart"
             size={28}
-            color={isLike ? 'var(--like)' : 'var(--grayscale-20)'}
-            className="cursor-pointer"
+            color={liked ? 'var(--like)' : 'var(--grayscale-20)'}
+            className={`cursor-pointer ${liked ? 'fill-current' : ''}`}
           />
         </button>
         <span className="text-grayscale-80">{likeCount}</span>
@@ -68,7 +70,7 @@ export default function PostActionBar({
           />
         </button>
       </div>
-      <span className="text-grayscale-40">{createdAt}</span>
+      <span className="text-grayscale-40">{formatDate(createdAt)}</span>
     </div>
   );
 }
