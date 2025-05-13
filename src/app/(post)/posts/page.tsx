@@ -171,7 +171,7 @@ export default function PostsPage() {
 
   return (
     <div className="flex justify-center my-12 mx-auto">
-      <div className="w-[960px]">
+      <div className="w-[960px] max-md:w-[390px]">
         <div className="space-y-12">
           {/* 게시글 목록 렌더링 */}
           {data?.pages.flatMap((group: PostCardProps[]) =>
