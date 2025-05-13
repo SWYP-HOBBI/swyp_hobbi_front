@@ -66,7 +66,10 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
         className={`flex flex-col items-center transition-all duration-1000 ease-in-out
           ${isAnimating ? 'transform -translate-y-[38vh]' : ''}`}
       >
-        <SvgIcon name="logo" width={240} height={70} />
+        <SvgIcon
+          name="logo"
+          className="w-[240px] h-[70px] max-md:w-[150px] max-md:h-[44px]"
+        />
       </div>
     </div>,
     portalElement,

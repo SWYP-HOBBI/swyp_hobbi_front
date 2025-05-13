@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   images: {
     domains: ['kr.object.ncloudstorage.com'],
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: 'https',
