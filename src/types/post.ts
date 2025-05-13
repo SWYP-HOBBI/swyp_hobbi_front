@@ -31,7 +31,11 @@ export interface PostCardProps {
   postImageUrls: string[];
   postHobbyTags: string[];
   likeCount: number;
+  liked: boolean;
   commentCount: number;
+  createdAt: string;
+  userId: number;
+  onLikeClick: () => void;
 }
 
 export interface PostDetail {
@@ -44,7 +48,8 @@ export interface PostDetail {
   postHobbyTags: string[];
   createdAt: string;
   likeCount: number;
-  isLike: boolean;
+  liked: boolean;
+  commentCount: number;
   userId: number;
 }
 
@@ -59,4 +64,17 @@ export interface Comment {
   deleted: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PostLike {
+  postLikeId: number;
+  postId: number;
+  userId: number;
+  likeYn: boolean;
+  createdAt: string;
+}
+
+export interface InfinitePostsResponse {
+  pages: PostCardProps[][];
+  pageParams: (string | undefined)[];
 }

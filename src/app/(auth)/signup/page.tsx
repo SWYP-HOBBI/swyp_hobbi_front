@@ -62,6 +62,8 @@ export default function Signup() {
             }),
       });
 
+      console.log('회원가입 응답 데이터:', userData);
+
       // 회원가입 관련 임시 데이터 정리
       localStorage.removeItem('signup-storage');
       if (!isSocialSignup) {
@@ -69,8 +71,12 @@ export default function Signup() {
         localStorage.removeItem('emailVerified');
       }
 
-      // 인증 상태 설정
-      setAuth(userData);
+      // 인증 상태 설정 (hobbyTags 포함)
+      setAuth({
+        ...userData,
+        hobbyTags: currentSignupData.hobbyTags, // 회원가입 시 선택한 취미 태그 포함
+        nickname: currentSignupData.nickname,
+      });
 
       // 회원가입 성공 모달 표시
       openModal({
@@ -114,7 +120,12 @@ export default function Signup() {
   return (
     <div className="flex flex-col items-center px-4 py-8 w-full shadow-md rounded-3xl">
       <div className="mb-4">
-        <SvgIcon name="logo" width={120} height={35} />
+        <SvgIcon
+          name="logo"
+          width={120}
+          height={35}
+          className="max-md:hidden"
+        />
       </div>
 
       {/* 회원가입 폼 렌더링 */}

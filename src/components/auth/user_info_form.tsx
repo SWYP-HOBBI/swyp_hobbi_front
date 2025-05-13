@@ -213,17 +213,19 @@ export default function UserInfoForm({
         <div className="absolute left-0" onClick={onPrevStep}>
           <SvgIcon
             name="arrow_left"
-            size={40}
-            className="cursor-pointer"
+            className="cursor-pointer max-md:w-[20px] max-md:h-[20px] w-[40px] h-[40px]"
             color="var(--grayscale-60)"
           />
         </div>
-        <h1 className="text-[32px] font-bold">나의 정보</h1>
+        <h1 className="text-[32px] font-bold max-md:text-lg">나의 정보</h1>
       </div>
 
       {/* 닉네임 입력 */}
-      <div className="mt-6 mb-3">
-        <label htmlFor="nickname" className="text-grayscale-100 font-semibold">
+      <div className="mt-6 mb-3 max-md:mb-2">
+        <label
+          htmlFor="nickname"
+          className="text-grayscale-100 font-semibold max-md:text-sm"
+        >
           닉네임
           <span className="text-like ml-1">*</span>
         </label>
@@ -263,16 +265,23 @@ export default function UserInfoForm({
       </div>
 
       {isError && errorMessage && (
-        <p className="text-xs text-like mt-2">*{errorMessage}</p>
+        <p className="text-xs text-like mt-2 max-md:text-[8px]">
+          *{errorMessage}
+        </p>
       )}
 
       {isNicknameVerified && (
-        <p className="text-xs text-primary mt-2">*인증이 완료되었습니다.</p>
+        <p className="text-xs text-primary mt-2 max-md:text-[8px]">
+          *인증이 완료되었습니다.
+        </p>
       )}
 
       {/* 생년월일 입력 */}
-      <div className="mt-6 mb-3">
-        <label className="text-grayscale-100 font-semibold">
+      <div className="mt-6 mb-3 max-md:mb-2">
+        <label
+          className="text-grayscale-100 font-semibold max-md:text-sm"
+          htmlFor="birthYear"
+        >
           생년월일
           <span className="text-like ml-1">*</span>
         </label>
@@ -358,8 +367,11 @@ export default function UserInfoForm({
       </div>
 
       {/* 성별 선택 */}
-      <div className="mt-6 mb-3">
-        <label className="text-grayscale-100 font-semibold">
+      <div className="mt-6 mb-3 max-md:mb-2">
+        <label
+          className="text-grayscale-100 font-semibold max-md:text-sm"
+          htmlFor="gender"
+        >
           성별
           <span className="text-like ml-1">*</span>
         </label>
@@ -387,8 +399,13 @@ export default function UserInfoForm({
       </div>
 
       {/* MBTI 선택 */}
-      <div className="mt-6 mb-3">
-        <label className="text-grayscale-100 font-semibold">MBTI</label>
+      <div className="mt-6 mb-3 max-md:mb-2">
+        <label
+          className="text-grayscale-100 font-semibold max-md:text-sm"
+          htmlFor="mbti"
+        >
+          MBTI
+        </label>
       </div>
 
       <div className="w-full">
@@ -415,11 +432,14 @@ export default function UserInfoForm({
       </div>
 
       {/* 취미 선택 */}
-      <div className="mt-6 mb-3">
-        <label className="text-grayscale-100 font-semibold">
+      <div className="mt-6 mb-3 max-md:mb-2">
+        <label
+          className="text-grayscale-100 font-semibold max-md:text-sm"
+          htmlFor="hobby"
+        >
           취미선택
-          <span className="text-grayscale-60 text-sm ml-2">
-            *최대 15개까지 선택 가능합니다.
+          <span className="text-grayscale-60 text-sm ml-2 max-md:text-[8px]">
+            *관심 취미 태그를 추가해 보세요. (최대 15개)
           </span>
         </label>
       </div>
@@ -431,7 +451,7 @@ export default function UserInfoForm({
         variant="primary"
         size="lg"
         fullWidth
-        className="mt-12"
+        className="mt-12 max-md:text-sm max-md:mt-6"
       >
         {isLoading ? '처리 중...' : '회원가입 완료'}
       </Button>

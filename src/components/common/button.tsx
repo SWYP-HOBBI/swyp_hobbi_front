@@ -14,7 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export default function Button({
   variant = 'primary',
-  size = 'lg',
+  size = 'xl',
   fullWidth = false,
   children,
   className = '',
@@ -22,7 +22,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyle =
-    'py-3 px-4 rounded-lg button_transition font-semibold text-center cursor-pointer disabled:cursor-not-allowed h-[60px]';
+    'py-3 px-4 rounded-lg button_transition font-semibold text-center cursor-pointer disabled:cursor-not-allowed h-[60px] max-md:h-[48px]';
 
   const sizeStyles = {
     sm: 'text-sm',

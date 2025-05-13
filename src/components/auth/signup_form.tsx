@@ -107,12 +107,11 @@ export default function SignupForm({
         <div className="absolute left-0" onClick={onBackButton}>
           <SvgIcon
             name="arrow_left"
-            size={40}
-            className="cursor-pointer"
+            className="cursor-pointer max-md:w-[20px] max-md:h-[20px] w-[40px] h-[40px]"
             color="var(--grayscale-60)"
           />
         </div>
-        <h1 className="text-[32px] font-bold">회원가입</h1>
+        <h1 className="text-[32px] font-bold max-md:text-lg">회원가입</h1>
       </div>
 
       {/* 이름 입력 */}
@@ -128,8 +127,11 @@ export default function SignupForm({
       />
 
       {/* 이메일 인증 */}
-      <div className="mt-6 mb-3">
-        <label htmlFor="email" className="text-grayscale-100 font-semibold">
+      <div className="mt-6 mb-3 max-md:mb-2">
+        <label
+          htmlFor="email"
+          className="text-grayscale-100 font-semibold max-md:text-sm"
+        >
           이메일
           <span className="text-like ml-1">*</span>
         </label>
@@ -168,7 +170,7 @@ export default function SignupForm({
                   : 'primary'
             }
             size="md"
-            className="w-[40%]"
+            className="w-[40%] max-md:text-sm max-md:px-2 max-md:w-[45%] whitespace-normal break-keep"
           >
             {isLoading
               ? '처리 중...'
@@ -238,7 +240,7 @@ export default function SignupForm({
         variant="primary"
         size="lg"
         fullWidth
-        className="mt-12"
+        className="mt-12 max-md:text-sm max-md:mt-6"
       >
         {isLoading ? '처리 중...' : '다음'}
       </Button>

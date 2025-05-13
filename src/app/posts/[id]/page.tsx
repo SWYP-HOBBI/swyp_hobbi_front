@@ -11,6 +11,7 @@ import PostActionBar from '@/components/post/post_action_bar';
 import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
+import Loader from '@/components/common/loader';
 
 /**
  * 게시글 상세 페이지
@@ -20,6 +21,7 @@ import { useModalStore } from '@/store/modal';
  * 2. 게시글 수정 및 삭제 기능
  * 3. 댓글 기능
  * 4. 공유 기능
+ * 5. 좋아요 기능
  */
 export default function PostDetailPage() {
   const { id } = useParams();
@@ -42,6 +44,7 @@ export default function PostDetailPage() {
         setIsLoading(true);
         const data = await postService.getPostDetail(Number(id));
         setPost(data);
+        console.log(data);
         setError(null);
       } catch (err) {
         setError(
@@ -87,16 +90,29 @@ export default function PostDetailPage() {
   };
 
   // 좋아요 클릭
-  const handleLikeClick = () => {
+  const handleLikeClick = async () => {
     if (!post) return;
-    setPost((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        isLike: !prev.isLike,
-        likeCount: prev.isLike ? prev.likeCount - 1 : prev.likeCount + 1,
-      };
-    });
+
+    try {
+      if (post.liked) {
+        // 이미 좋아요가 되어있다면 취소
+        await postService.unlikePost(post.postId);
+      } else {
+        // 좋아요가 안되어있다면 좋아요
+        await postService.likePost(post.postId);
+      }
+
+      // 서버에서 최신 데이터를 다시 불러옴
+      const updatedPost = await postService.getPostDetail(Number(id));
+      setPost(updatedPost);
+    } catch (error) {
+      console.error('좋아요 처리 중 오류:', error);
+      openModal({
+        title: '오류',
+        message: '좋아요 처리 중 오류가 발생했습니다.',
+        confirmText: '확인',
+      });
+    }
   };
 
   // 댓글 클릭
@@ -111,7 +127,11 @@ export default function PostDetailPage() {
 
   // 로딩 중
   if (isLoading) {
-    return <div className="max-w-[960px] mx-auto my-12 p-9">로딩 중...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen mx-auto">
+        <Loader />
+      </div>
+    );
   }
 
   // 오류 발생
@@ -158,18 +178,17 @@ export default function PostDetailPage() {
       </div>
 
       <PostActionBar
+        postId={post.postId}
         likeCount={post.likeCount}
-        commentCount={12}
+        commentCount={post.commentCount}
         createdAt={post.createdAt}
-        isLike={post.isLike}
+        liked={post.liked}
         onLikeClick={handleLikeClick}
         onCommentClick={handleCommentClick}
         onShareClick={handleShareClick}
       />
 
-      <div className="border-t border-grayscale-40 my-6 w-full" />
-
-      <PostComment postId={Number(id)} postAuthorId={post.userId} />
+      <PostComment postId={Number(id)} profileImageUrl={post.profileImageUrl} />
     </div>
   );
 }

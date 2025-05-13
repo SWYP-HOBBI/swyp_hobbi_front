@@ -1,11 +1,13 @@
 import { Comment } from '@/types/post';
-// import { commentService } from '@/services/api';
-// import React, { useState, useEffect, useRef, useCallback } from 'react';
-import React, { useState } from 'react';
+import { commentService } from '@/services/api';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/store/auth';
-// import { useInfiniteQuery } from '@tanstack/react-query';
-// import { InfiniteData } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData } from '@tanstack/react-query';
 import SvgIcon from '../common/svg_icon';
+import Profile from '../common/profile';
+import Image from 'next/image';
+import Loader from '../common/loader';
 
 /**
  * 댓글 데이터 인터페이스
@@ -29,52 +31,9 @@ interface ReplyTo {
   content: string;
 }
 
-// 테스트용 더미 데이터
-const DUMMY_COMMENTS: CommentWithReplies[] = [
-  {
-    commentId: 1,
-    userId: 1, // 댓글 작성자 ID 추가
-    nickname: '홍길동',
-    userImageUrl: '/images/profile.jpg',
-    content: '안녕하세요!',
-    parentCommentId: null,
-    postId: 1,
-    deleted: false,
-    createdAt: '2024-03-20',
-    updatedAt: '2024-03-20',
-    replies: [
-      {
-        commentId: 3,
-        userId: 2, // 댓글 작성자 ID 추가
-        nickname: '김철수',
-        userImageUrl: '/images/profile.jpg',
-        content: '반갑습니다!',
-        parentCommentId: 1,
-        postId: 1,
-        deleted: false,
-        createdAt: '2024-03-20',
-        updatedAt: '2024-03-20',
-      },
-    ],
-  },
-  {
-    commentId: 2,
-    userId: 3, // 댓글 작성자 ID 추가
-    nickname: '이영희',
-    userImageUrl: '/images/profile.jpg',
-    content: '좋은 글이네요.',
-    parentCommentId: null,
-    postId: 1,
-    deleted: true,
-    createdAt: '2024-03-20',
-    updatedAt: '2024-03-20',
-    replies: [],
-  },
-];
-
 interface PostCommentProps {
   postId: number;
-  postAuthorId: number; // 게시글 작성자 ID 추가
+  profileImageUrl: string;
 }
 
 /**
@@ -88,133 +47,94 @@ interface PostCommentProps {
  */
 export default function PostComment({
   postId,
-  postAuthorId,
+  profileImageUrl,
 }: PostCommentProps) {
-  console.log(postId);
   const [newComment, setNewComment] = useState('');
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
-  const currentUserId = useAuthStore((state) => state.userId); // 현재 로그인한 사용자 ID
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null); // 수정 중인 댓글 ID
+  const [editContent, setEditContent] = useState(''); // 수정 중인 댓글 내용
+  const queryClient = useQueryClient();
+
+  // 현재 로그인한 사용자의 닉네임도 가져옵니다
+  const currentUserNickname = useAuthStore((state) => state.nickname);
 
   const truncateContent = (content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
     return content.slice(0, maxLength) + '...';
   };
-  // const userId = useAuthStore((state) => state.userId);
-  // const observerRef = useRef<HTMLDivElement>(null);
 
-  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-  //   useInfiniteQuery<Comment[], Error, InfiniteData<Comment[]>>({
-  //     queryKey: ['comments', postId],
-  //     queryFn: ({ pageParam }) => {
-  //       return commentService.getComments({
-  //         postId,
-  //         lastCommentId: pageParam as number,
-  //         pageSize: 15,
-  //       });
-  //     },
-  //     getNextPageParam: (lastPage) => {
-  //       if (!lastPage || lastPage.length < 15) return undefined;
-  //       return lastPage[lastPage.length - 1].commentId;
-  //     },
-  //     initialPageParam: undefined,
-  //   });
+  const userId = useAuthStore((state) => state.userId);
+  const observerRef = useRef<HTMLDivElement>(null);
 
-  // // 무한 스크롤 구현
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-  //         fetchNextPage();
-  //       }
-  //     },
-  //     { threshold: 0.1 },
-  //   );
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useInfiniteQuery<Comment[], Error, InfiniteData<Comment[]>>({
+      queryKey: ['comments', postId],
+      queryFn: ({ pageParam }) => {
+        return commentService.getComments({
+          postId,
+          lastCommentId: pageParam as number,
+          pageSize: 15,
+        });
+      },
+      getNextPageParam: (lastPage) => {
+        if (!lastPage || lastPage.length < 15) return undefined;
+        return lastPage[lastPage.length - 1].commentId;
+      },
+      initialPageParam: undefined,
+    });
 
-  //   if (observerRef.current) {
-  //     observer.observe(observerRef.current);
-  //   }
+  // 무한 스크롤 구현
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
 
-  //   return () => observer.disconnect();
-  // }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
 
-  // // 댓글 데이터를 구조화하는 함수
-  // const structureComments = useCallback(
-  //   (commentsData: Comment[]): CommentWithReplies[] => {
-  //     const parentComments: CommentWithReplies[] = [];
-  //     const replyComments: Comment[] = [];
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  //     commentsData.forEach((comment) => {
-  //       if (comment.parentCommentId === null) {
-  //         parentComments.push({ ...comment, replies: [] });
-  //       } else {
-  //         replyComments.push(comment);
-  //       }
-  //     });
+  // 댓글 데이터를 구조화하는 함수
+  const structureComments = useCallback(
+    (commentsData: Comment[]): CommentWithReplies[] => {
+      const parentComments: CommentWithReplies[] = [];
+      const replyComments: Comment[] = [];
 
-  //     replyComments.forEach((reply) => {
-  //       const parentComment = parentComments.find(
-  //         (parent) => parent.commentId === reply.parentCommentId,
-  //       );
-  //       if (parentComment && !reply.deleted) {
-  //         parentComment.replies?.push(reply);
-  //       }
-  //     });
+      commentsData.forEach((comment) => {
+        if (comment.parentCommentId === null) {
+          parentComments.push({ ...comment, replies: [] });
+        } else {
+          replyComments.push(comment);
+        }
+      });
 
-  //     return parentComments;
-  //   },
-  //   [],
-  // );
+      replyComments.forEach((reply) => {
+        const parentComment = parentComments.find(
+          (parent) => parent.commentId === reply.parentCommentId,
+        );
+        if (parentComment && !reply.deleted) {
+          parentComment.replies?.push(reply);
+        }
+      });
 
-  // // 모든 페이지의 댓글을 하나의 배열로 합치고 구조화
-  // const allComments = data?.pages.flatMap((page) => page) ?? [];
-  // const structuredComments = structureComments(allComments);
+      return parentComments;
+    },
+    [],
+  );
 
-  // // 댓글 작성
-  // const handleCreateComment = async (
-  //   content: string,
-  //   parentCommentId?: number | null,
-  // ) => {
-  //   if (!content.trim()) {
-  //     alert('댓글 내용을 입력해주세요.');
-  //     return;
-  //   }
+  // 모든 페이지의 댓글을 하나의 배열로 합치고 구조화
+  const allComments = data?.pages.flatMap((page) => page) ?? [];
+  const structuredComments = structureComments(allComments);
 
-  //   try {
-  //     await commentService.createComment(
-  //       postId,
-  //       content,
-  //       parentCommentId,
-  //       userId,
-  //     );
-  //     setNewComment('');
-  //   } catch (error) {
-  //     console.error('댓글 작성에 실패했습니다:', error);
-  //     alert('댓글 작성에 실패했습니다.');
-  //   }
-  // };
-
-  // // 댓글 수정
-  // const handleUpdateComment = async (commentId: number, content: string) => {
-  //   try {
-  //     await commentService.updateComment(commentId, content);
-  //   } catch (error) {
-  //     console.error('댓글 수정에 실패했습니다:', error);
-  //   }
-  // };
-
-  // // 댓글 삭제
-  // const handleDeleteComment = async (commentId: number) => {
-  //   try {
-  //     await commentService.deleteComment(commentId);
-  //   } catch (error) {
-  //     console.error('댓글 삭제에 실패했습니다:', error);
-  //   }
-  // };
-
-  // if (status === 'pending') return <div>로딩 중...</div>;
-  // if (status === 'error') return <div>에러가 발생했습니다.</div>;
-
-  const handleCreateComment = (
+  // 댓글 작성
+  const handleCreateComment = async (
     content: string,
     parentCommentId?: number | null,
   ) => {
@@ -222,18 +142,73 @@ export default function PostComment({
       alert('댓글 내용을 입력해주세요.');
       return;
     }
-    console.log('댓글 작성:', { content, parentCommentId });
-    setNewComment('');
-    setReplyTo(null);
+
+    try {
+      await commentService.createComment(
+        postId,
+        content,
+        parentCommentId,
+        userId,
+      );
+      setNewComment('');
+      setReplyTo(null);
+      // 댓글 목록 쿼리 무효화
+      await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+    } catch (error) {
+      console.error('댓글 작성에 실패했습니다:', error);
+      alert('댓글 작성에 실패했습니다.');
+    }
   };
 
-  const handleUpdateComment = (commentId: number, content: string) => {
-    console.log('댓글 수정:', { commentId, content });
+  // 댓글 수정 모드 시작
+  const handleStartEdit = (comment: Comment) => {
+    setEditingCommentId(comment.commentId);
+    setEditContent(comment.content);
   };
 
-  const handleDeleteComment = (commentId: number) => {
-    console.log('댓글 삭제:', commentId);
+  // 댓글 수정 취소
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditContent('');
   };
+
+  // 댓글 수정 완료
+  const handleUpdateComment = async (commentId: number, content: string) => {
+    if (!content.trim()) {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      await commentService.updateComment(commentId, content, postId, userId);
+      setEditingCommentId(null);
+      setEditContent('');
+      await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+    } catch (error) {
+      console.error('댓글 수정에 실패했습니다:', error);
+    }
+  };
+
+  // 댓글 삭제
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await commentService.deleteComment(commentId);
+      // 댓글 목록 쿼리 무효화
+      await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+    } catch (error) {
+      console.error('댓글 삭제에 실패했습니다:', error);
+    }
+  };
+
+  console.log(structuredComments);
+
+  if (status === 'pending')
+    return (
+      <div className="flex justify-center items-center h-screen mx-auto">
+        <Loader />
+      </div>
+    );
+  if (status === 'error') return <div>에러가 발생했습니다.</div>;
 
   const handleReplyTo = (comment: Comment) => {
     setReplyTo({
@@ -248,59 +223,105 @@ export default function PostComment({
   };
 
   // 댓글 수정/삭제 권한 체크 함수
-  const canModifyComment = (commentAuthorId: number) => {
-    return currentUserId === commentAuthorId || currentUserId === postAuthorId;
+  const canModifyComment = (commentNickname: string) => {
+    console.log({
+      currentUserNickname,
+      commentNickname,
+      isCommentAuthor: currentUserNickname === commentNickname,
+    });
+
+    if (!currentUserNickname) return false; // 로그인하지 않은 경우
+
+    // 내가 작성한 댓글이면 수정/삭제 가능
+    return currentUserNickname === commentNickname;
   };
 
   return (
-    <>
-      <div className="space-y-6">
-        {/* structuredComments */}
-        {DUMMY_COMMENTS.map((comment) => (
+    <div
+      className={`flex flex-col ${!!structuredComments.length ? 'h-[600px]' : ''}`}
+    >
+      {!!structuredComments.length && (
+        <div className="border-t border-grayscale-40 my-6 w-full" />
+      )}
+      {/* 댓글 목록 영역 */}
+      <div
+        className={`space-y-6 ${!!structuredComments.length ? 'flex-1 overflow-y-auto' : ''}`}
+      >
+        {structuredComments.map((comment) => (
           <div key={comment.commentId} className="space-y-4">
             {/* 부모 댓글 */}
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <img
-                  src={comment.userImageUrl}
-                  alt={comment.nickname}
-                  className="w-9 h-9 rounded-full bg-grayscale-10 flex-shrink-0"
+                <Profile
+                  imageUrl={comment.userImageUrl}
+                  nickname={comment.nickname}
+                  variant="horizontal-small"
                 />
-                <span className="font-medium">{comment.nickname}</span>
               </div>
               <div className="ml-12">
-                <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5">
-                  <p className="text-grayscale-100 text-sm">
-                    {comment.deleted ? '삭제된 댓글입니다.' : comment.content}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
-                  <button
-                    className="font-medium"
-                    onClick={() => handleCreateComment('', comment.commentId)}
-                  >
-                    답글달기
-                  </button>
-                  {canModifyComment(comment.userId) && !comment.deleted && (
-                    <>
+                {editingCommentId === comment.commentId ? (
+                  // 수정 모드 UI
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5"
+                    />
+                    <div className="flex gap-2">
                       <button
                         onClick={() =>
-                          handleUpdateComment(
-                            comment.commentId,
-                            comment.content,
-                          )
+                          handleUpdateComment(comment.commentId, editContent)
                         }
+                        className="text-xs text-primary-b40"
                       >
-                        수정
+                        저장
                       </button>
                       <button
-                        onClick={() => handleDeleteComment(comment.commentId)}
+                        onClick={handleCancelEdit}
+                        className="text-xs text-grayscale-60"
                       >
-                        삭제
+                        취소
                       </button>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                ) : (
+                  // 일반 모드 UI
+                  <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5">
+                    <p className="text-grayscale-100 text-sm">
+                      {comment.deleted ? '삭제된 댓글입니다.' : comment.content}
+                    </p>
+                  </div>
+                )}
+                {!editingCommentId && !comment.deleted && (
+                  <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
+                    <button
+                      className="font-medium"
+                      onClick={() => handleReplyTo(comment)}
+                    >
+                      답글달기
+                    </button>
+                    {/* nickname으로 권한 체크 */}
+                    {canModifyComment(comment.nickname) && (
+                      <>
+                        <span className="mx-1">·</span>
+                        <button
+                          onClick={() => handleStartEdit(comment)}
+                          className="hover:text-primary"
+                        >
+                          수정
+                        </button>
+                        <span className="mx-1">·</span>
+                        <button
+                          onClick={() => handleDeleteComment(comment.commentId)}
+                          className="hover:text-primary"
+                        >
+                          삭제
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -309,49 +330,81 @@ export default function PostComment({
               <div className="space-y-4 ml-14">
                 {comment.replies.map((reply) => (
                   <div key={reply.commentId}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <img
-                        src={reply.userImageUrl}
-                        alt={reply.nickname}
-                        className="w-9 h-9 rounded-full bg-grayscale-10 flex-shrink-0"
-                      />
-                      <span className="font-medium">{reply.nickname}</span>
-                    </div>
+                    <Profile
+                      imageUrl={reply.userImageUrl}
+                      nickname={reply.nickname}
+                      variant="horizontal-small"
+                    />
                     <div className="ml-12">
-                      <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5">
-                        <p className="text-grayscale-100 text-sm">
-                          {reply.deleted ? '삭제된 댓글입니다.' : reply.content}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
-                        <button
-                          className="font-medium"
-                          onClick={() => handleReplyTo(reply)}
-                        >
-                          답글달기
-                        </button>
-                        {canModifyComment(reply.userId) && !reply.deleted && (
-                          <>
+                      {editingCommentId === reply.commentId ? (
+                        // 대댓글 수정 모드 UI
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5"
+                          />
+                          <div className="flex gap-2">
                             <button
                               onClick={() =>
                                 handleUpdateComment(
                                   reply.commentId,
-                                  reply.content,
+                                  editContent,
                                 )
                               }
+                              className="text-xs text-primary-b40"
                             >
-                              수정
+                              저장
                             </button>
                             <button
-                              onClick={() =>
-                                handleDeleteComment(reply.commentId)
-                              }
+                              onClick={handleCancelEdit}
+                              className="text-xs text-grayscale-60"
                             >
-                              삭제
+                              취소
                             </button>
-                          </>
-                        )}
-                      </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5">
+                          <p className="text-grayscale-100 text-sm">
+                            {reply.deleted
+                              ? '삭제된 댓글입니다.'
+                              : reply.content}
+                          </p>
+                        </div>
+                      )}
+                      {!editingCommentId && !reply.deleted && (
+                        <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
+                          <button
+                            className="font-medium"
+                            onClick={() => handleReplyTo(reply)}
+                          >
+                            답글달기
+                          </button>
+                          {/* nickname으로 권한 체크 */}
+                          {canModifyComment(reply.nickname) && (
+                            <>
+                              <span className="mx-1">·</span>
+                              <button
+                                onClick={() => handleStartEdit(reply)}
+                                className="hover:text-primary"
+                              >
+                                수정
+                              </button>
+                              <span className="mx-1">·</span>
+                              <button
+                                onClick={() =>
+                                  handleDeleteComment(reply.commentId)
+                                }
+                                className="hover:text-primary"
+                              >
+                                삭제
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -361,19 +414,22 @@ export default function PostComment({
         ))}
 
         {/* 무한 스크롤 옵저버 */}
-        {/* <div ref={observerRef} className="h-10">
+        <div ref={observerRef} className="h-2 flex items-center justify-center">
           {isFetchingNextPage && <div>댓글 불러오는 중...</div>}
-        </div> */}
+        </div>
       </div>
 
-      <div className="border-t border-grayscale-40 my-6 w-full" />
+      {!!structuredComments.length && (
+        <div className="border-t border-grayscale-40 my-6 w-full" />
+      )}
 
-      {/* 댓글 입력 */}
-      <div className="mt-6">
+      {/* 댓글 입력 영역 - 고정 위치 */}
+      <div className="mt-6 bg-grayscale-0">
         {/* 답글 작성 중인 경우 표시 */}
         {replyTo && (
           <div className="flex items-center mb-3">
             <div className="flex items-center gap-2 mr-3">
+              <SvgIcon name="reply" color="var(--grayscale-70)" />
               <span className="text-xs text-grayscale-70">
                 <span>{replyTo.nickname}</span>님에게 답장
                 <span>&quot;{truncateContent(replyTo.content, 10)}&quot;</span>
@@ -384,11 +440,15 @@ export default function PostComment({
             </button>
           </div>
         )}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-10 h-10 rounded-full bg-grayscale-10 flex-shrink-0" />
-          <span className="font-medium">사용자 닉네임</span>
-        </div>
+
         <div className="flex gap-2">
+          <Image
+            src={profileImageUrl}
+            alt="profile"
+            width={56}
+            height={56}
+            className="rounded-full"
+          />
           <input
             type="text"
             value={newComment}
@@ -397,13 +457,13 @@ export default function PostComment({
             className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
           />
           <button
-            onClick={() => handleCreateComment(newComment)}
-            className="bg-primary text-grayscale-0 rounded-xl px-4"
+            onClick={() => handleCreateComment(newComment, replyTo?.commentId)}
+            className="bg-primary text-grayscale-0 rounded-xl px-4 whitespace-nowrap"
           >
             등록
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
