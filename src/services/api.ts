@@ -11,8 +11,21 @@ import {
   PostLike,
 } from '@/types/post';
 import { useAuthStore } from '@/store/auth';
+import {
+  MyPageInfo,
+  MyPageModify,
+  MyPostsResponse,
+  NicknameValidationRequest,
+  NicknameValidationResponse,
+  ProfileImageUpload,
+  UpdateNickname,
+  UpdatePassword,
+  UpdateUserInfo,
+} from '@/types/my_page';
+import { SearchParams } from '@/types/search';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
 
 // API 요청 helper 함수
 export async function fetchApi<T>(
@@ -227,14 +240,14 @@ export const postService = {
     return fetchApi('/post', options);
   },
 
-  // 게시글 상세 조회
+  // 회원: 게시글 상세 조회
   getPostDetail: async (postId: number) => {
     return fetchApi<PostDetail>(`/post/${postId}`, {
       method: 'GET',
     });
   },
 
-  // 무한 스크롤 게시글 조회
+  // 회원: 무한 스크롤 게시글 조회
   getInfiniteScrollPosts: async (params: {
     tagExist: boolean;
     lastPostId?: number;
@@ -250,6 +263,39 @@ export const postService = {
     return fetchApi<PostCardProps[]>(`/post?${searchParams}`, {
       method: 'GET',
     });
+  },
+
+  // 비회원: 무한 스크롤 게시글 조회
+  getPublicPosts: async (params: { cursor_id?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams({
+      ...(params.cursor_id && { cursor_id: params.cursor_id.toString() }),
+      limit: (params.limit || 15).toString(),
+    });
+
+    const url = `${API_BASE_URL_PUBLIC}/posts/cursor?${searchParams}`;
+
+    const response = await fetch(url, { method: 'GET' });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '비회원 게시글 목록 조회 중 오류');
+    }
+
+    return data as PostCardProps[];
+  },
+
+  // 비회원: 게시글 상세 조회
+  getPublicPostDetail: async (postId: number) => {
+    const url = `${API_BASE_URL_PUBLIC}/posts/${postId}`;
+
+    const response = await fetch(url, { method: 'GET' });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '비회원 게시글 상세 조회 중 오류');
+    }
+
+    return data as PostDetail;
   },
 
   // 게시글 수정
@@ -353,6 +399,155 @@ export const commentService = {
   deleteComment: async (commentId: number) => {
     return fetchApi(`/comment/${commentId}`, {
       method: 'DELETE',
+    });
+  },
+};
+
+// 검색 관련 API 서비스
+export const searchService = {
+  getSearchPosts: async (params: SearchParams) => {
+    const url = `${API_BASE_URL_PUBLIC}/search/`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        keyword_text: params.keyword_text || '',
+        keyword_user: params.keyword_user || '',
+        mbti: params.mbti ?? [],
+        hobby_tags: params.hobby_tags ?? [],
+        cursor_created_at: params.cursor_created_at ?? null,
+        cursor_id: params.cursor_id ?? null,
+        limit: params.limit ?? 15,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || '검색 중 오류 ');
+    }
+
+    return await response.json();
+  },
+};
+
+// 마이페이지 관련 API 서비스
+export const userService = {
+  // 마이페이지 정보 조회
+  getMyPageInfo: async (): Promise<MyPageInfo> => {
+    return fetchApi<MyPageInfo>('/my-page', {
+      method: 'GET',
+    });
+  },
+
+  // 내 게시글 목록 조회
+  getMyPosts: async (
+    lastPostId?: number,
+    pageSize: number = 15,
+  ): Promise<MyPostsResponse> => {
+    const params = new URLSearchParams();
+    if (lastPostId) params.append('lastPostId', lastPostId.toString());
+    params.append('pageSize', pageSize.toString());
+
+    return fetchApi<MyPostsResponse>(`/my-page/myposts?${params}`, {
+      method: 'GET',
+    });
+  },
+
+  // 개인정보 수정 페이지 데이터 조회
+  getMyModifyPage: async (): Promise<MyPageModify> => {
+    return fetchApi<MyPageModify>('/my-page/my-modify-page', {
+      method: 'GET',
+    });
+  },
+
+  // 닉네임 중복 확인
+  validateNickname: async (
+    body: NicknameValidationRequest,
+  ): Promise<NicknameValidationResponse> => {
+    return fetchApi<NicknameValidationResponse>(
+      '/my-page/validation/nickname',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      },
+    );
+  },
+
+  // 닉네임 변경
+  updateNickname: async (body: UpdateNickname): Promise<void> => {
+    return fetchApi<void>('/my-page/update/nickname', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 현재 비밀번호 확인
+  checkCurrentPassword: async (
+    currentPassword: string,
+  ): Promise<{ success: boolean }> => {
+    const response = await fetchApi<{ success: boolean }>(
+      '/my-page/update/password/check',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentPassword }),
+      },
+    );
+
+    return response;
+  },
+
+  // 비밀번호 변경
+  updatePassword: async (body: UpdatePassword): Promise<void> => {
+    return fetchApi<void>('/my-page/update/password', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 프로필 이미지 업로드
+  uploadProfileImage: async (
+    profileImage: File,
+  ): Promise<ProfileImageUpload> => {
+    const formData = new FormData();
+    formData.append('profileImage', profileImage);
+
+    return fetchApi<ProfileImageUpload>('/my-page/update/profile-image', {
+      method: 'POST',
+      body: formData,
+    });
+  },
+
+  // 개인정보 수정 저장
+  updateUserInfo: async (body: UpdateUserInfo): Promise<void> => {
+    return fetchApi<void>('/my-page/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 회원 탈퇴
+  deleteUser: async (reason: string): Promise<{ message: string }> => {
+    return fetchApi('/user/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reason }),
     });
   },
 };

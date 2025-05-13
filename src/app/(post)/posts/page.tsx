@@ -18,14 +18,17 @@ import Loader from '@/components/common/loader';
  *
  * 주요 기능
  * 1. 무한 스크롤을 통한 게시글 목록 조회
- * 2. 사용자의 취미 태그에 따른 게시글 필터링
- * 3. IntersectionObserver를 활용한 스크롤 감지
+ * 2. 로그인한 경우: 사용자의 취미 태그에 따른 게시글 필터링
+ * 3. 비회원인 경우: 모든 게시글을 cursor 기반 조회
+ * 4. IntersectionObserver를 활용한 스크롤 감지
  */
 export default function PostsPage() {
   const queryClient = useQueryClient();
 
   // 사용자 id 및 취미 태그 상태 가져오기
   const { userId, hobbyTags } = useAuthStore();
+  // 비회원 구분용
+  const isLoggedIn = Boolean(userId);
 
   // 무한 스크롤 옵저버 ref
   const observerRef = useRef<HTMLDivElement>(null);
@@ -49,12 +52,21 @@ export default function PostsPage() {
 
     // 데이터 fetching 함수
     queryFn: async ({ pageParam }) => {
-      const response = await postService.getInfiniteScrollPosts({
-        tagExist: Boolean(hobbyTags?.length),
-        lastPostId: pageParam ? Number(pageParam) : undefined, // pageParam을 number로 변환
-        pageSize: 15, // 한 페이지당 15개 게시글
-      });
-      return response;
+      if (isLoggedIn) {
+        // 로그인한 경우: 취미 태그 기반 필터링된 게시글 조회
+        return await postService.getInfiniteScrollPosts({
+          tagExist: Boolean(hobbyTags?.length),
+          lastPostId: pageParam ? Number(pageParam) : undefined, // pageParam을 number로 변환
+          pageSize: 15, // 한 페이지당 15개 게시글
+        });
+      } else {
+        // 비회원인 경우: 공개 게시글 목록 조회
+        const response = await postService.getPublicPosts({
+          cursor_id: pageParam ? Number(pageParam) : undefined,
+          limit: 15,
+        });
+        return response;
+      }
     },
 
     // 다음 페이지 파라미터 결정 로직
