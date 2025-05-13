@@ -44,7 +44,7 @@ export default function Modal() {
         <div className="w-full">
           <button
             onClick={handleConfirm}
-            className="w-full p-4 bg-primary text-primary-b80 rounded-xl hover:bg-primary/80 button_transition font-semibold"
+            className="w-full p-4 bg-primary text-primary-b80 rounded-xl hover:bg-primary/80 button_transition font-semibold "
           >
             {confirmText}
           </button>

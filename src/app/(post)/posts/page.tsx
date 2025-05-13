@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import PostCard from '@/components/post/post_card';
-import { PostCardProps } from '@/types/post';
+import { PostCardProps, InfinitePostsResponse } from '@/types/post';
+import Loader from '@/components/common/loader';
 
 /**
  * 게시글 목록 페이지
@@ -18,6 +23,8 @@ import { PostCardProps } from '@/types/post';
  * 4. IntersectionObserver를 활용한 스크롤 감지
  */
 export default function PostsPage() {
+  const queryClient = useQueryClient();
+
   // 사용자 id 및 취미 태그 상태 가져오기
   const { userId, hobbyTags } = useAuthStore();
   // 비회원 구분용
@@ -72,6 +79,73 @@ export default function PostsPage() {
     initialPageParam: undefined as string | undefined,
   });
 
+  // 좋아요 mutation
+  const likeMutation = useMutation({
+    mutationFn: (postId: string) => postService.likePost(Number(postId)),
+    onSuccess: (_, postId) => {
+      queryClient.setQueryData<InfinitePostsResponse>(
+        ['posts', userId, hobbyTags?.length > 0],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) =>
+              page.map((post) =>
+                post.postId === postId
+                  ? {
+                      ...post,
+                      liked: true,
+                      likeCount: post.likeCount + 1,
+                    }
+                  : post,
+              ),
+            ),
+          };
+        },
+      );
+    },
+  });
+
+  // 좋아요 취소 mutation
+  const unlikeMutation = useMutation({
+    mutationFn: (postId: string) => postService.unlikePost(Number(postId)),
+    onSuccess: (_, postId) => {
+      queryClient.setQueryData<InfinitePostsResponse>(
+        ['posts', userId, hobbyTags?.length > 0],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) =>
+              page.map((post) =>
+                post.postId === postId
+                  ? {
+                      ...post,
+                      liked: false,
+                      likeCount: post.likeCount - 1,
+                    }
+                  : post,
+              ),
+            ),
+          };
+        },
+      );
+    },
+  });
+
+  // 좋아요 처리 함수
+  const handleLike = async (postId: string, isLiked: boolean) => {
+    try {
+      if (isLiked) {
+        await unlikeMutation.mutateAsync(postId);
+      } else {
+        await likeMutation.mutateAsync(postId);
+      }
+    } catch (error) {
+      console.error('좋아요 처리 중 오류:', error);
+    }
+  };
+
   /**
    * Intersection Observer 설정
    * 스크롤이 관찰 대상에 도달하면 다음 페이지 데이터를 요청
@@ -97,20 +171,28 @@ export default function PostsPage() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   // 로딩 상태 처리
-  if (status === 'pending') return <div>로딩 중...</div>;
+  if (status === 'pending')
+    return (
+      <div className="flex justify-center items-center h-screen mx-auto">
+        <Loader />
+      </div>
+    );
 
   // 에러 상태 처리
   if (status === 'error') return <div>에러가 발생했습니다.</div>;
 
   return (
     <div className="flex justify-center my-12 mx-auto">
-      <div className="w-[960px]">
+      <div className="w-[960px] max-md:w-[390px]">
         <div className="space-y-12">
           {/* 게시글 목록 렌더링 */}
           {data?.pages.flatMap((group: PostCardProps[]) =>
             group.map((post) => (
               <div key={post.postId}>
-                <PostCard {...post} />
+                <PostCard
+                  {...post}
+                  onLikeClick={() => handleLike(post.postId, post.liked)}
+                />
               </div>
             )),
           )}
@@ -121,7 +203,9 @@ export default function PostsPage() {
             className="h-4 flex items-center justify-center"
           >
             {isFetchingNextPage && (
-              <div className="text-grayscale-60">로딩 중...</div>
+              <div className="flex justify-center items-center h-screen mx-auto">
+                <Loader />
+              </div>
             )}
           </div>
         </div>

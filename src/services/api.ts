@@ -8,7 +8,7 @@ import {
   PostCardProps,
   PostResponse,
   PostDetail,
-  // PostLike,
+  PostLike,
 } from '@/types/post';
 import { useAuthStore } from '@/store/auth';
 import {
@@ -22,7 +22,7 @@ import {
   UpdatePassword,
   UpdateUserInfo,
 } from '@/types/my_page';
-// import { SearchParams } from '@/types/search';
+import { SearchParams } from '@/types/search';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
@@ -316,47 +316,47 @@ export const postService = {
     });
   },
 
-  // // 게시글 좋아요
-  // likePost: async (postId: number): Promise<PostLike> => {
-  //   return fetchApi(`/like/post/${postId}`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //   });
-  // },
+  // 게시글 좋아요
+  likePost: async (postId: number): Promise<PostLike> => {
+    return fetchApi(`/like/post/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
 
-  //   // 게시글 좋아요 취소
-  //   unlikePost: async (postId: number): Promise<PostLike> => {
-  //     return fetchApi(`/unlike/post/${postId}`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //   },
-  // };
+  // 게시글 좋아요 취소
+  unlikePost: async (postId: number): Promise<PostLike> => {
+    return fetchApi(`/unlike/post/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
+};
 
-  // // 댓글 관련 API 서비스
-  // export const commentService = {
-  //   // 댓글 목록 조회 (무한 스크롤)
-  //   getComments: async (params: {
-  //     postId: number;
-  //     lastCommentId?: number;
-  //     pageSize?: number;
-  //   }): Promise<Comment[]> => {
-  //     const searchParams = new URLSearchParams({
-  //       postId: params.postId.toString(),
-  //       ...(params.lastCommentId && {
-  //         lastCommentId: params.lastCommentId.toString(),
-  //       }),
-  //       pageSize: (params.pageSize || 15).toString(),
-  //     });
+// 댓글 관련 API 서비스
+export const commentService = {
+  // 댓글 목록 조회 (무한 스크롤)
+  getComments: async (params: {
+    postId: number;
+    lastCommentId?: number;
+    pageSize?: number;
+  }): Promise<Comment[]> => {
+    const searchParams = new URLSearchParams({
+      postId: params.postId.toString(),
+      ...(params.lastCommentId && {
+        lastCommentId: params.lastCommentId.toString(),
+      }),
+      pageSize: (params.pageSize || 15).toString(),
+    });
 
-  //     return fetchApi(`/comments?${searchParams}`, {
-  //       method: 'GET',
-  //     });
-  //   },
+    return fetchApi(`/comments?${searchParams}`, {
+      method: 'GET',
+    });
+  },
 
   // 댓글 작성
   createComment: async (
@@ -403,35 +403,36 @@ export const postService = {
   },
 };
 
-// // 검색 관련 API 서비스
-// export const searchService = {
-//   getSearchPosts: async (params: SearchParams) => {
-//     const url = `${API_BASE_URL_PUBLIC}/search/`;
 
-//     const response = await fetch(url, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         keyword_text: params.keyword_text || '',
-//         keyword_user: params.keyword_user || '',
-//         mbti: params.mbti ?? [],
-//         hobby_tags: params.hobby_tags ?? [],
-//         cursor_created_at: params.cursor_created_at ?? null,
-//         cursor_id: params.cursor_id ?? null,
-//         limit: params.limit ?? 15,
-//       }),
-//     });
+// 검색 관련 API 서비스
+export const searchService = {
+  getSearchPosts: async (params: SearchParams) => {
+    const url = `${API_BASE_URL_PUBLIC}/search/`;
 
-//     if (!response.ok) {
-//       const errorText = await response.text();
-//       throw new Error(errorText || '검색 중 오류 ');
-//     }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        keyword_text: params.keyword_text || '',
+        keyword_user: params.keyword_user || '',
+        mbti: params.mbti ?? [],
+        hobby_tags: params.hobby_tags ?? [],
+        cursor_created_at: params.cursor_created_at ?? null,
+        cursor_id: params.cursor_id ?? null,
+        limit: params.limit ?? 15,
+      }),
+    });
 
-//     return await response.json();
-//   },
-// };
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || '검색 중 오류 ');
+    }
+
+    return await response.json();
+  },
+};
 
 // 마이페이지 관련 API 서비스
 export const userService = {
