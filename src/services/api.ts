@@ -403,6 +403,7 @@ export const commentService = {
   },
 };
 
+
 // 검색 관련 API 서비스
 export const searchService = {
   getSearchPosts: async (params: SearchParams) => {
