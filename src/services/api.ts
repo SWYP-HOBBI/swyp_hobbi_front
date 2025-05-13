@@ -3,8 +3,26 @@ import {
   SignupRequest,
   SocialLoginResponse,
 } from '@/types/auth';
-import { Comment, PostCardProps, PostResponse, PostDetail } from '@/types/post';
+import {
+  Comment,
+  PostCardProps,
+  PostResponse,
+  PostDetail,
+  // PostLike,
+} from '@/types/post';
 import { useAuthStore } from '@/store/auth';
+import {
+  MyPageInfo,
+  MyPageModify,
+  MyPostsResponse,
+  NicknameValidationRequest,
+  NicknameValidationResponse,
+  ProfileImageUpload,
+  UpdateNickname,
+  UpdatePassword,
+  UpdateUserInfo,
+} from '@/types/my_page';
+// import { SearchParams } from '@/types/search';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
@@ -297,28 +315,48 @@ export const postService = {
       method: 'DELETE',
     });
   },
-};
 
-// 댓글 관련 API 서비스
-export const commentService = {
-  // 댓글 목록 조회 (무한 스크롤)
-  getComments: async (params: {
-    postId: number;
-    lastCommentId?: number;
-    pageSize?: number;
-  }): Promise<Comment[]> => {
-    const searchParams = new URLSearchParams({
-      postId: params.postId.toString(),
-      ...(params.lastCommentId && {
-        lastCommentId: params.lastCommentId.toString(),
-      }),
-      pageSize: (params.pageSize || 15).toString(),
-    });
+  // // 게시글 좋아요
+  // likePost: async (postId: number): Promise<PostLike> => {
+  //   return fetchApi(`/like/post/${postId}`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   });
+  // },
 
-    return fetchApi(`/api/v1/comments?${searchParams}`, {
-      method: 'GET',
-    });
-  },
+  //   // 게시글 좋아요 취소
+  //   unlikePost: async (postId: number): Promise<PostLike> => {
+  //     return fetchApi(`/unlike/post/${postId}`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //   },
+  // };
+
+  // // 댓글 관련 API 서비스
+  // export const commentService = {
+  //   // 댓글 목록 조회 (무한 스크롤)
+  //   getComments: async (params: {
+  //     postId: number;
+  //     lastCommentId?: number;
+  //     pageSize?: number;
+  //   }): Promise<Comment[]> => {
+  //     const searchParams = new URLSearchParams({
+  //       postId: params.postId.toString(),
+  //       ...(params.lastCommentId && {
+  //         lastCommentId: params.lastCommentId.toString(),
+  //       }),
+  //       pageSize: (params.pageSize || 15).toString(),
+  //     });
+
+  //     return fetchApi(`/comments?${searchParams}`, {
+  //       method: 'GET',
+  //     });
+  //   },
 
   // 댓글 작성
   createComment: async (
@@ -342,20 +380,174 @@ export const commentService = {
   },
 
   // 댓글 수정
-  updateComment: async (commentId: number, content: string) => {
-    return fetchApi(`/post/comment/${commentId}`, {
+  updateComment: async (
+    commentId: number,
+    content: string,
+    postId: number,
+    userId: number | null,
+  ) => {
+    return fetchApi(`/comment/${commentId}`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'PUT',
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, postId, userId }),
     });
   },
 
   // 댓글 삭제
   deleteComment: async (commentId: number) => {
-    return fetchApi(`/post//comment/${commentId}`, {
+    return fetchApi(`/comment/${commentId}`, {
       method: 'DELETE',
+    });
+  },
+};
+
+// // 검색 관련 API 서비스
+// export const searchService = {
+//   getSearchPosts: async (params: SearchParams) => {
+//     const url = `${API_BASE_URL_PUBLIC}/search/`;
+
+//     const response = await fetch(url, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         keyword_text: params.keyword_text || '',
+//         keyword_user: params.keyword_user || '',
+//         mbti: params.mbti ?? [],
+//         hobby_tags: params.hobby_tags ?? [],
+//         cursor_created_at: params.cursor_created_at ?? null,
+//         cursor_id: params.cursor_id ?? null,
+//         limit: params.limit ?? 15,
+//       }),
+//     });
+
+//     if (!response.ok) {
+//       const errorText = await response.text();
+//       throw new Error(errorText || '검색 중 오류 ');
+//     }
+
+//     return await response.json();
+//   },
+// };
+
+// 마이페이지 관련 API 서비스
+export const userService = {
+  // 마이페이지 정보 조회
+  getMyPageInfo: async (): Promise<MyPageInfo> => {
+    return fetchApi<MyPageInfo>('/my-page', {
+      method: 'GET',
+    });
+  },
+
+  // 내 게시글 목록 조회
+  getMyPosts: async (
+    lastPostId?: number,
+    pageSize: number = 15,
+  ): Promise<MyPostsResponse> => {
+    const params = new URLSearchParams();
+    if (lastPostId) params.append('lastPostId', lastPostId.toString());
+    params.append('pageSize', pageSize.toString());
+
+    return fetchApi<MyPostsResponse>(`/my-page/myposts?${params}`, {
+      method: 'GET',
+    });
+  },
+
+  // 개인정보 수정 페이지 데이터 조회
+  getMyModifyPage: async (): Promise<MyPageModify> => {
+    return fetchApi<MyPageModify>('/my-page/my-modify-page', {
+      method: 'GET',
+    });
+  },
+
+  // 닉네임 중복 확인
+  validateNickname: async (
+    body: NicknameValidationRequest,
+  ): Promise<NicknameValidationResponse> => {
+    return fetchApi<NicknameValidationResponse>(
+      '/my-page/validation/nickname',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      },
+    );
+  },
+
+  // 닉네임 변경
+  updateNickname: async (body: UpdateNickname): Promise<void> => {
+    return fetchApi<void>('/my-page/update/nickname', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 현재 비밀번호 확인
+  checkCurrentPassword: async (
+    currentPassword: string,
+  ): Promise<{ success: boolean }> => {
+    const response = await fetchApi<{ success: boolean }>(
+      '/my-page/update/password/check',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentPassword }),
+      },
+    );
+
+    return response;
+  },
+
+  // 비밀번호 변경
+  updatePassword: async (body: UpdatePassword): Promise<void> => {
+    return fetchApi<void>('/my-page/update/password', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 프로필 이미지 업로드
+  uploadProfileImage: async (
+    profileImage: File,
+  ): Promise<ProfileImageUpload> => {
+    const formData = new FormData();
+    formData.append('profileImage', profileImage);
+
+    return fetchApi<ProfileImageUpload>('/my-page/update/profile-image', {
+      method: 'POST',
+      body: formData,
+    });
+  },
+
+  // 개인정보 수정 저장
+  updateUserInfo: async (body: UpdateUserInfo): Promise<void> => {
+    return fetchApi<void>('/my-page/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 회원 탈퇴
+  deleteUser: async (reason: string): Promise<{ message: string }> => {
+    return fetchApi('/user/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reason }),
     });
   },
 };

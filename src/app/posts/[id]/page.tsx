@@ -26,6 +26,7 @@ export default function PostDetailPage() {
   const router = useRouter();
 
   const { userId } = useAuthStore();
+  const isLoggedIn = Boolean(userId);
 
   const { openModal } = useModalStore();
 
@@ -40,7 +41,12 @@ export default function PostDetailPage() {
     const fetchPostDetail = async () => {
       try {
         setIsLoading(true);
-        const data = await postService.getPostDetail(Number(id));
+
+        // 로그인 여부에 따라 호출할 API 선택
+        const data = isLoggedIn
+          ? await postService.getPostDetail(Number(id)) // 회원용
+          : await postService.getPublicPostDetail(Number(id)); // 비회원용
+
         setPost(data);
         setError(null);
       } catch (err) {
