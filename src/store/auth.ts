@@ -1,6 +1,7 @@
 import { AuthState } from '@/types/auth';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { authService } from '@/services/api';
 
 const initialState = {
   isAuthenticated: false,
@@ -37,8 +38,17 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // 로그아웃
-      logout: () => {
-        set(initialState);
+      logout: async () => {
+        try {
+          await authService.logout();
+          set(initialState);
+          // 로그아웃 후 홈페이지로 리다이렉트
+          window.location.href = '/';
+        } catch (error) {
+          console.error('로그아웃 중 오류 발생:', error);
+          // 에러가 발생해도 로컬 상태는 초기화
+          set(initialState);
+        }
       },
 
       setIsLoading: (loading: boolean) =>

@@ -148,6 +148,12 @@ export const authService = {
     });
   },
 
+  logout: async () => {
+    return fetchApi('/user/logout', {
+      method: 'POST',
+    });
+  },
+
   // 이메일 인증 전송
   sendVerificationEmail: async (email: string) => {
     return fetchApi('/email/send', {
@@ -402,7 +408,6 @@ export const commentService = {
     });
   },
 };
-
 
 // 검색 관련 API 서비스
 export const searchService = {
