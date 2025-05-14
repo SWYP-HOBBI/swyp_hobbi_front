@@ -34,7 +34,7 @@ export default function UserPostCard({
 
   return (
     <Link href={`/posts/${postId}`}>
-      <div className="flex gap-[23px] bg-grayscale-0 border-b border-b-[var(--grayscale-20)] p-5 space-y-4 ${containerWidth} flex-shrink-0">
+      <a className="w-full flex gap-[23px] bg-grayscale-0 border-b border-b-[var(--grayscale-20)] p-5 space-y-4">
         {/* 이미지 */}
         {representativeImageUrl && representativeImageUrl.length > 0 && (
           <div className="w-[140px] h-[140px] relative">
@@ -56,12 +56,15 @@ export default function UserPostCard({
           </div>
         )}
 
-        <div className="flex-1">
+        <div>
           {/* 제목과 날짜 */}
           <div className="w-full flex justify-between items-center">
             <h3 className="text-[20px] font-semibold">{postTitle}</h3>
             <div className="flex gap-[12px]">
-              <span className="text-[12px] text-grayscale-60">{createdAt}</span>
+              <span className="text-[12px] text-grayscale-60">
+                {/* {formatDate(createdAt)} */}
+                {createdAt}
+              </span>
               <div
                 className="flex items-center cursor-pointer"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -103,7 +106,7 @@ export default function UserPostCard({
           </div>
 
           {/* 본문 */}
-          <p className="text-grayscale-100 h-[80px] text-sm line-clamp-3 break-all overflow-hidden">
+          <p className="h-[74px] text-grayscale-100 text-sm line-clamp-10 break-all">
             {postContents}
           </p>
 
@@ -129,7 +132,7 @@ export default function UserPostCard({
             </div>
           </div>
         </div>
-      </div>
+      </a>
     </Link>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { userService } from '@/services/api';
+// import { userService } from '@/services/api';
 
 interface EditNicknameProps {
   currentNickname: string;
@@ -11,7 +11,7 @@ const EditNickname = ({
   currentNickname,
   onNicknameChange,
 }: EditNicknameProps) => {
-  const [newNickname, setNewNickname] = useState('');
+  const [newNickname, setNewNickname] = useState(currentNickname);
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -37,43 +37,43 @@ const EditNickname = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleNicknameCheck = async () => {
-    if (!newNickname) return;
-    setIsLoading(true);
-    setIsError(false);
-    try {
-      const response = await userService.validateNickname({
-        nickname: newNickname,
-      });
+  // const handleNicknameCheck = async () => {
+  //   if (!newNickname) return;
+  //   setIsLoading(true);
+  //   setIsError(false);
+  //   try {
+  //     const response = await userService.validateNickname({
+  //       nickname: newNickname,
+  //     });
 
-      if (response.exists) {
-        setIsError(true);
-        setErrorMessage(response.message);
-      } else {
-        setIsNicknameVerified(true);
-        setErrorMessage('');
-      }
-    } catch (error) {
-      setIsError(true);
-      setErrorMessage('서버 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     if (response.exists) {
+  //       setIsError(true);
+  //       setErrorMessage(response.message);
+  //     } else {
+  //       setIsNicknameVerified(true);
+  //       setErrorMessage('');
+  //     }
+  //   } catch (error) {
+  //     setIsError(true);
+  //     setErrorMessage('서버 오류가 발생했습니다. 다시 시도해주세요.');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  // 닉네임 변경 요청
-  const handleSave = async () => {
-    if (!isNicknameVerified) return;
-    try {
-      await userService.updateNickname({ nickname: newNickname });
-      onNicknameChange(newNickname);
-      setShowNicknameEdit(false);
-    } catch (error) {
-      console.error('닉네임 변경 실패:', error);
-      setIsError(true);
-      setErrorMessage('닉네임 변경에 실패했습니다.');
-    }
-  };
+  // // 닉네임 변경 요청
+  // const handleSave = async () => {
+  //   if (!isNicknameVerified) return;
+  //   try {
+  //     await userService.updateNickname({ nickname: newNickname });
+  //     onNicknameChange(newNickname);
+  //     setShowNicknameEdit(false);
+  //   } catch (error) {
+  //     console.error('닉네임 변경 실패:', error);
+  //     setIsError(true);
+  //     setErrorMessage('닉네임 변경에 실패했습니다.');
+  //   }
+  // };
 
   return (
     <div className="w-[452px]">
@@ -82,7 +82,10 @@ const EditNickname = ({
         <span className="text-[18px]">{currentNickname}</span>
         <button
           className="w-[59px] h-[24px] rounded-[24px] bg-[var(--primary-w80)] border border-[var(--primary-b20)] hover:bg-[var(--primary-w40)] text-[12px] mb-[9.5px]"
-          onClick={() => setShowNicknameEdit(true)}
+          // onClick={() => setShowNicknameEdit(true)}
+          onClick={() => {
+            setTimeout(() => setShowNicknameEdit(true), 0);
+          }}
         >
           변경하기
         </button>
@@ -112,7 +115,7 @@ const EditNickname = ({
             />
             <button
               className="w-[180px] h-[60px] bg-white border border-[var(--primary-b60)] text-[var(--primary-b60)] text-[14px] font-semibold rounded-[12px]"
-              onClick={handleNicknameCheck}
+              // onClick={handleNicknameCheck}
               disabled={!newNickname || isNicknameVerified || isLoading}
             >
               {isLoading
@@ -122,15 +125,14 @@ const EditNickname = ({
                   : '중복확인'}
             </button>
 
-            <button
-              className={`w-[180px] h-[60px] text-[14px] px-4 py-2 rounded-[12px] bg-[var(--primary)] font-semibold cursor-pointer ${
-                !isNicknameVerified ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              onClick={handleSave}
-              disabled={!isNicknameVerified}
-            >
-              닉네임 변경
-            </button>
+            {isNicknameVerified && (
+              <button
+                className="w-[180px] h-[60px] text-[14px] px-4 py-2 rounded-[12px] bg-[var(--primary)] font-semibold"
+                // onClick={handleSave}
+              >
+                닉네임 변경
+              </button>
+            )}
           </div>
 
           {isError && errorMessage && (

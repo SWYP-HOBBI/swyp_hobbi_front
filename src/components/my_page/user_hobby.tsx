@@ -1,25 +1,10 @@
-import { useEffect, useState } from 'react';
 import Tag from '../common/tag';
-import { userService } from '@/services/api';
-import { MyPageInfo } from '@/types/my_page';
 
-export default function UserHobby() {
-  const [hobbyTags, setHobbyTags] = useState<string[]>([]);
+interface UserHobbyProps {
+  hobbyTags: string[];
+}
 
-  useEffect(() => {
-    const fetchHobbies = async () => {
-      try {
-        const data: MyPageInfo = await userService.getMyPageInfo();
-        console.log(' API Data:', data);
-        setHobbyTags(data.hobbyTags || []);
-      } catch (err) {
-        console.error('취미 태그 로딩 실패:', err);
-      }
-    };
-
-    fetchHobbies();
-  }, []);
-
+export default function UserHobby({ hobbyTags }: UserHobbyProps) {
   return (
     <div>
       <div className="text-[20px] font-semibold leading-[100%] mb-[23px]">
@@ -27,7 +12,7 @@ export default function UserHobby() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {hobbyTags.length > 0 ? (
+        {hobbyTags && hobbyTags.length > 0 ? (
           hobbyTags.map((tag, index) => (
             <Tag key={index} label={tag} variant="white" />
           ))

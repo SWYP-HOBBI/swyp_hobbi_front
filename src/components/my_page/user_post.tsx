@@ -54,7 +54,7 @@ export default function UserPost() {
     <div className="w-[960px] bg-white rounded-[24px] p-[20px] space-y-8">
       <h2 className="text-xl font-bold">나의 게시글</h2>
 
-      {data?.pages.flatMap((group: MyPostsResponse) =>
+      {/* {data?.pages.flatMap((group: MyPostsResponse) =>
         group.posts.map((post) => (
           <UserPostCard
             key={post.postId}
@@ -100,7 +100,7 @@ export default function UserPost() {
         {isFetchingNextPage && (
           <div className="text-grayscale-60">로딩 중...</div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

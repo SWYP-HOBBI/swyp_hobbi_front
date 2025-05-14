@@ -44,7 +44,7 @@ export default function EditPassword() {
       setIsLoading(true);
 
       const response = await userService.checkCurrentPassword(currentPassword);
-      if (response.check) {
+      if (response.success) {
         setShowPasswordEdit(true);
         setCurrentPasswordError(null);
       } else {
@@ -117,14 +117,14 @@ export default function EditPassword() {
   };
 
   return (
-    <div className="w-[452px] h-[65px]">
+    <div className="w-[452px] flex flex-col">
       <span className="text-[20px] font-semibold">비밀번호</span>
       {/* 현재 비밀번호 입력 */}
-      <div className="w-[452px] h-[58px] flex justify-between items-center border-b border-[#D9D9D9]">
+      <div className="w-[452px] flex justify-between border-b border-[#D9D9D9] mt-[24px]">
         <input
           id="current-password"
           type="password"
-          className="w-[250px] h-[27px] px-3 text-[18px] focus:outline-none focus:border-none"
+          className="w-[250px] h-[27px] px-3 text-[18px]"
           placeholder="현재 비밀번호를 입력해주세요."
           value={currentPassword}
           onChange={handleCurrentPasswordChange}
@@ -201,7 +201,7 @@ export default function EditPassword() {
           {/* 비밀번호 변경 버튼 */}
           <div className="flex h-[60px] mt-[12px] gap-3">
             <button
-              type="button"
+              type="submit"
               className="w-[180px] h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-[var(--primary)]"
               onClick={handleSave}
               disabled={isLoading}
