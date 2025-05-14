@@ -39,7 +39,7 @@ export const CustomDropdownButton = ({
         type="button"
         onClick={onToggle}
         disabled={disabled}
-        className={`flex items-center text-sm max-md:text-xs font-medium justify-between w-full p-5 rounded-lg h-[60px] max-md:h-[48px] whitespace-normal break-keep ${
+        className={`flex items-center text-sm font-medium justify-between w-full p-5 rounded-lg h-[60px] ${
           disabled
             ? 'bg-grayscale-10 text-grayscale-40'
             : 'bg-grayscale-0 text-grayscale-60'
@@ -60,7 +60,7 @@ export const CustomDropdownButton = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-grayscale-0 border border-grayscale-20 rounded-lg shadow-md max-md:text-xs text-sm whitespace-normal break-keep">
+        <div className="absolute z-10 w-full mt-1 bg-grayscale-0 border border-grayscale-20 rounded-lg shadow-md">
           <div className="max-h-52 overflow-y-auto mr-2">
             <div className="p-2">{children}</div>
           </div>
@@ -183,7 +183,7 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
-          className="flex-1 max-md:text-xs"
+          className="flex-1"
           onClick={() => {
             if (
               !maxCount ||

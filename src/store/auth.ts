@@ -12,7 +12,6 @@ const initialState = {
   isError: false,
   errorMessage: null,
   hobbyTags: [],
-  nickname: null,
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -33,7 +32,6 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
           isError: false,
           errorMessage: null,
-          nickname: params.nickname,
         }));
       },
 
@@ -121,7 +119,6 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         userId: state.userId,
         hobbyTags: state.hobbyTags,
-        nickname: state.nickname,
       }),
     },
   ),

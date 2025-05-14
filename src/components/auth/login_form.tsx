@@ -108,16 +108,10 @@ export default function LoginForm() {
   return (
     <div className="w-full flex flex-col items-center">
       {/* 로고 */}
-      <SvgIcon
-        name="logo"
-        className="max-md:w-[150px] max-md:h-[44px] w-[240px] h-[70px]"
-      />
+      <SvgIcon name="logo" width={240} height={70} />
 
       {/* 로그인 */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-full space-y-8 mt-12 max-md:space-y-3"
-      >
+      <form onSubmit={handleSubmit} className="w-full space-y-8 mt-12">
         {/* 이메일 입력 */}
         <Input
           id="email"
@@ -148,12 +142,7 @@ export default function LoginForm() {
         />
 
         {/* 로그인 버튼 */}
-        <Button
-          type="submit"
-          disabled={isLoading}
-          fullWidth
-          className="max-md:text-sm"
-        >
+        <Button type="submit" disabled={isLoading} fullWidth>
           로그인
         </Button>
       </form>
@@ -169,23 +158,23 @@ export default function LoginForm() {
       </div>
 
       {/* 소셜 로그인 섹션 */}
-      <div className="mt-12 w-full">
-        <p className="text-center text-grayscale-100 mb-6">소셜 로그인</p>
-        <div className="flex justify-center space-x-3 max-md:flex-col max-md:space-x-0 max-md:space-y-3">
+      <div className="mt-10 w-full">
+        <p className="text-center text-grayscale-100 mb-11">소셜 로그인</p>
+        <div className="flex justify-center space-x-3">
           {/* 소셜 로그인 버튼들 */}
           <Button
             variant="outline"
+            size="sm"
             fullWidth
             onClick={() => handleSocialLogin('kakao')}
-            className="max-md:text-sm"
           >
             카카오로 로그인
           </Button>
           <Button
             variant="outline"
+            size="sm"
             fullWidth
             onClick={() => handleSocialLogin('google')}
-            className="max-md:text-sm"
           >
             구글로 로그인
           </Button>
@@ -193,9 +182,8 @@ export default function LoginForm() {
       </div>
 
       {/* 비회원 로그인 */}
-
       <div className="mt-15 w-full">
-        <Button fullWidth variant="secondary" className="max-md:text-sm" onClick={() => logout()}>
+        <Button fullWidth variant="secondary" onClick={() => logout()}>
           <Link href="/posts">비회원으로 둘러보기</Link>
         </Button>
       </div>

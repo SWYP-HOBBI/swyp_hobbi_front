@@ -5,6 +5,7 @@ import { useHobbyStore } from '@/store/hobby';
 import { postService } from '@/services/api';
 import PostForm from '@/components/post/post_form';
 import { useModalStore } from '@/store/modal';
+import { useEffect } from 'react';
 
 /**
  * 게시글 작성 페이지
@@ -22,11 +23,14 @@ export default function PostWrite() {
   const { openModal } = useModalStore();
   const resetSelections = useHobbyStore((state) => state.resetSelections);
 
+  // 컴포넌트 마운트 시 태그 초기화
+  useEffect(() => {
+    resetSelections();
+  }, [resetSelections]);
+
   const handleSubmit = async (formData: FormData) => {
     try {
       const { postId } = await postService.writePost(formData);
-      // 게시글 작성 완료 후에만 취미 태그 초기화
-      resetSelections();
       openModal({
         title: '게시글이 등록되었습니다.',
         message: '상세페이지로 이동합니다.',

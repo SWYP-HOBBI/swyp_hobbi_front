@@ -499,8 +499,8 @@ export const userService = {
   // 현재 비밀번호 확인
   checkCurrentPassword: async (
     currentPassword: string,
-  ): Promise<{ success: boolean }> => {
-    const response = await fetchApi<{ success: boolean }>(
+  ): Promise<{ check: boolean }> => {
+    const response = await fetchApi<{ check: boolean }>(
       '/my-page/update/password/check',
       {
         method: 'POST',
@@ -518,6 +518,9 @@ export const userService = {
   updatePassword: async (body: UpdatePassword): Promise<void> => {
     return fetchApi<void>('/my-page/update/password', {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     });
   },
