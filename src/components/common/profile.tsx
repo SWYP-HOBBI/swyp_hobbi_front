@@ -36,8 +36,6 @@ export default function Profile({
             src={imageUrl}
             alt="프로필 이미지"
             className="w-full h-full object-contain rounded-full"
-            width={imageSize}
-            height={imageSize}
           />
         ) : (
           <DefaultProfile size={svgSize} />

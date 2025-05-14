@@ -42,11 +42,6 @@ export default function PostImageSlider({ images }: PostImageSliderProps) {
                     alt={`게시글 이미지 ${index + 1}`}
                     fill
                     className="object-cover rounded-xl"
-                    unoptimized
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/default_post_image.png'; // 기본 이미지 경로
-                    }}
                   />
                 </div>
               </div>

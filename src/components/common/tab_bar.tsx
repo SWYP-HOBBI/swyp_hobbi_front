@@ -11,7 +11,6 @@ export default function TabBar() {
   const pathname = usePathname();
   const { logout, isAuthenticated } = useAuthStore();
   const { openModal } = useModalStore();
-
   const { toggleSearch, isSearchOpen } = useSearchStore();
   const [showNotification, setShowNotification] = useState(false);
 
@@ -51,11 +50,6 @@ export default function TabBar() {
     active
       ? 'text-[var(--primary-b60)] font-semibold'
       : 'text-[var(--grayscale-40)]';
-
-  // // 검색 버튼 클릭 시 열리거나 닫히도록
-  // const handleSearchClick = () => {
-  //   setIsSearchOpen((prevState) => !prevState); // 상태 토글
-  // };
 
   return (
     <div className="w-[198px] h-screen bg-white sticky top-0 flex flex-col">
@@ -186,7 +180,6 @@ export default function TabBar() {
           </button>
         </div>
       </div>
-      {/* {isSearchOpen && <Search />} */}
     </div>
   );
 }
