@@ -18,6 +18,7 @@ export interface SearchState {
   openSearch: () => void;
   closeSearch: () => void;
   setMbti: (mbti: string) => void;
+  resetSearchState: () => void;
 }
 
 export interface SearchData {
