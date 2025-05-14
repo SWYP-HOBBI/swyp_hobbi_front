@@ -10,8 +10,9 @@ import { useModalStore } from '@/store/modal';
 export default function TabBar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { userId } = useAuthStore();
+  const { userId, logout } = useAuthStore();
   const { openModal } = useModalStore();
+
   // const { toggleSearch } = useSearchStore();
 
   // const { openSearch } = useSearchStore();
@@ -112,9 +113,12 @@ export default function TabBar() {
         </div>
 
         <div className="w-[198px] h-[64px] flex items-center justify-end text-[16px] text-right pr-6">
-          <span className="text-[var(--grayscale-60)]">
+          <button
+            className="text-[var(--grayscale-60)] cursor-pointer"
+            onClick={() => logout()}
+          >
             {isLoggedIn ? '로그아웃' : '로그인'}
-          </span>
+          </button>
         </div>
       </div>
       {/* {isSearchOpen && <Search />} */}
