@@ -155,6 +155,12 @@ export const authService = {
     });
   },
 
+  logout: async () => {
+    return fetchApi('/user/logout', {
+      method: 'POST',
+    });
+  },
+
   // 이메일 인증 전송
   sendVerificationEmail: async (email: string) => {
     return fetchApi('/email/send', {
