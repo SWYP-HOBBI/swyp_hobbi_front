@@ -4,11 +4,13 @@ import HobbySelector from '@/components/common/hobby_selector';
 import MbtiButton from '@/components/common/mbti_button';
 import SearchBar from '@/components/common/search_bar';
 import { useSearchStore } from '@/store/search';
-import { searchService } from '@/services/api';
+import { useHobbyStore } from '@/store/hobby';
 import { useEffect, useState } from 'react';
 import SvgIcon from '../common/svg_icon';
+import { useRouter } from 'next/navigation';
 
 export default function Search() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('제목+내용');
 
@@ -18,11 +20,13 @@ export default function Search() {
     closeSearch,
     setSearchQuery,
     searchQuery,
-    selectedHobbies,
-    // setSelectedHobbies,
     selectedMbti,
     setMbti,
+    resetSearchState,
   } = useSearchStore();
+
+  // 취미 store
+  const { selectedHobbyTags, resetSelections } = useHobbyStore();
 
   // Body 스크롤 잠금
   useEffect(() => {
@@ -38,24 +42,45 @@ export default function Search() {
   }, [isSearchOpen]);
 
   // 검색 실행
-  const handleSearch = async () => {
-    const requestData = {
-      keyword_text: selectedOption === '제목+내용' ? searchQuery : '',
-      keyword_user: selectedOption === '작성자' ? searchQuery : '',
-      mbti: selectedMbti.length > 0 ? selectedMbti : [],
-      hobby_tags: selectedHobbies,
-      cursor_created_at: null,
-      cursor_id: null,
-      limit: 15,
-    };
+  const handleSearch = () => {
+    const trimmedQuery = searchQuery.trim();
 
-    try {
-      const response = await searchService.getSearchPosts(requestData);
-      console.log(response.data);
-      closeSearch();
-    } catch (error) {
-      console.error('검색 중 오류 :', error);
+    if (
+      (!trimmedQuery || trimmedQuery.length === 0) &&
+      selectedMbti.length === 0 &&
+      selectedHobbyTags.length === 0
+    ) {
+      return;
     }
+
+    const params = new URLSearchParams();
+
+    // 검색어 추가 (trim 처리된 값 사용)
+    if (trimmedQuery) {
+      if (selectedOption === '작성자') {
+        params.append('keyword_user', trimmedQuery);
+      } else {
+        params.append('keyword_text', trimmedQuery);
+      }
+    }
+
+    // MBTI 추가
+    selectedMbti.forEach((mbti) => {
+      params.append('mbti', mbti);
+    });
+
+    // 취미 태그 추가
+    selectedHobbyTags.forEach((hobby) => {
+      params.append('hobby_tags', hobby.subCategory);
+    });
+
+    // 모든 상태 초기화
+    closeSearch();
+    resetSearchState(); // 검색어와 MBTI 초기화
+    resetSelections(); // 취미 태그 초기화
+    setSelectedOption('제목+내용'); // 검색 옵션 초기화
+
+    router.push(`/posts/search?${params.toString()}`);
   };
 
   // MBTI 선택
@@ -135,7 +160,7 @@ export default function Search() {
 
         {/* 검색 버튼 */}
         <button
-          className="mt-6 w-[380px] h-[60px] bg-[var(--primary)] rounded-[12px] text-[14px] font-semibold"
+          className="mt-6 w-[380px] h-[60px] bg-[var(--primary)] rounded-[12px] text-[14px] font-semibold text-white"
           onClick={handleSearch}
         >
           검색하기

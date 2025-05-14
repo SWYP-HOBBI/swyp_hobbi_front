@@ -16,4 +16,10 @@ export const useSearchStore = create<SearchState>((set) => ({
         ? { selectedMbti: state.selectedMbti.filter((m) => m !== mbti) }
         : { selectedMbti: [...state.selectedMbti, mbti] },
     ),
+  resetSearchState: () =>
+    set({
+      searchQuery: '',
+      selectedHobbies: [],
+      selectedMbti: [],
+    }),
 }));
