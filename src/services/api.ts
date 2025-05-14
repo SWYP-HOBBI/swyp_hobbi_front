@@ -316,47 +316,47 @@ export const postService = {
     });
   },
 
-  // // 게시글 좋아요
-  // likePost: async (postId: number): Promise<PostLike> => {
-  //   return fetchApi(`/like/post/${postId}`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //   });
-  // },
+  // 게시글 좋아요
+  likePost: async (postId: number): Promise<PostLike> => {
+    return fetchApi(`/like/post/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
 
-  //   // 게시글 좋아요 취소
-  //   unlikePost: async (postId: number): Promise<PostLike> => {
-  //     return fetchApi(`/unlike/post/${postId}`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //   },
-  // };
+  // 게시글 좋아요 취소
+  unlikePost: async (postId: number): Promise<PostLike> => {
+    return fetchApi(`/unlike/post/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
+};
 
-  // // 댓글 관련 API 서비스
-  // export const commentService = {
-  //   // 댓글 목록 조회 (무한 스크롤)
-  //   getComments: async (params: {
-  //     postId: number;
-  //     lastCommentId?: number;
-  //     pageSize?: number;
-  //   }): Promise<Comment[]> => {
-  //     const searchParams = new URLSearchParams({
-  //       postId: params.postId.toString(),
-  //       ...(params.lastCommentId && {
-  //         lastCommentId: params.lastCommentId.toString(),
-  //       }),
-  //       pageSize: (params.pageSize || 15).toString(),
-  //     });
+// 댓글 관련 API 서비스
+export const commentService = {
+  // 댓글 목록 조회 (무한 스크롤)
+  getComments: async (params: {
+    postId: number;
+    lastCommentId?: number;
+    pageSize?: number;
+  }): Promise<Comment[]> => {
+    const searchParams = new URLSearchParams({
+      postId: params.postId.toString(),
+      ...(params.lastCommentId && {
+        lastCommentId: params.lastCommentId.toString(),
+      }),
+      pageSize: (params.pageSize || 15).toString(),
+    });
 
-  //     return fetchApi(`/comments?${searchParams}`, {
-  //       method: 'GET',
-  //     });
-  //   },
+    return fetchApi(`/comments?${searchParams}`, {
+      method: 'GET',
+    });
+  },
 
   // 댓글 작성
   createComment: async (
@@ -403,35 +403,35 @@ export const postService = {
   },
 };
 
-// // 검색 관련 API 서비스
-// export const searchService = {
-//   getSearchPosts: async (params: SearchParams) => {
-//     const url = `${API_BASE_URL_PUBLIC}/search/`;
+// 검색 관련 API 서비스
+export const searchService = {
+  getSearchPosts: async (params: SearchParams) => {
+    const url = `${API_BASE_URL_PUBLIC}/search/`;
 
-//     const response = await fetch(url, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         keyword_text: params.keyword_text || '',
-//         keyword_user: params.keyword_user || '',
-//         mbti: params.mbti ?? [],
-//         hobby_tags: params.hobby_tags ?? [],
-//         cursor_created_at: params.cursor_created_at ?? null,
-//         cursor_id: params.cursor_id ?? null,
-//         limit: params.limit ?? 15,
-//       }),
-//     });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        keyword_text: params.keyword_text || '',
+        keyword_user: params.keyword_user || '',
+        mbti: params.mbti ?? [],
+        hobby_tags: params.hobby_tags ?? [],
+        cursor_created_at: params.cursor_created_at ?? null,
+        cursor_id: params.cursor_id ?? null,
+        limit: params.limit ?? 15,
+      }),
+    });
 
-//     if (!response.ok) {
-//       const errorText = await response.text();
-//       throw new Error(errorText || '검색 중 오류 ');
-//     }
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || '검색 중 오류 ');
+    }
 
-//     return await response.json();
-//   },
-// };
+    return await response.json();
+  },
+};
 
 // 마이페이지 관련 API 서비스
 export const userService = {
@@ -493,8 +493,8 @@ export const userService = {
   // 현재 비밀번호 확인
   checkCurrentPassword: async (
     currentPassword: string,
-  ): Promise<{ success: boolean }> => {
-    const response = await fetchApi<{ success: boolean }>(
+  ): Promise<{ check: boolean }> => {
+    const response = await fetchApi<{ check: boolean }>(
       '/my-page/update/password/check',
       {
         method: 'POST',
@@ -512,6 +512,9 @@ export const userService = {
   updatePassword: async (body: UpdatePassword): Promise<void> => {
     return fetchApi<void>('/my-page/update/password', {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     });
   },
