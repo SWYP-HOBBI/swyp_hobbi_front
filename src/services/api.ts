@@ -8,7 +8,7 @@ import {
   PostCardProps,
   PostResponse,
   PostDetail,
-  // PostLike,
+  PostLike,
 } from '@/types/post';
 import { useAuthStore } from '@/store/auth';
 import {
@@ -22,7 +22,7 @@ import {
   UpdatePassword,
   UpdateUserInfo,
 } from '@/types/my_page';
-// import { SearchParams } from '@/types/search';
+import { SearchParams } from '@/types/search';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
