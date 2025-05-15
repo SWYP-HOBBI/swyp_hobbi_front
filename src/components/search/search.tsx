@@ -4,7 +4,6 @@ import HobbySelector from '@/components/common/hobby_selector';
 import MbtiButton from '@/components/common/mbti_button';
 import SearchBar from '@/components/common/search_bar';
 import { useSearchStore } from '@/store/search';
-import { useHobbyStore } from '@/store/hobby';
 import { useEffect, useState } from 'react';
 import SvgIcon from '../common/svg_icon';
 import { useRouter } from 'next/navigation';
@@ -23,10 +22,9 @@ export default function Search() {
     selectedMbti,
     setMbti,
     resetSearchState,
+    searchHobbyTags,
+    setSearchHobbyTags,
   } = useSearchStore();
-
-  // 취미 store
-  const { selectedHobbyTags, resetSelections } = useHobbyStore();
 
   // Body 스크롤 잠금
   useEffect(() => {
@@ -48,7 +46,7 @@ export default function Search() {
     if (
       (!trimmedQuery || trimmedQuery.length === 0) &&
       selectedMbti.length === 0 &&
-      selectedHobbyTags.length === 0
+      searchHobbyTags.length === 0
     ) {
       return;
     }
@@ -70,15 +68,15 @@ export default function Search() {
     });
 
     // 취미 태그 추가
-    selectedHobbyTags.forEach((hobby) => {
+    searchHobbyTags.forEach((hobby) => {
       params.append('hobby_tags', hobby.subCategory);
     });
 
     // 모든 상태 초기화
     closeSearch();
-    resetSearchState(); // 검색어와 MBTI 초기화
-    resetSelections(); // 취미 태그 초기화
-    setSelectedOption('제목+내용'); // 검색 옵션 초기화
+    resetSearchState();
+    setSearchHobbyTags([]);
+    setSelectedOption('제목+내용');
 
     router.push(`/posts/search?${params.toString()}`);
   };
@@ -140,7 +138,11 @@ export default function Search() {
         {/* 취미 */}
         <div className="mt-4 w-full px-4">
           <span className="text-[20px] font-semibold">취미검색</span>
-          <HobbySelector />
+          <HobbySelector
+            selectedTags={searchHobbyTags}
+            onTagsChange={setSearchHobbyTags}
+            isSearchMode={true}
+          />
         </div>
 
         {/* MBTI */}
