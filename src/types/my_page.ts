@@ -38,7 +38,7 @@ export interface MyPageModify {
   birthDay: number;
   userImageUrl: string;
   mbti: string;
-  hobbytags: string[];
+  hobbyTags: string[];
 }
 
 // 닉네임 중복 확인 요청/응답
@@ -75,7 +75,7 @@ export interface UpdateUserInfo {
   birthMonth: number;
   birthDay: number;
   mbti: string;
-  hobbytags: string[];
+  hobbyTags: string[];
 }
 
 // 회원 탈퇴 요청

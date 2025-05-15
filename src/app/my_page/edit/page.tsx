@@ -9,11 +9,16 @@ import EditPassword from '@/components/my_page/edit_password';
 import { userService } from '@/services/api'; // API 서비스 호출
 import { useHobbyStore } from '@/store/hobby';
 import { MyPageModify, UpdateUserInfo } from '@/types/my_page';
+import {
+  HOBBY_MAIN_CATEGORIES,
+  HOBBY_SUB_CATEGORIES,
+  HobbyTag,
+} from '@/types/hobby';
 
 export default function EditMyPage() {
   const router = useRouter();
 
-  const { selectedHobbyTags } = useHobbyStore(); // 선택된 취미 태그 상태
+  const { selectedHobbyTags, setSelectedHobbyTags } = useHobbyStore(); // 선택된 취미 태그 상태
 
   // 상태 변수 설정
   const [userInfo, setUserInfo] = useState<MyPageModify | null>(null);
@@ -23,12 +28,12 @@ export default function EditMyPage() {
   const [birthMonth, setBirthMonth] = useState('');
   const [birthDay, setBirthDay] = useState('');
   const [mbti, setMbti] = useState('');
-  const [hobbytags, setHobbytags] = useState<string[]>([]);
+  // const [hobbytags, setHobbytags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // 닉네임 수정 폼 상태
-  const [showNicknameEdit, setShowNicknameEdit] = useState(false); // 닉네임 수정 여부
-  const [currentNickname, setCurrentNickname] = useState(''); // 현재 닉네임
+  const [showNicknameEdit, setShowNicknameEdit] = useState(false);
+  const [currentNickname, setCurrentNickname] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -37,25 +42,44 @@ export default function EditMyPage() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const data = await userService.getMyModifyPage(); // API 호출
+        const data = await userService.getMyModifyPage();
         setUserInfo(data);
         setUsername(data.username);
+        setCurrentNickname(data.nickname);
         setGender(data.gender);
         setBirthYear(data.birthYear.toString());
-        setBirthMonth(String(data.birthMonth).padStart(2, '0')); // 월을 문자열로 변환
-        setBirthDay(String(data.birthDay).padStart(2, '0')); // 일을 문자열로 변환
-        // setBirthMonth(data.birthMonth.toString());
-        // setBirthDay(data.birthDay.toString());
+        setBirthMonth(String(data.birthMonth).padStart(2, '0'));
+        setBirthDay(String(data.birthDay).padStart(2, '0'));
         setMbti(data.mbti);
-        // setHobbytags(data.hobbytags);
-        setCurrentNickname(data.nickname); // 현재 닉네임 상태 설정
+
+        // 서버에서 받은 취미 태그를 상태로 설정
+        const convertedTags = data.hobbyTags
+          .map((subCategory) => {
+            const mainCategoryEntry = Object.entries(HOBBY_SUB_CATEGORIES).find(
+              ([, subCategories]) => subCategories.includes(subCategory),
+            );
+
+            if (!mainCategoryEntry) return null;
+
+            const [mainCategoryKey] = mainCategoryEntry;
+            const mainCategory =
+              HOBBY_MAIN_CATEGORIES[
+                mainCategoryKey as keyof typeof HOBBY_MAIN_CATEGORIES
+              ];
+
+            return { mainCategory, subCategory } as HobbyTag;
+          })
+          .filter((tag): tag is HobbyTag => tag !== null);
+
+        // 선택된 취미 태그를 상태로 설정
+        setSelectedHobbyTags(convertedTags);
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
     };
 
     fetchUserInfo();
-  }, []);
+  }, [setSelectedHobbyTags]);
 
   // 정보 수정 요청
   const handleSave = async () => {
@@ -66,8 +90,7 @@ export default function EditMyPage() {
       birthMonth: parseInt(birthMonth),
       birthDay: parseInt(birthDay),
       mbti,
-      hobbytags,
-      // hobbytags: Array.isArray(selectedHobbyTags) ? selectedHobbyTags : [],
+      hobbyTags: selectedHobbyTags.map((tag) => tag.subCategory),
     };
 
     setIsLoading(true);
@@ -116,14 +139,14 @@ export default function EditMyPage() {
               onNicknameChange={setCurrentNickname}
               setShowNicknameEdit={setShowNicknameEdit}
             />
-            {/* <EditPassword
+            <EditPassword
               currentPassword={currentPassword}
               setCurrentPassword={setCurrentPassword}
               newPassword={newPassword}
               setNewPassword={setNewPassword}
               confirmPassword={confirmPassword}
               setConfirmPassword={setConfirmPassword}
-            /> */}
+            />
           </div>
 
           <div className="flex w-full gap-[20px]">
@@ -217,7 +240,7 @@ export default function EditMyPage() {
                 *최대 15개까지 선택 가능합니다.
               </span>
             </div>
-            <HobbySelector />
+            <HobbySelector maxCount={15} />
           </div>
         </div>
         <div className="w-full flex justify-end gap-[11px] pt-[12px]">
