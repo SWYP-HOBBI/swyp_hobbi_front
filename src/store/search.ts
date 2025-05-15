@@ -1,12 +1,22 @@
+import { HobbyTag } from '@/types/hobby';
 import { SearchState } from '@/types/search';
 import { create } from 'zustand';
 
-export const useSearchStore = create<SearchState>((set) => ({
+interface SearchStore {
+  isSearchOpen: boolean;
+  searchQuery: string;
+  selectedMbti: string[];
+  searchHobbyTags: HobbyTag[];
+  setSearchHobbyTags: (tags: HobbyTag[]) => void;
+}
+
+export const useSearchStore = create<SearchStore>((set) => ({
   isSearchOpen: false,
   searchQuery: '',
-  selectedHobbies: [],
   selectedMbti: [],
-  setSearchQuery: (query) => set({ searchQuery: query }),
+  searchHobbyTags: [],
+  setSearchHobbyTags: (tags: HobbyTag[]) => set({ searchHobbyTags: tags }),
+  setSearchQuery: (query: string) => set({ searchQuery: query }),
   toggleSearch: () => set((state) => ({ isSearchOpen: !state.isSearchOpen })),
   openSearch: () => set({ isSearchOpen: true }),
   closeSearch: () => set({ isSearchOpen: false }),
@@ -19,7 +29,7 @@ export const useSearchStore = create<SearchState>((set) => ({
   resetSearchState: () =>
     set({
       searchQuery: '',
-      selectedHobbies: [],
       selectedMbti: [],
+      searchHobbyTags: [],
     }),
 }));

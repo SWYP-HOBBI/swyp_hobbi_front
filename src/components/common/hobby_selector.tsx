@@ -14,7 +14,9 @@ interface HobbySelectorProps {
   className?: string;
   maxCount?: number;
   variant?: TagVariant;
-  tags?: HobbyTag[];
+  selectedTags?: HobbyTag[];
+  onTagsChange?: (tags: HobbyTag[]) => void;
+  isSearchMode?: boolean;
 }
 
 // 수정된 드롭다운 버튼 컴포넌트
@@ -108,6 +110,9 @@ export default function HobbySelector({
   className = '',
   maxCount,
   variant = 'primary',
+  selectedTags,
+  onTagsChange,
+  isSearchMode = false,
 }: HobbySelectorProps) {
   const {
     selectedMainCategory,
@@ -121,7 +126,12 @@ export default function HobbySelector({
     toggleSubCategory,
     addSelectedHobbyTags,
     removeHobbyTag,
+    setSelectedHobbyTags,
   } = useHobbyStore();
+
+  // 검색 모드일 때는 props의 상태를 사용, 아닐 때는 store의 상태를 사용
+  const tags = isSearchMode ? selectedTags : selectedHobbyTags;
+  const setTags = isSearchMode ? onTagsChange : setSelectedHobbyTags;
 
   // 선택된 대분류의 표시 텍스트
   const selectedMainCategoryLabel = selectedMainCategory
@@ -187,8 +197,7 @@ export default function HobbySelector({
           onClick={() => {
             if (
               !maxCount ||
-              selectedHobbyTags.length + selectedSubCategories.length <=
-                maxCount
+              (tags?.length || 0) + selectedSubCategories.length <= maxCount
             ) {
               addSelectedHobbyTags();
             }
@@ -198,8 +207,7 @@ export default function HobbySelector({
             selectedSubCategories.length === 0 ||
             Boolean(
               maxCount &&
-                selectedHobbyTags.length + selectedSubCategories.length >
-                  maxCount,
+                (tags?.length || 0) + selectedSubCategories.length > maxCount,
             )
           }
         >
@@ -208,7 +216,7 @@ export default function HobbySelector({
       </div>
 
       <div className="flex flex-wrap gap-2 mt-3">
-        {selectedHobbyTags.map((tag) => (
+        {tags?.map((tag) => (
           <Tag
             key={`${tag.mainCategory}-${tag.subCategory}`}
             label={tag.subCategory}
