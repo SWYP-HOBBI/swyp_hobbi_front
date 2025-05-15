@@ -34,6 +34,7 @@ interface ReplyTo {
 interface PostCommentProps {
   postId: number;
   profileImageUrl: string;
+  onCommentUpdate?: () => void;
 }
 
 /**
@@ -48,6 +49,7 @@ interface PostCommentProps {
 export default function PostComment({
   postId,
   profileImageUrl,
+  onCommentUpdate,
 }: PostCommentProps) {
   const [newComment, setNewComment] = useState('');
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
@@ -55,8 +57,8 @@ export default function PostComment({
   const [editContent, setEditContent] = useState(''); // 수정 중인 댓글 내용
   const queryClient = useQueryClient();
 
-  // 현재 로그인한 사용자의 닉네임도 가져옵니다
-  const currentUserNickname = useAuthStore((state) => state.nickname);
+  // 현재 로그인한 사용자의 userId를 가져오도록 수정
+  const currentUserId = useAuthStore((state) => state.userId);
 
   const truncateContent = (content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
@@ -154,6 +156,8 @@ export default function PostComment({
       setReplyTo(null);
       // 댓글 목록 쿼리 무효화
       await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      // 상위 컴포넌트에 알림
+      onCommentUpdate?.();
     } catch (error) {
       console.error('댓글 작성에 실패했습니다:', error);
       alert('댓글 작성에 실패했습니다.');
@@ -195,6 +199,8 @@ export default function PostComment({
       await commentService.deleteComment(commentId);
       // 댓글 목록 쿼리 무효화
       await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      // 상위 컴포넌트에 알림
+      onCommentUpdate?.();
     } catch (error) {
       console.error('댓글 삭제에 실패했습니다:', error);
     }
@@ -222,18 +228,10 @@ export default function PostComment({
     setReplyTo(null);
   };
 
-  // 댓글 수정/삭제 권한 체크 함수
-  const canModifyComment = (commentNickname: string) => {
-    console.log({
-      currentUserNickname,
-      commentNickname,
-      isCommentAuthor: currentUserNickname === commentNickname,
-    });
-
-    if (!currentUserNickname) return false; // 로그인하지 않은 경우
-
-    // 내가 작성한 댓글이면 수정/삭제 가능
-    return currentUserNickname === commentNickname;
+  // 댓글 수정/삭제 권한 체크 함수 수정
+  const canModifyComment = (commentUserId: number) => {
+    if (!currentUserId) return false; // 로그인하지 않은 경우
+    return currentUserId === commentUserId; // userId가 같은 경우에만 수정/삭제 가능
   };
 
   return (
@@ -301,8 +299,8 @@ export default function PostComment({
                     >
                       답글달기
                     </button>
-                    {/* nickname으로 권한 체크 */}
-                    {canModifyComment(comment.nickname) && (
+                    {/* userId로 권한 체크 */}
+                    {canModifyComment(comment.userId) && (
                       <>
                         <span className="mx-1">·</span>
                         <button
@@ -382,8 +380,8 @@ export default function PostComment({
                           >
                             답글달기
                           </button>
-                          {/* nickname으로 권한 체크 */}
-                          {canModifyComment(reply.nickname) && (
+                          {/* userId로 권한 체크 */}
+                          {canModifyComment(reply.userId) && (
                             <>
                               <span className="mx-1">·</span>
                               <button

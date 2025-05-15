@@ -131,6 +131,16 @@ export default function PostDetailPage() {
     // 공유 기능 구현
   };
 
+  // 댓글 업데이트 시 게시글 정보 다시 불러오기
+  const handleCommentUpdate = async () => {
+    try {
+      const updatedPost = await postService.getPostDetail(Number(id));
+      setPost(updatedPost);
+    } catch (error) {
+      console.error('게시글 정보 업데이트 중 오류:', error);
+    }
+  };
+
   // 로딩 중
   if (isLoading) {
     return (
@@ -194,7 +204,11 @@ export default function PostDetailPage() {
         onShareClick={handleShareClick}
       />
 
-      <PostComment postId={Number(id)} profileImageUrl={post.profileImageUrl} />
+      <PostComment
+        postId={Number(id)}
+        profileImageUrl={post.profileImageUrl}
+        onCommentUpdate={handleCommentUpdate}
+      />
     </div>
   );
 }

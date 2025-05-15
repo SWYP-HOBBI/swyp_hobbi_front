@@ -226,9 +226,9 @@ export default function PostForm({
   };
 
   return (
-    <div className="min-w-[960px] mx-auto my-12 space-y-6">
+    <div className="w-[960px] mx-auto my-12 space-y-6">
       {/* 1. 제목 입력 */}
-      <div className="shadow-md rounded-lg">
+      <div className="shadow-md rounded-lg bg-grayscale-0">
         <Input
           placeholder="제목을 입력하세요. *최대 30자 이하"
           value={title}
@@ -239,7 +239,7 @@ export default function PostForm({
       </div>
 
       {/* 2. 태그 설정 */}
-      <div className="space-y-2 shadow-md rounded-lg p-5">
+      <div className="space-y-2 shadow-md rounded-lg p-5 bg-grayscale-0">
         <div className="mb-6">
           <label className="text-grayscale-100 text-lg font-medium">
             태그 설정
@@ -259,7 +259,7 @@ export default function PostForm({
       />
 
       {/* 4. 게시글 내용 입력*/}
-      <div className="space-y-2 shadow-md rounded-lg p-5">
+      <div className="space-y-2 shadow-md rounded-lg p-5 bg-grayscale-0">
         <textarea
           className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
           placeholder="게시글을 작성해주세요. *최소 10자~최대 2,000자 이하"

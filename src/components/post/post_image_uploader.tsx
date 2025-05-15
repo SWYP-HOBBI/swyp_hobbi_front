@@ -44,7 +44,7 @@ export default function PostImageUploader({
   };
 
   return (
-    <div className="space-y-2 shadow-md rounded-lg p-5">
+    <div className="space-y-2 shadow-md rounded-lg p-5 bg-grayscale-0">
       {/* 헤더 */}
       <div className="mb-6">
         <label className="text-grayscale-100 text-lg font-medium">
