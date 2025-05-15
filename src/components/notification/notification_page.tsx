@@ -14,7 +14,7 @@ export default function NotificationPage() {
   const [showCheckbox, setShowCheckbox] = useState(false); // 체크박스 표시 여부
   const [notifications, setNotifications] = useState<Notification[]>([]); //선택알림
   const { isNotificationOpen, closeNotification } = useNotificationStore();
-  // const [noNotifications, setNoNotifications] = useState(false); // 알림이 없을 때 메시지 표시 여부
+  const [isChecked, setIsChecked] = useState<boolean[]>([]);
 
   // Body 스크롤 잠금
   useEffect(() => {
@@ -67,13 +67,13 @@ export default function NotificationPage() {
           <span className="text-[20px] font-semibold">알림</span>
           {isDeleteVisible ? (
             <span
-              className="text-[14px] text-[var(--grayscale-80)] cursor-pointer"
+              className="text-[14px] text-[var(--grayscale-80)] cursor-pointer mt-2"
               onClick={handleDeleteClick}
             >
               알림삭제
             </span>
           ) : (
-            <div className="flex space-x-2 items-center">
+            <div className="flex space-x-2 items-center mt-2">
               <button
                 className={`w-[59px] h-[24px] rounded-[24px] text-[14px] border ${
                   selectedButton === '전체 읽음'
@@ -116,6 +116,8 @@ export default function NotificationPage() {
           setSelectedNotifications={setSelectedNotifications}
           notifications={notifications}
           setNotifications={setNotifications}
+          isChecked={isChecked}
+          setIsChecked={setIsChecked}
         />
       </div>
     </div>
