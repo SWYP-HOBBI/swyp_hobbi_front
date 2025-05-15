@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from 'react';
 import { useSignupStore } from '@/store/signup';
 import { authService } from '@/services/api';
@@ -14,7 +16,12 @@ import { authService } from '@/services/api';
  * @returns
  */
 
-export function useEmailVerification() {
+interface EmailVerificationConfig {
+  sendVerificationEmail?: typeof authService.sendVerificationEmail;
+  skipDuplicateCheck?: boolean;
+}
+
+export function useEmailVerification(config?: EmailVerificationConfig) {
   const {
     signupData, // 회원가입 데이터
     updateSignupData, // 회원가입 데이터 업데이트
@@ -75,25 +82,29 @@ export function useEmailVerification() {
       setIsError(false);
       setErrorMessage(null);
 
-      // 이메일 중복 확인
-      const duplicateResponse = await authService.checkEmailDuplicate(
-        signupData.email,
-      );
+      // 이메일 중복 확인 (비밀번호 찾기에서는 스킵)
+      if (!config?.skipDuplicateCheck) {
+        const duplicateResponse = await authService.checkEmailDuplicate(
+          signupData.email,
+        );
 
-      // 중복된 이메일인 경우
-      if (
-        typeof duplicateResponse === 'object' &&
-        duplicateResponse !== null &&
-        'isDuplicate' in duplicateResponse &&
-        duplicateResponse.isDuplicate
-      ) {
-        setIsError(true);
-        setErrorMessage('이미 등록된 회원입니다.');
-        return;
+        // 중복된 이메일인 경우
+        if (
+          typeof duplicateResponse === 'object' &&
+          duplicateResponse !== null &&
+          'isDuplicate' in duplicateResponse &&
+          duplicateResponse.isDuplicate
+        ) {
+          setIsError(true);
+          setErrorMessage('이미 등록된 회원입니다.');
+          return;
+        }
       }
 
       // 인증 메일 발송
-      await authService.sendVerificationEmail(signupData.email);
+      const sendEmail =
+        config?.sendVerificationEmail || authService.sendVerificationEmail;
+      await sendEmail(signupData.email);
 
       // 타이머 시작 (3분)
       setEmailTimer(180);

@@ -238,20 +238,26 @@ export default function UserInfoForm({
           type="text"
           value={signupData.nickname}
           onChange={handleChange}
-          disabled={isLoading || isNicknameVerified}
+          disabled={isLoading}
           containerClassName="w-[60%]"
-          placeholder={
-            isNicknameVerified
-              ? '인증이 완료되었습니다.'
-              : '닉네임을 입력해주세요.'
-          }
+          placeholder="닉네임을 입력해주세요."
           showClearButton
           required
         />
         <Button
           type="button"
-          onClick={handleNicknameCheck}
-          disabled={!signupData.nickname || isNicknameVerified || isLoading}
+          onClick={() => {
+            if (isNicknameVerified) {
+              // 인증 완료 상태에서는 수정 모드로 전환
+              setIsNicknameVerified(false);
+              setErrorMessage(null);
+              setIsError(false);
+            } else {
+              // 미인증 상태에서는 중복 확인 실행
+              handleNicknameCheck();
+            }
+          }}
+          disabled={!signupData.nickname || isLoading}
           variant={isNicknameVerified ? 'secondary' : 'primary'}
           size="md"
           className="w-[40%]"
@@ -259,7 +265,7 @@ export default function UserInfoForm({
           {isLoading
             ? '처리 중...'
             : isNicknameVerified
-              ? '인증완료'
+              ? '중복확인'
               : '중복확인'}
         </Button>
       </div>
@@ -272,7 +278,7 @@ export default function UserInfoForm({
 
       {isNicknameVerified && (
         <p className="text-xs text-primary mt-2 max-md:text-[8px]">
-          *인증이 완료되었습니다.
+          *사용 가능한 닉네임입니다.
         </p>
       )}
 

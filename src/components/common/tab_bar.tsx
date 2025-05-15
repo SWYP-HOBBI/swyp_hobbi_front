@@ -7,6 +7,8 @@ import { useSearchStore } from '@/store/search';
 import { useState, useEffect } from 'react';
 import { notificationService } from '@/services/api';
 import { useNotificationStore } from '@/store/notification';
+import { useFeedStore } from '@/store/feed';
+import { useState, useEffect } from 'react';
 
 export default function TabBar() {
   const router = useRouter();
@@ -16,6 +18,14 @@ export default function TabBar() {
   const { toggleSearch, isSearchOpen } = useSearchStore();
   const { toggleNotification, isNotificationOpen } = useNotificationStore();
   const [unreadCount, setUnreadCount] = useState(0); //알림 개수
+  const { feedType, setFeedType } = useFeedStore();
+  const [showNotification, setShowNotification] = useState(false);
+  const [showFeedMenu, setShowFeedMenu] = useState(false);
+
+  useEffect(() => {
+    // 페이지가 변경될 때마다 피드 타입을 'all'로 초기화
+    setFeedType('all');
+  }, [pathname, setFeedType]);
 
   const handleProtectedRoute = (callback: () => void) => {
     if (!isAuthenticated) {
@@ -39,6 +49,7 @@ export default function TabBar() {
   const isHome = pathname === '/posts';
   const isWrite = pathname === '/posts/write';
   const isMyPage = pathname === '/my_page';
+  const isSearch = pathname === '/search';
 
   const iconColor = (active: boolean) =>
     active ? 'var(--primary)' : 'var(--grayscale-40)';
@@ -71,22 +82,76 @@ export default function TabBar() {
       <div className="flex-1 flex flex-col justify-between">
         <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-[24px]">
           {/* 홈 */}
-          <div
-            className={`w-[150px] flex items-center h-[52px] pt-[20px] ${
-              isSearchOpen ? 'opacity-30 pointer-events-none' : 'cursor-pointer'
-            }`}
-            onClick={() => router.push('/posts')}
-          >
-            <SvgIcon
-              name="home"
-              size={36}
-              color={isSearchOpen ? '#999999' : iconColor(isHome)}
-            />
-            <span
-              className={`ml-[24px] text-[16px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isHome)}`}
+          <div className="relative">
+            <div
+              className={`w-[150px] flex items-center h-[52px] pt-[20px] ${
+                isSearchOpen
+                  ? 'opacity-30 pointer-events-none'
+                  : 'cursor-pointer'
+              }`}
             >
-              홈
-            </span>
+              <div
+                className="flex items-center flex-1"
+                onClick={() => router.push('/posts')}
+              >
+                <SvgIcon
+                  name="home"
+                  size={36}
+                  color={isSearchOpen ? '#999999' : iconColor(isHome)}
+                />
+                <span
+                  className={`ml-[24px] text-[16px] ${
+                    isSearchOpen
+                      ? 'text-[var(--grayscale-40)]'
+                      : textColor(isHome)
+                  }`}
+                >
+                  홈
+                </span>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFeedMenu(!showFeedMenu);
+                }}
+                className={`ml-2 transform transition-transform duration-200 -rotate-90
+                ${isSearchOpen ? 'opacity-30' : ''}`}
+              >
+                <SvgIcon name="arrow_down" size={24} />
+              </button>
+            </div>
+
+            {/* 피드 선택 메뉴 */}
+            {showFeedMenu && !isSearchOpen && (
+              <div className="absolute left-[180px] top-[20px] bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[92px] text-sm">
+                <button
+                  onClick={() => {
+                    setFeedType('all');
+                    setShowFeedMenu(false);
+                  }}
+                  className={`w-full px-4 py-2 text-left hover:bg-[var(--primary-w80)] ${
+                    feedType === 'all'
+                      ? 'text-[var(--primary)] font-medium'
+                      : 'text-[var(--grayscale-60)]'
+                  }`}
+                >
+                  전체 피드
+                </button>
+                <button
+                  onClick={() => {
+                    setFeedType('hobby');
+                    setShowFeedMenu(false);
+                  }}
+                  className={`w-full px-4 py-2 text-left hover:bg-[var(--primary-w80)] ${
+                    feedType === 'hobby'
+                      ? 'text-[var(--primary)] font-medium'
+                      : 'text-[var(--grayscale-60)]'
+                  }`}
+                >
+                  취미 피드
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 검색 */}

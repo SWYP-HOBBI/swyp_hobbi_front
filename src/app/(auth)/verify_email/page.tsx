@@ -22,6 +22,7 @@ export default function VerifyEmailPage() {
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
   const [isSuccess, setIsSuccess] = useState(false); // 인증 성공 상태
   const [error, setError] = useState<string | null>(null); // 오류 메시지
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
 
   /**
    * 컴포넌트 마운트 시 이메일 인증 프로세스 실행
@@ -31,6 +32,8 @@ export default function VerifyEmailPage() {
       // URL 파라미터에서 토큰과 이메일 추출
       const token = searchParams.get('token'); //2d4576cb-be1c-4cbb-b597-3f4e25f83363
       const email = searchParams.get('email'); // luckseok1@gmail.com
+      const reset = searchParams.get('reset') === 'true';
+      setIsPasswordReset(reset);
 
       // 토큰과 이메일이 없으면 오류 메시지 표시
       if (!token || !email) {
@@ -40,9 +43,24 @@ export default function VerifyEmailPage() {
       }
 
       try {
-        // 이메일 인증 API 호출
-        await authService.verifyEmail(token, email);
+        if (reset) {
+          // 비밀번호 재설정 이메일 인증
+          await authService.verifyPasswordFindEmail(token, email);
 
+          // 인증 성공
+          setIsSuccess(true);
+
+          // 로컬 스토리지에 인증 상태 저장
+          localStorage.setItem('passwordResetToken', token);
+
+          // 2초 대기 후 창 닫기
+          setTimeout(() => {
+            window.close();
+          }, 2000);
+        } else {
+          // 이메일 인증 API 호출
+          await authService.verifyEmail(token, email);
+        }
         // 인증 성공
         setIsSuccess(true);
 

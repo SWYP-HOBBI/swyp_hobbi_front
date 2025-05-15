@@ -72,11 +72,7 @@ export default function Signup() {
       }
 
       // 인증 상태 설정 (hobbyTags 포함)
-      setAuth({
-        ...userData,
-        hobbyTags: currentSignupData.hobbyTags, // 회원가입 시 선택한 취미 태그 포함
-        nickname: currentSignupData.nickname,
-      });
+      setAuth(userData);
 
       // 회원가입 성공 모달 표시
       openModal({

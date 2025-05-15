@@ -144,6 +144,17 @@ export const authService = {
     });
   },
 
+  // 비밀번호 이메일 인증 전송
+  sendPasswordFindEmail: async (email: string) => {
+    return fetchApi('/user/password/reset-link', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+  },
+
   // 이메일 중복 확인
   checkEmailDuplicate: async (email: string) => {
     return fetchApi('/user/validation/email', {
@@ -182,6 +193,28 @@ export const authService = {
       },
       body: JSON.stringify({ token, email }),
       // credentials: 'include',
+    });
+  },
+
+  // 비밀번호 찾기 이메일 인증 확인
+  verifyPasswordFindEmail: async (token: string, email: string) => {
+    return fetchApi('/user/password/verify/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, email }),
+    });
+  },
+
+  // 비밀번호 변경
+  resetPassword: async (token: string, newPassword: string) => {
+    return fetchApi('/user/password/reset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, newPassword }),
     });
   },
 

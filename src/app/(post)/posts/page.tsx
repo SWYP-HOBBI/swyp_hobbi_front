@@ -9,6 +9,7 @@ import {
 
 import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
+import { useFeedStore } from '@/store/feed';
 import PostCard from '@/components/post/post_card';
 import { PostCardProps, InfinitePostsResponse } from '@/types/post';
 import Loader from '@/components/common/loader';
@@ -24,67 +25,42 @@ import Loader from '@/components/common/loader';
  */
 export default function PostsPage() {
   const queryClient = useQueryClient();
-
-  // 사용자 id 및 취미 태그 상태 가져오기
-  const { userId, hobbyTags } = useAuthStore();
-  // 비회원 구분용
-  const isLoggedIn = Boolean(userId);
-
-  // 무한 스크롤 옵저버 ref
+  const { userId, isAuthenticated } = useAuthStore();
+  const { feedType } = useFeedStore();
   const observerRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * React Query의 useInfiniteQuery를 사용한 무한 스크롤 데이터 fetching
-   *
-   * @param queryKey - ['posts', userId, hobbyTags 존재 여부]
-   * @param queryFn - 페이지 데이터를 가져오는 함수
-   * @param getNextPageParam - 다음 페이지 파라미터 결정 함수
-   */
-  const {
-    data, // 페이지 데이터
-    fetchNextPage, // 다음 페이지 요청 함수
-    hasNextPage, // 다음 페이지 존재 여부
-    isFetchingNextPage, // 다음 페이지 로딩 상태
-    status, // 쿼리 상태
-  } = useInfiniteQuery({
-    // 쿼리 키 : 사용자 id와 취미 태그 존재 여부에 따라 캐시 구분
-    queryKey: ['posts', userId, hobbyTags?.length > 0],
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useInfiniteQuery({
+      queryKey: ['posts', userId, feedType],
+      queryFn: async ({ pageParam }) => {
+        if (!isAuthenticated) {
+          // 비로그인 사용자는 항상 전체 피드만 볼 수 있음
+          return await postService.getPublicPosts({
+            cursor_id: pageParam ? Number(pageParam) : undefined,
+            limit: 15,
+          });
+        }
 
-    // 데이터 fetching 함수
-    queryFn: async ({ pageParam }) => {
-      if (isLoggedIn) {
-        // 로그인한 경우: 취미 태그 기반 필터링된 게시글 조회
+        // 로그인 사용자의 피드 타입에 따른 조회
         return await postService.getInfiniteScrollPosts({
-          tagExist: Boolean(hobbyTags?.length),
-          lastPostId: pageParam ? Number(pageParam) : undefined, // pageParam을 number로 변환
-          pageSize: 15, // 한 페이지당 15개 게시글
+          tagExist: feedType === 'hobby', // 취미 피드일 때만 true
+          lastPostId: pageParam ? Number(pageParam) : undefined,
+          pageSize: 15,
         });
-      } else {
-        // 비회원인 경우: 공개 게시글 목록 조회
-        const response = await postService.getPublicPosts({
-          cursor_id: pageParam ? Number(pageParam) : undefined,
-          limit: 15,
-        });
-        return response;
-      }
-    },
-
-    // 다음 페이지 파라미터 결정 로직
-    getNextPageParam: (lastPage) => {
-      // 마지막 페이지가 없거나 게시글이 15개 미만이면 더 이상 데이터가 없음
-      if (!lastPage || lastPage.length < 15) return undefined;
-      // 마지막 게시글 ID 반환
-      return lastPage[lastPage.length - 1].postId;
-    },
-    initialPageParam: undefined as string | undefined,
-  });
+      },
+      getNextPageParam: (lastPage) => {
+        if (!lastPage || lastPage.length < 15) return undefined;
+        return lastPage[lastPage.length - 1].postId;
+      },
+      initialPageParam: undefined as string | undefined,
+    });
 
   // 좋아요 mutation
   const likeMutation = useMutation({
     mutationFn: (postId: string) => postService.likePost(Number(postId)),
     onSuccess: (_, postId) => {
       queryClient.setQueryData<InfinitePostsResponse>(
-        ['posts', userId, hobbyTags?.length > 0],
+        ['posts', userId, feedType],
         (oldData) => {
           if (!oldData) return oldData;
           return {
@@ -111,7 +87,7 @@ export default function PostsPage() {
     mutationFn: (postId: string) => postService.unlikePost(Number(postId)),
     onSuccess: (_, postId) => {
       queryClient.setQueryData<InfinitePostsResponse>(
-        ['posts', userId, hobbyTags?.length > 0],
+        ['posts', userId, feedType],
         (oldData) => {
           if (!oldData) return oldData;
           return {
@@ -186,15 +162,16 @@ export default function PostsPage() {
       <div className="w-[960px] max-md:w-[390px]">
         <div className="space-y-12">
           {/* 게시글 목록 렌더링 */}
-          {data?.pages.flatMap((group: PostCardProps[]) =>
-            group.map((post) => (
-              <div key={post.postId}>
-                <PostCard
-                  {...post}
-                  onLikeClick={() => handleLike(post.postId, post.liked)}
-                />
-              </div>
-            )),
+          {data?.pages.flatMap(
+            (group: PostCardProps[]) =>
+              group.map((post) => (
+                <div key={post.postId}>
+                  <PostCard
+                    {...post}
+                    onLikeClick={() => handleLike(post.postId, post.liked)}
+                  />
+                </div>
+              )) ?? [],
           )}
 
           {/* 무한 스크롤 옵저버 */}
