@@ -27,7 +27,7 @@ import {
   NotificationDetailResponse,
   MarkSelectedReadRequest,
   UnreadCountResponse,
-} from '@/types/notificaion';
+} from '@/types/notification';
 
 import { SearchParams } from '@/types/search';
 
@@ -506,8 +506,8 @@ export const userService = {
   // 현재 비밀번호 확인
   checkCurrentPassword: async (
     currentPassword: string,
-  ): Promise<{ success: boolean }> => {
-    const response = await fetchApi<{ success: boolean }>(
+  ): Promise<{ check: boolean }> => {
+    const response = await fetchApi<{ check: boolean }>(
       '/my-page/update/password/check',
       {
         method: 'POST',
@@ -525,6 +525,9 @@ export const userService = {
   updatePassword: async (body: UpdatePassword): Promise<void> => {
     return fetchApi<void>('/my-page/update/password', {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     });
   },
@@ -579,7 +582,7 @@ export const notificationService = {
       }),
     });
 
-    return fetchApi<Notification[]>(`/api/v1/notifications?${params}`, {
+    return fetchApi<Notification[]>(`/notifications?${params}`, {
       method: 'GET',
     });
   },
@@ -589,7 +592,7 @@ export const notificationService = {
     notificationId: number,
   ): Promise<NotificationDetailResponse> => {
     return fetchApi<NotificationDetailResponse>(
-      `/api/v1/notifications/${notificationId}`,
+      `/notifications/${notificationId}`,
       {
         method: 'POST',
       },
@@ -598,7 +601,7 @@ export const notificationService = {
 
   // 전체 읽음 처리
   markAllRead: async (): Promise<void> => {
-    return fetchApi<void>(`/api/v1/notifications/read-all`, {
+    return fetchApi<void>(`/notifications/read-all`, {
       method: 'POST',
     });
   },
@@ -607,7 +610,7 @@ export const notificationService = {
   markSelectedRead: async (notificationIds: number[]): Promise<void> => {
     const body: MarkSelectedReadRequest = { notificationIds };
 
-    return fetchApi<void>(`/api/v1/notifications/read`, {
+    return fetchApi<void>(`/notifications/read`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -618,7 +621,7 @@ export const notificationService = {
 
   // 읽지 않은 알림 개수 조회
   getUnreadCount: async (): Promise<UnreadCountResponse> => {
-    return fetchApi<UnreadCountResponse>(`/api/v1/notifications/unread-count`, {
+    return fetchApi<UnreadCountResponse>(`/notifications/unread-count`, {
       method: 'GET',
     });
   },

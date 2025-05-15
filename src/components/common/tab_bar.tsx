@@ -4,7 +4,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import { useSearchStore } from '@/store/search';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { notificationService } from '@/services/api';
+import { useNotificationStore } from '@/store/notification';
 
 export default function TabBar() {
   const router = useRouter();
@@ -12,7 +14,8 @@ export default function TabBar() {
   const { logout, isAuthenticated } = useAuthStore();
   const { openModal } = useModalStore();
   const { toggleSearch, isSearchOpen } = useSearchStore();
-  const [showNotification, setShowNotification] = useState(false);
+  const { toggleNotification, isNotificationOpen } = useNotificationStore();
+  const [unreadCount, setUnreadCount] = useState(0); //알림 개수
 
   const handleProtectedRoute = (callback: () => void) => {
     if (!isAuthenticated) {
@@ -29,14 +32,7 @@ export default function TabBar() {
 
   const handleNotificationClick = () => {
     handleProtectedRoute(() => {
-      setShowNotification(true);
-      // 알림 데이터를 가져오는 API 호출 등의 로직을 여기에 추가
-      openModal({
-        title: '알림',
-        message: '새로운 알림이 없습니다.',
-        confirmText: '확인',
-        onConfirm: () => setShowNotification(false),
-      });
+      toggleNotification();
     });
   };
 
@@ -50,6 +46,22 @@ export default function TabBar() {
     active
       ? 'text-[var(--primary-b60)] font-semibold'
       : 'text-[var(--grayscale-40)]';
+
+  //알림 개수 조회
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const { unreadCount } = await notificationService.getUnreadCount();
+        setUnreadCount(unreadCount);
+      } catch (error) {
+        console.error('알림 수 조회 실패:', error);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchUnreadCount();
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="w-[198px] h-screen bg-white sticky top-0 flex flex-col">
@@ -111,7 +123,8 @@ export default function TabBar() {
               color={
                 isSearchOpen
                   ? '#999999'
-                  : showNotification
+                  : // : showNotification
+                    isNotificationOpen
                     ? 'var(--primary)'
                     : '#999999'
               }
@@ -120,13 +133,18 @@ export default function TabBar() {
               className={`ml-[24px] text-[16px] ${
                 isSearchOpen
                   ? 'text-[var(--grayscale-40)]'
-                  : showNotification
+                  : // : showNotification
+                    isNotificationOpen
                     ? 'text-[var(--primary-b60)] font-semibold'
                     : 'text-[var(--grayscale-40)]'
               }`}
             >
               알림
             </span>
+            {/* 알림 표시 */}
+            {unreadCount > 0 && (
+              <div className="absolute right-0 top-[16px] w-[8px] h-[8px] bg-red-500 rounded-full" />
+            )}
           </div>
 
           {/* 게시글 작성 (로그인 필요) */}
