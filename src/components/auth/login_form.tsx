@@ -160,8 +160,8 @@ export default function LoginForm() {
 
       {/* 아이디/비밀번호 찾기 */}
       <div className="flex justify-end space-x-4 w-full mt-3">
-        <Link href="/find-account" className="text-xs text-grayscale-100">
-          아이디/비밀번호 찾기
+        <Link href="/find_password" className="text-xs text-grayscale-100">
+          비밀번호 찾기
         </Link>
         <Link href="/signup" className="text-xs text-grayscale-100">
           회원가입
@@ -195,7 +195,12 @@ export default function LoginForm() {
       {/* 비회원 로그인 */}
 
       <div className="mt-15 w-full">
-        <Button fullWidth variant="secondary" className="max-md:text-sm" onClick={() => logout()}>
+        <Button
+          fullWidth
+          variant="secondary"
+          className="max-md:text-sm"
+          onClick={() => logout()}
+        >
           <Link href="/posts">비회원으로 둘러보기</Link>
         </Button>
       </div>

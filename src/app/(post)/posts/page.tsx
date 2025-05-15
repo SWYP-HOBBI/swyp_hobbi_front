@@ -25,16 +25,15 @@ import Loader from '@/components/common/loader';
  */
 export default function PostsPage() {
   const queryClient = useQueryClient();
-  const { userId } = useAuthStore();
+  const { userId, isAuthenticated } = useAuthStore();
   const { feedType } = useFeedStore();
-  const isLoggedIn = Boolean(userId);
   const observerRef = useRef<HTMLDivElement>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
       queryKey: ['posts', userId, feedType],
       queryFn: async ({ pageParam }) => {
-        if (!isLoggedIn) {
+        if (!isAuthenticated) {
           // 비로그인 사용자는 항상 전체 피드만 볼 수 있음
           return await postService.getPublicPosts({
             cursor_id: pageParam ? Number(pageParam) : undefined,
@@ -163,15 +162,16 @@ export default function PostsPage() {
       <div className="w-[960px] max-md:w-[390px]">
         <div className="space-y-12">
           {/* 게시글 목록 렌더링 */}
-          {data?.pages.flatMap((group: PostCardProps[]) =>
-            group.map((post) => (
-              <div key={post.postId}>
-                <PostCard
-                  {...post}
-                  onLikeClick={() => handleLike(post.postId, post.liked)}
-                />
-              </div>
-            )),
+          {data?.pages.flatMap(
+            (group: PostCardProps[]) =>
+              group.map((post) => (
+                <div key={post.postId}>
+                  <PostCard
+                    {...post}
+                    onLikeClick={() => handleLike(post.postId, post.liked)}
+                  />
+                </div>
+              )) ?? [],
           )}
 
           {/* 무한 스크롤 옵저버 */}
