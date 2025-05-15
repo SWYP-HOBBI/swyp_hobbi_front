@@ -8,7 +8,6 @@ import { useState, useEffect } from 'react';
 import { notificationService } from '@/services/api';
 import { useNotificationStore } from '@/store/notification';
 import { useFeedStore } from '@/store/feed';
-import { useState, useEffect } from 'react';
 
 export default function TabBar() {
   const router = useRouter();
