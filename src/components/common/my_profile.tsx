@@ -32,14 +32,11 @@ export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
     try {
       // 파일 업로드 및 URL 받기
       const response = await userService.uploadProfileImage(file);
-      console.log('업로드된 이미지 URL:', response.userImageUrl);
-      console.log('서버 응답:', response);
 
       // 응답에서 userImageUrl을 추출
       const imageUrl = response.userImageUrl;
 
       if (imageUrl) {
-        console.log('업로드된 이미지 URL:', imageUrl);
         setPreviewUrl(imageUrl);
       } else {
         console.error('서버에서 이미지 URL을 찾을 수 없습니다.');

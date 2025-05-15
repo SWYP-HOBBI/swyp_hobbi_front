@@ -31,8 +31,6 @@ export default function SocialLoginCallback() {
           return;
         }
 
-        console.log('소셜 로그인 응답:', { provider, code });
-
         // 소셜 로그인 처리
         const loginService =
           provider === 'kakao'

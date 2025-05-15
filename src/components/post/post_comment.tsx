@@ -8,6 +8,8 @@ import SvgIcon from '../common/svg_icon';
 import Profile from '../common/profile';
 import Image from 'next/image';
 import Loader from '../common/loader';
+import Button from '../common/button';
+import { DefaultProfile } from '../common/profile';
 
 /**
  * 댓글 데이터 인터페이스
@@ -33,7 +35,7 @@ interface ReplyTo {
 
 interface PostCommentProps {
   postId: number;
-  profileImageUrl: string;
+  userImageUrl: string;
   onCommentUpdate?: () => void;
 }
 
@@ -48,7 +50,7 @@ interface PostCommentProps {
  */
 export default function PostComment({
   postId,
-  profileImageUrl,
+  userImageUrl,
   onCommentUpdate,
 }: PostCommentProps) {
   const [newComment, setNewComment] = useState('');
@@ -206,8 +208,6 @@ export default function PostComment({
     }
   };
 
-  console.log(structuredComments);
-
   if (status === 'pending')
     return (
       <div className="flex justify-center items-center h-screen mx-auto">
@@ -238,9 +238,12 @@ export default function PostComment({
     <div
       className={`flex flex-col ${!!structuredComments.length ? 'h-[600px]' : ''}`}
     >
-      {!!structuredComments.length && (
-        <div className="border-t border-grayscale-40 my-6 w-full" />
-      )}
+      <div
+        className={`border-t border-grayscale-40 w-full ${
+          !!structuredComments.length ? 'my-6 ' : 'mt-6 mb-3'
+        }`}
+      />
+
       {/* 댓글 목록 영역 */}
       <div
         className={`space-y-6 ${!!structuredComments.length ? 'flex-1 overflow-y-auto' : ''}`}
@@ -417,9 +420,11 @@ export default function PostComment({
         </div>
       </div>
 
-      {!!structuredComments.length && (
-        <div className="border-t border-grayscale-40 my-6 w-full" />
-      )}
+      <div
+        className={`border-t border-grayscale-40 w-full ${
+          !!structuredComments.length ? 'my-6 ' : 'mt-3'
+        }`}
+      />
 
       {/* 댓글 입력 영역 - 고정 위치 */}
       <div className="mt-6 bg-grayscale-0">
@@ -440,26 +445,36 @@ export default function PostComment({
         )}
 
         <div className="flex gap-2">
-          <Image
-            src={profileImageUrl}
-            alt="profile"
-            width={56}
-            height={56}
-            className="rounded-full"
-          />
+          {userImageUrl && userImageUrl !== '' ? (
+            <Image
+              src={userImageUrl}
+              alt="profile"
+              width={56}
+              height={56}
+              className="rounded-full"
+            />
+          ) : (
+            <DefaultProfile size={56} />
+          )}
           <input
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleCreateComment(newComment, replyTo?.commentId);
+              }
+            }}
             placeholder="댓글을 입력하세요."
             className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
           />
-          <button
+          <Button
+            variant="outline"
             onClick={() => handleCreateComment(newComment, replyTo?.commentId)}
-            className="bg-primary text-grayscale-0 rounded-xl px-4 whitespace-nowrap"
           >
             등록
-          </button>
+          </Button>
         </div>
       </div>
     </div>

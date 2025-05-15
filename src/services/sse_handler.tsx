@@ -41,6 +41,7 @@ export default function SSEHandler() {
 
             // 재연결 로직
             if (retryCount < maxRetries) {
+              console.log('SSE 연결 재시도 중...');
               retryCount++;
 
               setTimeout(() => {

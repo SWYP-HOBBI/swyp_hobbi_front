@@ -8,6 +8,12 @@ interface SearchStore {
   selectedMbti: string[];
   searchHobbyTags: HobbyTag[];
   setSearchHobbyTags: (tags: HobbyTag[]) => void;
+  setSearchQuery: (query: string) => void;
+  toggleSearch: () => void;
+  openSearch: () => void;
+  closeSearch: () => void;
+  setMbti: (mbti: string) => void;
+  resetSearchState: () => void;
 }
 
 export const useSearchStore = create<SearchStore>((set) => ({

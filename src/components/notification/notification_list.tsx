@@ -97,8 +97,6 @@ export default function NotificationList({
     return <div>에러가 발생했습니다.</div>;
   }
 
-  console.log(data);
-
   if (!data || data.pages[0].length === 0) {
     return (
       <div className="text-center py-4 text-[14px] text-[var(--grayscale-60)]">

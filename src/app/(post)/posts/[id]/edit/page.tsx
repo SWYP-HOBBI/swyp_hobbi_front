@@ -61,7 +61,6 @@ export default function EditPostPage() {
         message: '상세페이지로 이동합니다.',
         confirmText: '확인',
         onConfirm: () => {
-          console.log('모달 확인 버튼 클릭');
           router.push(`/posts/${id}`);
         },
       });

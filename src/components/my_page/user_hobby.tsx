@@ -14,7 +14,7 @@ export default function UserHobby() {
     const fetchHobbies = async () => {
       try {
         const data: MyPageInfo = await userService.getMyPageInfo();
-        console.log(' API Data:', data);
+
         setHobbyTags(data.hobbyTags || []);
       } catch (err) {
         console.error('취미 태그 로딩 실패:', err);
