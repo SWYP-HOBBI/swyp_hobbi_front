@@ -62,6 +62,7 @@ export default function UserPost() {
             postTitle={post.postTitle}
             postContents={post.postContents}
             postHobbyTags={post.postHobbyTags}
+            createdAt={post.createdAt}
             representativeImageUrl={
               post.representativeImageUrl ? [post.representativeImageUrl] : []
             }
@@ -78,14 +79,11 @@ export default function UserPost() {
                 onConfirm: async () => {
                   try {
                     await postService.deletePost(postId);
-                    await queryClient.invalidateQueries({
-                      queryKey: ['userPosts', userId],
-                    });
-                  } catch (error) {
-                    console.error('게시글 삭제 오류:', error);
+                  } catch (err) {
+                    console.error('게시글 삭제 중 오류:', err);
                     openModal({
                       title: '오류',
-                      message: '게시글 삭제에 실패했습니다.',
+                      message: '게시글 삭제 중 오류가 발생했습니다.',
                       confirmText: '확인',
                     });
                   }
