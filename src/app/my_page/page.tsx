@@ -57,7 +57,7 @@ export default function MyPage() {
         <div className="flex gap-[20px]">
           <UserProfile />
           <div className="flex-1 h-[353px] bg-white rounded-[24px] p-[20px]">
-            {/* <UserHobby /> */}
+            <UserHobby />
             <div className="mt-[24px]">
               <UserRank />
             </div>

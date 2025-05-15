@@ -2,9 +2,9 @@ import Link from 'next/link';
 import Tag from '../common/tag';
 import SvgIcon from '../common/svg_icon';
 import Image from 'next/image';
-import Profile from '../common/profile';
 import { UserPostCardProps } from '@/types/my_page';
 import { useEffect, useRef, useState } from 'react';
+import { formatDate } from '@/utils/date';
 
 export default function UserPostCard({
   postId,
@@ -16,8 +16,8 @@ export default function UserPostCard({
   onDelete,
   likeCount,
   commentCount,
+  createdAt,
 }: UserPostCardProps) {
-  const createdAt = '2025.05.13';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +34,7 @@ export default function UserPostCard({
 
   return (
     <Link href={`/posts/${postId}`}>
-      <a className="w-full flex gap-[23px] bg-grayscale-0 border-b border-b-[var(--grayscale-20)] p-5 space-y-4">
+      <div className="flex gap-[23px] bg-grayscale-0 border-b border-b-[var(--grayscale-20)] p-5 space-y-4 ${containerWidth} flex-shrink-0">
         {/* 이미지 */}
         {representativeImageUrl && representativeImageUrl.length > 0 && (
           <div className="w-[140px] h-[140px] relative">
@@ -56,14 +56,13 @@ export default function UserPostCard({
           </div>
         )}
 
-        <div>
+        <div className="flex-1">
           {/* 제목과 날짜 */}
           <div className="w-full flex justify-between items-center">
             <h3 className="text-[20px] font-semibold">{postTitle}</h3>
             <div className="flex gap-[12px]">
               <span className="text-[12px] text-grayscale-60">
-                {/* {formatDate(createdAt)} */}
-                {createdAt}
+                {formatDate(createdAt)}
               </span>
               <div
                 className="flex items-center cursor-pointer"
@@ -78,7 +77,7 @@ export default function UserPostCard({
 
               {/* 메뉴가 열렸을 때 */}
               {isMenuOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] bg-white rounded-md shadow-md border border-gray-200 z-10 w-[92px]">
+                <div className="absolute right-0 top-full mt-2 bg-white rounded-md shadow-md border border-gray-200 z-10 w-[92px]">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
@@ -89,14 +88,14 @@ export default function UserPostCard({
                   >
                     게시글 수정
                   </button>
-                  <div className="h-[1px] bg-gray-200 mx-[5px]" />
+                  <div className="h-[1px] bg-gray-20 mx-[5px]" />
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       onDelete(postId);
                       setIsMenuOpen(false);
                     }}
-                    className="w-full py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="w-full py-2 text-sm text-grayscale-80 hover:bg-grayscale-10"
                   >
                     게시글 삭제
                   </button>
@@ -106,7 +105,7 @@ export default function UserPostCard({
           </div>
 
           {/* 본문 */}
-          <p className="h-[74px] text-grayscale-100 text-sm line-clamp-10 break-all">
+          <p className="text-grayscale-100 h-[80px] text-sm line-clamp-3 break-all overflow-hidden">
             {postContents}
           </p>
 
@@ -132,7 +131,7 @@ export default function UserPostCard({
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </Link>
   );
 }
