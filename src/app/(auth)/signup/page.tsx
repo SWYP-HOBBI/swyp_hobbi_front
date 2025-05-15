@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import SvgIcon from '@/components/common/svg_icon';
 import { authService } from '@/services/api';
+import { useHobbyStore } from '@/store/hobby';
 
 /**
  * 회원가입 페이지
@@ -21,6 +22,7 @@ import { authService } from '@/services/api';
 export default function Signup() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
+  const resetSelections = useHobbyStore((state) => state.resetSelections);
   const {
     signupStep,
     signupData,
@@ -81,6 +83,7 @@ export default function Signup() {
         confirmText: '확인',
         onConfirm: () => {
           resetSignup();
+          resetSelections();
           router.push('/posts');
         },
       });

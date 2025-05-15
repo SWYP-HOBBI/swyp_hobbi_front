@@ -61,8 +61,9 @@ export default function TabBar() {
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
-        const { unreadCount } = await notificationService.getUnreadCount();
-        setUnreadCount(unreadCount);
+        const response = await notificationService.getUnreadCount();
+        setUnreadCount(Number(response));
+        console.log(response);
       } catch (error) {
         console.error('알림 수 조회 실패:', error);
       }
@@ -155,7 +156,7 @@ export default function TabBar() {
 
           {/* 검색 */}
           <div
-            className="w-[150px] flex items-center h-[52px] cursor-pointer"
+            className={`w-[150px] flex items-center h-[52px] cursor-pointer`}
             onClick={toggleSearch}
           >
             <SvgIcon
@@ -187,28 +188,28 @@ export default function TabBar() {
               color={
                 isSearchOpen
                   ? '#999999'
-                  : // : showNotification
-                    isNotificationOpen
+                  : isNotificationOpen
                     ? 'var(--primary)'
                     : '#999999'
               }
             />
-            <span
-              className={`ml-[24px] text-[16px] ${
-                isSearchOpen
-                  ? 'text-[var(--grayscale-40)]'
-                  : // : showNotification
-                    isNotificationOpen
-                    ? 'text-[var(--primary-b60)] font-semibold'
-                    : 'text-[var(--grayscale-40)]'
-              }`}
-            >
-              알림
-            </span>
-            {/* 알림 표시 */}
-            {unreadCount > 0 && (
-              <div className="absolute right-0 top-[16px] w-[8px] h-[8px] bg-red-500 rounded-full" />
-            )}
+            <div className="flex items-center justify-between">
+              <span
+                className={`ml-[24px] text-[16px] ${
+                  isSearchOpen
+                    ? 'text-[var(--grayscale-40)]'
+                    : isNotificationOpen
+                      ? 'text-[var(--primary-b60)] font-semibold'
+                      : 'text-[var(--grayscale-40)]'
+                }`}
+              >
+                알림
+              </span>
+              {/* 알림 표시 */}
+              {unreadCount > 0 && (
+                <div className="ml-1 w-[8px] h-[8px] bg-red-500 rounded-full" />
+              )}
+            </div>
           </div>
 
           {/* 게시글 작성 (로그인 필요) */}
@@ -255,7 +256,7 @@ export default function TabBar() {
         <div className="w-[198px] h-[64px] flex items-center justify-end text-[16px] text-right pr-6">
           <button
             className="text-[var(--grayscale-60)] cursor-pointer"
-            onClick={() => logout()}
+            onClick={() => (isAuthenticated ? logout() : router.push('/'))}
           >
             {isAuthenticated ? '로그아웃' : '로그인'}
           </button>

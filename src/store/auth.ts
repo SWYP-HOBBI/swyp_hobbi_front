@@ -120,7 +120,6 @@ export const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         userId: state.userId,
-        nickname: state.nickname,
       }),
     },
   ),

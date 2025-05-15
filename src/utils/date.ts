@@ -9,9 +9,9 @@
 export const formatDate = (date: Date | string): string => {
   const targetDate = typeof date === 'string' ? new Date(date) : date;
 
-  const year = String(targetDate.getFullYear()).slice(-2);
-  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-  const day = String(targetDate.getDate()).padStart(2, '0');
+  const year = String(targetDate?.getFullYear()).slice(-2);
+  const month = String(targetDate?.getMonth() + 1).padStart(2, '0');
+  const day = String(targetDate?.getDate()).padStart(2, '0');
 
   return `${year}.${month}.${day}`;
 };

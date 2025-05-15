@@ -72,7 +72,12 @@ export default function PasswordFind({}) {
         }
 
         await authService.resetPassword(token, signupData.password || '');
-        localStorage.removeItem('passwordResetToken'); // 사용한 토큰 제거
+
+        // 비밀번호 변경 완료 후 로컬스토리지 데이터 제거
+        localStorage.removeItem('passwordResetToken');
+        localStorage.removeItem('verifiedEmail');
+        localStorage.removeItem('emailVerified');
+
         router.push('/');
       } catch (error) {
         console.error('비밀번호 변경 중 오류:', error);
