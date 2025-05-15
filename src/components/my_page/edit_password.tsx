@@ -144,7 +144,7 @@ export default function EditPassword() {
       {showPasswordEdit && (
         <div
           ref={passwordEditRef}
-          className="w-[920px] h-[172px] bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] flex px-[24px] mt-[12px] gap-3"
+          className="w-[920px] h-[172px] relative bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] flex px-[24px] mt-[12px] gap-3"
         >
           {/* 새 비밀번호 입력 */}
           <div className="flex flex-col p-[10px]">
@@ -199,7 +199,7 @@ export default function EditPassword() {
           </div>
 
           {/* 비밀번호 변경 버튼 */}
-          <div className="flex h-[60px] mt-[12px] gap-3">
+          <div className="flex h-[60px] mt-[33px] gap-3">
             <button
               type="button"
               className="w-[180px] h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-[var(--primary)]"
