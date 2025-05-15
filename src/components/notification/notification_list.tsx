@@ -13,6 +13,8 @@ export default function NotificationList({
   showCheckbox,
   selectedNotifications,
   setSelectedNotifications,
+  isChecked,
+  setIsChecked,
 }: NotificationListProps) {
   const router = useRouter();
   const observerRef = useRef<HTMLDivElement | null>(null);
@@ -39,11 +41,6 @@ export default function NotificationList({
       refetchOnWindowFocus: true,
       staleTime: 0,
     });
-
-  // isChecked 상태를 데이터 길이에 맞게 관리
-  const isChecked = new Array(
-    data?.pages.reduce((acc, page) => acc + page.length, 0),
-  ).fill(false);
 
   // 무한 스크롤 설정
   useEffect(() => {
@@ -84,6 +81,9 @@ export default function NotificationList({
     const newCheckedState = [...isChecked];
     newCheckedState[index] = !newCheckedState[index];
 
+    // 상태 변경 시 부모 컴포넌트의 상태도 업데이트
+    setIsChecked(newCheckedState);
+
     if (newCheckedState[index]) {
       setSelectedNotifications([...selectedNotifications, notificationId]);
     } else {
@@ -121,11 +121,16 @@ export default function NotificationList({
                     e.stopPropagation();
                     handleCheckboxChange(index, notification.notificationId);
                   }}
-                  className="ml-5"
+                  className="ml-1"
                 >
                   <SvgIcon
                     name={isChecked[index] ? 'checkbox_on' : 'checkbox_off'}
                     className="w-6 h-6"
+                    color={
+                      isChecked[index]
+                        ? 'var(--primary)'
+                        : 'var(--grayscale-40)'
+                    }
                   />
                 </button>
               )}
@@ -153,7 +158,7 @@ export default function NotificationList({
                 )}
               </div>
             </div>
-            <span className="flex justify-end text-[12px] mr-[5px] text-[var(--grayscale-40)]">
+            <span className="flex justify-end text-[12px] mr-[20px] text-[var(--grayscale-40)]">
               {formatDate(notification.createdAt)}
             </span>
           </div>

@@ -50,4 +50,6 @@ export interface NotificationListProps {
   setSelectedNotifications: React.Dispatch<React.SetStateAction<number[]>>;
   notifications: Notification[];
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  isChecked: boolean[];
+  setIsChecked: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
