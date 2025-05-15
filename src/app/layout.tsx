@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 // import localFont from 'next/font/local';
 import './globals.css';
+import SSEHandler from '@/services/sse_handler';
+import Providers from '@/services/providers';
 
 // const pretendard = localFont({
 //   src: '../assets/fonts/PretendardVariable.woff2',
@@ -22,9 +24,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={` antialiased`}>
-        {children}
-        <div id="splash-screen" />
-        <div id="modal-portal" />
+        <Providers>
+          {children}
+          <div id="modal-portal" />
+          <SSEHandler />
+        </Providers>
       </body>
     </html>
   );
