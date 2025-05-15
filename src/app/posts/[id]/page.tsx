@@ -50,7 +50,7 @@ export default function PostDetailPage() {
           : await postService.getPublicPostDetail(Number(id)); // 비회원용
 
         setPost(data);
-        console.log(data);
+
         setError(null);
       } catch (err) {
         setError(
@@ -153,9 +153,7 @@ export default function PostDetailPage() {
   // 오류 발생
   if (error) {
     return (
-      <div className="max-w-[960px] mx-auto my-12 p-9 text-light-red">
-        {error}
-      </div>
+      <div className="max-w-[960px] mx-auto  p-9 text-light-red">{error}</div>
     );
   }
 
@@ -170,45 +168,47 @@ export default function PostDetailPage() {
 
   // 게시글 상세 페이지 렌더링
   return (
-    <div className="max-w-[960px] mx-auto my-12 p-9 rounded-xl shadow-md">
-      <PostHeader
-        nickname={post.nickname}
-        profileImageUrl={post.profileImageUrl}
-        isOwner={isOwner}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+    <div className="py-12">
+      <div className="max-w-[960px] mx-auto p-9 rounded-xl shadow-md bg-grayscale-0">
+        <PostHeader
+          nickname={post.nickname}
+          profileImageUrl={post.profileImageUrl}
+          isOwner={isOwner}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
 
-      <h1 className="text-[32px] font-bold mb-3">{post.title}</h1>
+        <h1 className="text-[32px] font-bold mb-3">{post.title}</h1>
 
-      <div className="tag_container mb-6">
-        {post.postHobbyTags.map((tag, index) => (
-          <Tag key={index} label={tag} variant="white" />
-        ))}
+        <div className="tag_container mb-6">
+          {post.postHobbyTags.map((tag, index) => (
+            <Tag key={index} label={tag} variant="white" />
+          ))}
+        </div>
+
+        <PostImageSlider images={post.postImageUrls} />
+
+        <div>
+          <p className="whitespace-pre-wrap mb-6">{post.content}</p>
+        </div>
+
+        <PostActionBar
+          postId={post.postId}
+          likeCount={post.likeCount}
+          commentCount={post.commentCount}
+          createdAt={post.createdAt}
+          liked={post.liked}
+          onLikeClick={handleLikeClick}
+          onCommentClick={handleCommentClick}
+          onShareClick={handleShareClick}
+        />
+
+        <PostComment
+          postId={Number(id)}
+          userImageUrl={post.userImageUrl}
+          onCommentUpdate={handleCommentUpdate}
+        />
       </div>
-
-      <PostImageSlider images={post.postImageUrls} />
-
-      <div>
-        <p className="whitespace-pre-wrap mb-6">{post.content}</p>
-      </div>
-
-      <PostActionBar
-        postId={post.postId}
-        likeCount={post.likeCount}
-        commentCount={post.commentCount}
-        createdAt={post.createdAt}
-        liked={post.liked}
-        onLikeClick={handleLikeClick}
-        onCommentClick={handleCommentClick}
-        onShareClick={handleShareClick}
-      />
-
-      <PostComment
-        postId={Number(id)}
-        profileImageUrl={post.profileImageUrl}
-        onCommentUpdate={handleCommentUpdate}
-      />
     </div>
   );
 }

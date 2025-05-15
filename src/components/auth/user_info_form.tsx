@@ -112,8 +112,6 @@ export default function UserInfoForm({
         signupData.nickname,
       );
 
-      console.log(response);
-
       if (
         response &&
         typeof response === 'object' &&

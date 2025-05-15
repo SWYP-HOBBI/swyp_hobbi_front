@@ -64,8 +64,6 @@ export default function Signup() {
             }),
       });
 
-      console.log('회원가입 응답 데이터:', userData);
-
       // 회원가입 관련 임시 데이터 정리
       localStorage.removeItem('signup-storage');
       if (!isSocialSignup) {

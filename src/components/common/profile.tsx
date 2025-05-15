@@ -58,7 +58,7 @@ export default function Profile({
   );
 }
 
-function DefaultProfile({ size }: { size: number }) {
+export function DefaultProfile({ size }: { size: number }) {
   return (
     <svg
       width={size}

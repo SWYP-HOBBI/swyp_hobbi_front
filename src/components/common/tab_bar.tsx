@@ -63,7 +63,6 @@ export default function TabBar() {
       try {
         const response = await notificationService.getUnreadCount();
         setUnreadCount(Number(response));
-        console.log(response);
       } catch (error) {
         console.error('알림 수 조회 실패:', error);
       }
@@ -75,7 +74,7 @@ export default function TabBar() {
   }, [isAuthenticated]);
 
   return (
-    <div className="w-[198px] h-screen bg-white sticky top-0 flex flex-col">
+    <div className="w-[198px] h-screen bg-white sticky top-0 flex flex-col z-[9999]">
       <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
         <SvgIcon name="logo" width={150} height={44} />
       </div>

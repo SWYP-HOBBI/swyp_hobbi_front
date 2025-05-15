@@ -42,6 +42,7 @@ export interface PostDetail {
   postId: number;
   nickname: string;
   profileImageUrl: string;
+  userImageUrl: string;
   title: string;
   content: string;
   postImageUrls: string[];
