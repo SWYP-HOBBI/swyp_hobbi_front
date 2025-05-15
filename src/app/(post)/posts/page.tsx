@@ -13,6 +13,7 @@ import { useFeedStore } from '@/store/feed';
 import PostCard from '@/components/post/post_card';
 import { PostCardProps, InfinitePostsResponse } from '@/types/post';
 import Loader from '@/components/common/loader';
+import SvgIcon from '@/components/common/svg_icon';
 
 /**
  * 게시글 목록 페이지
@@ -160,32 +161,53 @@ export default function PostsPage() {
   return (
     <div className="flex justify-center my-12 mx-auto">
       <div className="w-[960px] max-md:w-[390px]">
-        <div className="space-y-12">
-          {/* 게시글 목록 렌더링 */}
-          {data?.pages.flatMap(
-            (group: PostCardProps[]) =>
-              group.map((post) => (
-                <div key={post.postId}>
-                  <PostCard
-                    {...post}
-                    onLikeClick={() => handleLike(post.postId, post.liked)}
-                  />
-                </div>
-              )) ?? [],
-          )}
-
-          {/* 무한 스크롤 옵저버 */}
-          <div
-            ref={observerRef}
-            className="h-4 flex items-center justify-center"
-          >
-            {isFetchingNextPage && (
-              <div className="flex justify-center items-center h-screen mx-auto">
-                <Loader />
-              </div>
-            )}
+        {data?.pages[0].length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <SvgIcon
+              name="search"
+              size={120}
+              color="var(--grayscale-30)"
+              className="mb-4"
+            />
+            <p className="text-grayscale-60 text-lg mb-2">
+              {feedType === 'hobby'
+                ? '선택하신 취미 태그의 게시글이 없습니다'
+                : '아직 등록된 게시글이 없습니다'}
+            </p>
+            <p className="text-grayscale-40 text-sm">
+              {feedType === 'hobby'
+                ? '다른 사용자들의 취미 이야기를 기다리고 있어요'
+                : '첫 번째 게시글의 주인공이 되어보세요!'}
+            </p>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-12">
+            {/* 게시글 목록 렌더링 */}
+            {data?.pages.flatMap(
+              (group: PostCardProps[]) =>
+                group.map((post) => (
+                  <div key={post.postId}>
+                    <PostCard
+                      {...post}
+                      onLikeClick={() => handleLike(post.postId, post.liked)}
+                    />
+                  </div>
+                )) ?? [],
+            )}
+
+            {/* 무한 스크롤 옵저버 */}
+            <div
+              ref={observerRef}
+              className="h-4 flex items-center justify-center"
+            >
+              {isFetchingNextPage && (
+                <div className="flex justify-center items-center h-screen mx-auto">
+                  <Loader />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
