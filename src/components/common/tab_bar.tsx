@@ -207,7 +207,7 @@ export default function TabBar() {
               </span>
               {/* 알림 표시 */}
               {unreadCount > 0 && (
-                <div className="ml-1 w-[8px] h-[8px] bg-red-500 rounded-full" />
+                <div className="ml-13 w-[8px] h-[8px] bg-red-500 rounded-full" />
               )}
             </div>
           </div>
