@@ -22,6 +22,13 @@ import {
   UpdatePassword,
   UpdateUserInfo,
 } from '@/types/my_page';
+import {
+  Notification,
+  NotificationDetailResponse,
+  MarkSelectedReadRequest,
+  UnreadCountResponse,
+} from '@/types/notification';
+
 import { SearchParams } from '@/types/search';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -532,8 +539,8 @@ export const userService = {
   // 현재 비밀번호 확인
   checkCurrentPassword: async (
     currentPassword: string,
-  ): Promise<{ success: boolean }> => {
-    const response = await fetchApi<{ success: boolean }>(
+  ): Promise<{ check: boolean }> => {
+    const response = await fetchApi<{ check: boolean }>(
       '/my-page/update/password/check',
       {
         method: 'POST',
@@ -551,6 +558,9 @@ export const userService = {
   updatePassword: async (body: UpdatePassword): Promise<void> => {
     return fetchApi<void>('/my-page/update/password', {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     });
   },
@@ -587,6 +597,65 @@ export const userService = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ reason }),
+    });
+  },
+};
+
+// 알림 관련 API 서비스
+export const notificationService = {
+  // 알림 리스트 조회
+  getNotifications: async (
+    lastNotificationId?: number,
+    pageSize: number = 15,
+  ): Promise<Notification[]> => {
+    const params = new URLSearchParams({
+      pageSize: pageSize.toString(),
+      ...(lastNotificationId && {
+        lastNotificationId: lastNotificationId.toString(),
+      }),
+    });
+
+    return fetchApi<Notification[]>(`/notifications?${params}`, {
+      method: 'GET',
+    });
+  },
+
+  // 알림 상세 조회 및 삭제
+  getNotificationDetail: async (
+    notificationId: number,
+  ): Promise<NotificationDetailResponse> => {
+    return fetchApi<NotificationDetailResponse>(
+      `/notifications/${notificationId}`,
+      {
+        method: 'POST',
+      },
+    );
+  },
+
+  // 전체 읽음 처리
+  markAllRead: async (): Promise<void> => {
+    return fetchApi<void>(`/notifications/read-all`, {
+      method: 'POST',
+    });
+  },
+
+  // 선택 알림 읽음 처리
+  markSelectedRead: async (notificationIds: number[]): Promise<void> => {
+    const body: MarkSelectedReadRequest = { notificationIds };
+
+    return fetchApi<void>(`/notifications/read`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  },
+
+  // 읽지 않은 알림 개수 조회
+  getUnreadCount: async (): Promise<UnreadCountResponse> => {
+    return fetchApi<UnreadCountResponse>(`/notifications/unread-count`, {
+      method: 'GET',
     });
   },
 };
