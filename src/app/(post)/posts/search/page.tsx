@@ -4,10 +4,10 @@ import { useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { searchService } from '@/services/api';
-import PostCard from '@/components/post/post_card';
 import Loader from '@/components/common/loader';
 import Tag from '@/components/common/tag';
 import { SearchPostResponse } from '@/types/search';
+import SearchCard from '@/components/search/search_card';
 
 type PageParam =
   | {
@@ -116,7 +116,7 @@ export default function SearchPage() {
         <div className="flex gap-2 mb-12 flex-wrap">
           {searchParams.get('keyword_text') && (
             <Tag
-              label={searchParams.get('keyword_text') || ''}
+              label={`제목 + 본문: ${searchParams.get('keyword_text')}`}
               variant="white"
               onDelete={() => handleDeleteSearchParam('keyword_text')}
             />
@@ -131,7 +131,7 @@ export default function SearchPage() {
           {searchParams.getAll('mbti').map((mbti) => (
             <Tag
               key={mbti}
-              label={mbti}
+              label={`MBTI: ${mbti}`}
               variant="white"
               onDelete={() => handleDeleteSearchParam('mbti', mbti)}
             />
@@ -139,7 +139,7 @@ export default function SearchPage() {
           {searchParams.getAll('hobby_tags').map((tag) => (
             <Tag
               key={tag}
-              label={tag}
+              label={`태그: ${tag}`}
               variant="white"
               onDelete={() => handleDeleteSearchParam('hobby_tags', tag)}
             />
@@ -159,7 +159,7 @@ export default function SearchPage() {
               {data?.pages.map((page) =>
                 page.posts.map((post) => (
                   <div key={post.postId}>
-                    <PostCard
+                    <SearchCard
                       postId={String(post.postId)}
                       userId={post.userId}
                       nickname={post.nickname}
