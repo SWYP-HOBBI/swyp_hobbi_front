@@ -129,9 +129,64 @@ export default function HobbySelector({
     setSelectedHobbyTags,
   } = useHobbyStore();
 
-  // 검색 모드일 때는 props의 상태를 사용, 아닐 때는 store의 상태를 사용
-  const tags = isSearchMode ? selectedTags : selectedHobbyTags;
-  const setTags = isSearchMode ? onTagsChange : setSelectedHobbyTags;
+  // 현재 표시할 태그들
+  const currentTags = isSearchMode ? selectedTags || [] : selectedHobbyTags;
+
+  // 태그 추가 핸들러
+  const handleAddTags = () => {
+    if (!selectedMainCategory || selectedSubCategories.length === 0) return;
+
+    const newTags = selectedSubCategories.map((subCategory) => ({
+      mainCategory: selectedMainCategory,
+      subCategory: subCategory,
+    }));
+
+    if (isSearchMode && onTagsChange) {
+      // 검색 모드일 때
+      const totalTags = [...currentTags, ...newTags];
+
+      // 중복 제거
+      const uniqueTags = totalTags.filter(
+        (tag, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              t.mainCategory === tag.mainCategory &&
+              t.subCategory === tag.subCategory,
+          ),
+      );
+
+      // 최대 개수 체크
+      if (maxCount && uniqueTags.length > maxCount) return;
+
+      onTagsChange(uniqueTags as HobbyTag[]);
+    } else {
+      // 일반 모드일 때
+      addSelectedHobbyTags();
+    }
+
+    // 드롭다운 닫기
+    if (isMainCategoryOpen) toggleMainCategoryOpen();
+    if (isSubCategoryOpen) toggleSubCategoryOpen();
+  };
+
+  // 태그 삭제 핸들러
+  const handleRemoveTag = (tagToRemove: HobbyTag) => {
+    if (isSearchMode && onTagsChange) {
+      // 검색 모드일 때
+      const newTags = currentTags.filter(
+        (tag) =>
+          !(
+            tag.mainCategory === tagToRemove.mainCategory &&
+            tag.subCategory === tagToRemove.subCategory
+          ),
+      );
+      onTagsChange(newTags);
+    } else {
+      // 일반 모드일 때
+      removeHobbyTag(tagToRemove);
+    }
+  };
 
   // 선택된 대분류의 표시 텍스트
   const selectedMainCategoryLabel = selectedMainCategory
@@ -194,20 +249,13 @@ export default function HobbySelector({
         <Button
           variant="primary"
           className="flex-1 max-md:text-xs"
-          onClick={() => {
-            if (
-              !maxCount ||
-              (tags?.length || 0) + selectedSubCategories.length <= maxCount
-            ) {
-              addSelectedHobbyTags();
-            }
-          }}
+          onClick={handleAddTags}
           disabled={
             !selectedMainCategory ||
             selectedSubCategories.length === 0 ||
             Boolean(
               maxCount &&
-                (tags?.length || 0) + selectedSubCategories.length > maxCount,
+                currentTags.length + selectedSubCategories.length > maxCount,
             )
           }
         >
@@ -216,12 +264,12 @@ export default function HobbySelector({
       </div>
 
       <div className="flex flex-wrap gap-2 mt-3">
-        {tags?.map((tag) => (
+        {currentTags.map((tag) => (
           <Tag
             key={`${tag.mainCategory}-${tag.subCategory}`}
             label={tag.subCategory}
             variant={variant}
-            onDelete={() => removeHobbyTag(tag)}
+            onDelete={() => handleRemoveTag(tag)}
           />
         ))}
       </div>

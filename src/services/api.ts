@@ -110,11 +110,7 @@ async function handleResponse(response: Response) {
   }
 
   if (!response.ok) {
-    throw new Error(
-      typeof data === 'string'
-        ? data
-        : data.message || '요청 처리 중 오류가 발생했습니다.',
-    );
+    throw new Error(typeof data === 'string' ? data : data.message);
   }
 
   return data;
