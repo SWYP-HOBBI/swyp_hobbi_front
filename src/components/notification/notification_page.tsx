@@ -4,6 +4,7 @@ import NotificationList from './notification_list';
 import { notificationService } from '@/services/api';
 import { Notification } from '@/types/notification';
 import { useNotificationStore } from '@/store/notification';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function NotificationPage() {
   const [isDeleteVisible, setIsDeleteVisible] = useState(true); // 알림삭제 버튼 표시 여부
@@ -15,6 +16,8 @@ export default function NotificationPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]); //선택알림
   const { isNotificationOpen, closeNotification } = useNotificationStore();
   const [isChecked, setIsChecked] = useState<boolean[]>([]);
+
+  const queryClient = useQueryClient();
 
   // Body 스크롤 잠금
   useEffect(() => {
@@ -46,13 +49,23 @@ export default function NotificationPage() {
       await notificationService.markSelectedRead(selectedNotifications);
 
       // 체크된 알림을 UI에서도 제거
-      setNotifications((prev) =>
-        prev.filter((n) => !selectedNotifications.includes(n.notificationId)),
-      );
+      queryClient.setQueryData(['notifications'], (oldData: any) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: Notification[]) =>
+            page.filter(
+              (n) => !selectedNotifications.includes(n.notificationId),
+            ),
+          ),
+        };
+      });
 
       // 상태 초기화
       setSelectedNotifications([]);
       setShowCheckbox(false);
+      setSelectedButton(null);
       setIsDeleteVisible(true); // 버튼 원상 복구
     } catch (error) {
       console.error('선택 알림 읽음 처리 실패:', error);
@@ -84,9 +97,19 @@ export default function NotificationPage() {
                   handleButtonClick('전체 읽음');
                   try {
                     await notificationService.markAllRead(); // 전체 읽음 API
-                    setNotifications([]); // 전체 제거
+                    queryClient.setQueryData(
+                      ['notifications'],
+                      (oldData: any) => {
+                        if (!oldData) return oldData;
+                        return {
+                          ...oldData,
+                          pages: oldData.pages.map(() => []),
+                        };
+                      },
+                    );
                     setShowCheckbox(false);
-                    setIsDeleteVisible(true); // 버튼 복구
+                    setIsDeleteVisible(true);
+                    setSelectedButton(null);
                   } catch (error) {
                     console.error('전체 읽음 처리 실패:', error);
                   }
