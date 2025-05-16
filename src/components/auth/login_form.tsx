@@ -17,6 +17,7 @@ import Button from '../common/button';
  * 3. 비회원 접근
  * 4. 회원가입 및 계정 찾기
  */
+
 export default function LoginForm() {
   const router = useRouter();
 
@@ -66,32 +67,44 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // 로딩 시작 및 에러 초기화
     setIsLoading(true);
     setIsError(false);
     setErrorMessage(null);
 
     try {
-      // 로그인 API 호출
       const userData = await authService.login(
         formData.email,
         formData.password,
       );
 
-      // 로그인 성공 시 인증 정보 저장
       setAuth(userData);
-
-      // 페이지 이동
       router.push('/posts');
     } catch (error) {
       setIsError(true);
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : '로그인 중 오류가 발생했습니다.',
+
+      console.log('Error:', error);
+      console.log(
+        'Error message:',
+        error instanceof Error ? error.message : '',
       );
+
+      // 에러 메시지에 따른 처리
+      if (error instanceof Error) {
+        if (error.message.includes('PASSWORD_NOT_MATCH')) {
+          setErrorMessage('비밀번호가 일치하지 않습니다.');
+        } else if (error.message.includes('USER_NOT_FOUND')) {
+          setErrorMessage('등록되지 않은 이메일입니다.');
+        } else {
+          setErrorMessage(
+            '로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          );
+        }
+      } else {
+        setErrorMessage(
+          '로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        );
+      }
     } finally {
-      // 로딩 상태 종료
       setIsLoading(false);
     }
   };
