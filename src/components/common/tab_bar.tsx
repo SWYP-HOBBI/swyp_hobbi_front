@@ -145,8 +145,17 @@ export default function TabBar() {
 
             {/* 피드 선택 메뉴 */}
             {showFeedMenu && !isSearchOpen && (
-              <div className="absolute left-[180px] top-[20px] bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[92px] text-sm">
-                <button
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="absolute left-[180px] top-[20px] bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[92px] text-sm"
+              >
+                <motion.button
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
                   onClick={() => {
                     setFeedType('all');
                     setShowFeedMenu(false);
@@ -158,8 +167,11 @@ export default function TabBar() {
                   }`}
                 >
                   전체 피드
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
                   onClick={() => {
                     setFeedType('hobby');
                     setShowFeedMenu(false);
@@ -171,8 +183,8 @@ export default function TabBar() {
                   }`}
                 >
                   취미 피드
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             )}
           </div>
 

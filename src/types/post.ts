@@ -27,7 +27,7 @@ export interface PostCardProps {
   nickname: string;
   title: string;
   content: string;
-  profileImageUrl: string;
+  userImageUrl: string;
   postImageUrls: string[];
   postHobbyTags: string[];
   likeCount: number;

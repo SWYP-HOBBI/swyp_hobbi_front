@@ -5,6 +5,7 @@ import Button from '../common/button';
 import HobbySelector from '../common/hobby_selector';
 import Input from '../common/input';
 import PostImageUploader from './post_image_uploader';
+import { motion } from 'framer-motion';
 import {
   HOBBY_MAIN_CATEGORIES,
   HOBBY_SUB_CATEGORIES,
@@ -225,10 +226,42 @@ export default function PostForm({
     }
   };
 
+  // 애니메이션 variants 정의
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      },
+    },
+  };
+
   return (
-    <div className="w-[960px] mx-auto my-12 space-y-6">
+    <motion.div
+      className="w-[960px] mx-auto my-12 space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* 1. 제목 입력 */}
-      <div className="shadow-md rounded-lg bg-grayscale-0">
+      <motion.div
+        className="shadow-md rounded-lg bg-grayscale-0"
+        variants={itemVariants}
+      >
         <Input
           placeholder="제목을 입력하세요. *최대 30자 이하"
           value={title}
@@ -236,7 +269,7 @@ export default function PostForm({
           maxLength={30}
           className="placeholder:text-lg placeholder:text-grayscale-60 placeholder:font-medium"
         />
-      </div>
+      </motion.div>
 
       {/* 2. 태그 설정 */}
       <div className="space-y-2 shadow-md rounded-lg p-5 bg-grayscale-0">
@@ -248,18 +281,24 @@ export default function PostForm({
             *관심 취미 대그룹 추가해 보세요. 최대 5개
           </span>
         </div>
+
         <HobbySelector maxCount={5} />
       </div>
 
       {/* 3. 이미지 업로드 */}
-      <PostImageUploader
-        images={images}
-        onImageUpload={handleImageUpload}
-        onImageRemove={handleImageRemove}
-      />
+      <motion.div variants={itemVariants}>
+        <PostImageUploader
+          images={images}
+          onImageUpload={handleImageUpload}
+          onImageRemove={handleImageRemove}
+        />
+      </motion.div>
 
       {/* 4. 게시글 내용 입력*/}
-      <div className="space-y-2 shadow-md rounded-lg p-5 bg-grayscale-0">
+      <motion.div
+        className="space-y-2 shadow-md rounded-lg p-5 bg-grayscale-0"
+        variants={itemVariants}
+      >
         <textarea
           className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
           placeholder="게시글을 작성해주세요. *최소 10자~최대 2,000자 이하"
@@ -268,22 +307,24 @@ export default function PostForm({
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-      </div>
+      </motion.div>
 
       {/* 5. 게시글 작성 버튼 */}
-      <div className="flex justify-end">
+      <motion.div className="flex justify-end" variants={itemVariants}>
         <div className="w-1/3">
-          <Button
-            type="submit"
-            fullWidth
-            className="px-6 py-2"
-            onClick={handleSubmit}
-            disabled={!title || !content || !selectedHobbyTags.length}
-          >
-            {submitButtonText}
-          </Button>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              type="submit"
+              fullWidth
+              className="px-6 py-2"
+              onClick={handleSubmit}
+              disabled={!title || !content || !selectedHobbyTags.length}
+            >
+              {submitButtonText}
+            </Button>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
