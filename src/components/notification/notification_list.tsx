@@ -58,6 +58,13 @@ export default function NotificationList({
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  useEffect(() => {
+    if (data) {
+      const allNotifications = data.pages.flat();
+      setIsChecked(new Array(allNotifications.length).fill(false));
+    }
+  }, [data, setIsChecked]);
+
   // 알림 상세 조회 & 이동
   const handleClick = async (notification: Notification) => {
     try {
@@ -165,9 +172,9 @@ export default function NotificationList({
         )),
       )}
 
-      <div ref={observerRef} className="h-4" />
+      <div ref={observerRef} className="h-20" />
       {isFetchingNextPage && (
-        <div className="text-center">데이터를 불러오는 중...</div>
+        <div className="text-center">알림 불러오는 중...</div>
       )}
     </div>
   );
