@@ -4,6 +4,7 @@ import NotificationList from './notification_list';
 import { notificationService } from '@/services/api';
 import { Notification } from '@/types/notification';
 import { useNotificationStore } from '@/store/notification';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function NotificationPage() {
   const [isDeleteVisible, setIsDeleteVisible] = useState(true); // 알림삭제 버튼 표시 여부
@@ -60,66 +61,92 @@ export default function NotificationPage() {
   };
 
   return (
-    <div>
-      <div className="fixed inset-0 bg-black/30" onClick={closeNotification} />
-      <div className="bg-white border border-[var(--grayscale-20)] fixed top-0 left-[198px] z-50 w-[490px] h-full">
-        <div className="flex justify-between p-4">
-          <span className="text-[20px] font-semibold">알림</span>
-          {isDeleteVisible ? (
-            <span
-              className="text-[14px] text-[var(--grayscale-80)] cursor-pointer mt-2"
-              onClick={handleDeleteClick}
-            >
-              알림삭제
-            </span>
-          ) : (
-            <div className="flex space-x-2 items-center mt-2">
-              <button
-                className={`w-[59px] h-[24px] rounded-[24px] text-[14px] border ${
-                  selectedButton === '전체 읽음'
-                    ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
-                    : 'border-[var(--grayscale-20)]'
-                }`}
-                onClick={async () => {
-                  handleButtonClick('전체 읽음');
-                  try {
-                    await notificationService.markAllRead(); // 전체 읽음 API
-                    setNotifications([]); // 전체 제거
-                    setShowCheckbox(false);
-                    setIsDeleteVisible(true); // 버튼 복구
-                  } catch (error) {
-                    console.error('전체 읽음 처리 실패:', error);
-                  }
-                }}
-              >
-                전체 읽음
-              </button>
-              <button
-                className={`w-[37px] h-[24px] rounded-[24px] text-[14px] border ${
-                  selectedButton === '읽음'
-                    ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
-                    : 'border-[var(--grayscale-20)]'
-                }`}
-                onClick={() => {
-                  handleButtonClick('읽음');
-                  handleMarkSelectedRead(); // 선택 읽음 처리 실행
-                }}
-              >
-                읽음
-              </button>
+    <AnimatePresence>
+      {isNotificationOpen && (
+        <motion.div
+          key="notification-panel-wrapper"
+          className="fixed top-0 left-[198px] z-50 w-full h-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {/* 어두운 배경 */}
+          <motion.div
+            className="fixed inset-0 bg-black/30"
+            onClick={closeNotification}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+
+          {/* 알림 사이드 패널 */}
+          <motion.div
+            key="notification-panel"
+            initial={{ x: -490 }}
+            animate={{ x: 0 }}
+            exit={{ x: -490 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed top-0 left-[198px] z-50 w-[490px] h-full bg-white border border-[var(--grayscale-20)]"
+          >
+            <div className="flex justify-between p-4">
+              <span className="text-[20px] font-semibold">알림</span>
+              {isDeleteVisible ? (
+                <span
+                  className="text-[14px] text-[var(--grayscale-80)] cursor-pointer mt-2"
+                  onClick={handleDeleteClick}
+                >
+                  알림삭제
+                </span>
+              ) : (
+                <div className="flex space-x-2 items-center mt-2">
+                  <button
+                    className={`w-[59px] h-[24px] rounded-[24px] text-[14px] border ${
+                      selectedButton === '전체 읽음'
+                        ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
+                        : 'border-[var(--grayscale-20)]'
+                    }`}
+                    onClick={async () => {
+                      handleButtonClick('전체 읽음');
+                      try {
+                        await notificationService.markAllRead();
+                        setNotifications([]);
+                        setShowCheckbox(false);
+                        setIsDeleteVisible(true);
+                      } catch (error) {
+                        console.error('전체 읽음 처리 실패:', error);
+                      }
+                    }}
+                  >
+                    전체 읽음
+                  </button>
+                  <button
+                    className={`w-[37px] h-[24px] rounded-[24px] text-[14px] border ${
+                      selectedButton === '읽음'
+                        ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
+                        : 'border-[var(--grayscale-20)]'
+                    }`}
+                    onClick={() => {
+                      handleButtonClick('읽음');
+                      handleMarkSelectedRead();
+                    }}
+                  >
+                    읽음
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        <NotificationList
-          showCheckbox={showCheckbox}
-          selectedNotifications={selectedNotifications}
-          setSelectedNotifications={setSelectedNotifications}
-          notifications={notifications}
-          setNotifications={setNotifications}
-          isChecked={isChecked}
-          setIsChecked={setIsChecked}
-        />
-      </div>
-    </div>
+            <NotificationList
+              showCheckbox={showCheckbox}
+              selectedNotifications={selectedNotifications}
+              setSelectedNotifications={setSelectedNotifications}
+              notifications={notifications}
+              setNotifications={setNotifications}
+              isChecked={isChecked}
+              setIsChecked={setIsChecked}
+            />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

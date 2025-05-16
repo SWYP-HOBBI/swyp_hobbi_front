@@ -24,7 +24,7 @@ export default function PostCard({
   nickname,
   title,
   content,
-  profileImageUrl,
+  userImageUrl,
   postImageUrls,
   postHobbyTags,
   likeCount,
@@ -50,13 +50,12 @@ export default function PostCard({
     >
       {/* 작성자 정보 */}
       <div className="flex items-center space-x-3 mb-6">
-        <motion.div whileHover={{ scale: 1.05 }}>
-          <Profile
-            imageUrl={profileImageUrl}
-            nickname={nickname}
-            variant="horizontal-large"
-          />
-        </motion.div>
+        <Profile
+          imageUrl={userImageUrl}
+          nickname={nickname}
+          variant="horizontal-large"
+        />
+
         <span className="text-grayscale-60 text-xs ml-3">
           {formatDate(createdAt)}
         </span>

@@ -82,12 +82,6 @@ export default function LoginForm() {
     } catch (error) {
       setIsError(true);
 
-      console.log('Error:', error);
-      console.log(
-        'Error message:',
-        error instanceof Error ? error.message : '',
-      );
-
       // 에러 메시지에 따른 처리
       if (error instanceof Error) {
         if (error.message.includes('PASSWORD_NOT_MATCH')) {
