@@ -5,6 +5,7 @@ import SvgIcon from '../common/svg_icon';
 import Image from 'next/image';
 import Profile from '../common/profile';
 import { formatDate } from '@/utils/date';
+import { motion } from 'framer-motion';
 
 /**
  *  게시글 카드 컴포넌트
@@ -40,14 +41,22 @@ export default function PostCard({
   };
 
   return (
-    <div className="w-full bg-grayscale-0 rounded-xl shadow-md p-5">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ y: -5 }}
+      className="w-full bg-grayscale-0 rounded-xl shadow-md p-5"
+    >
       {/* 작성자 정보 */}
       <div className="flex items-center space-x-3 mb-6">
-        <Profile
-          imageUrl={profileImageUrl}
-          nickname={nickname}
-          variant="horizontal-large"
-        />
+        <motion.div whileHover={{ scale: 1.05 }}>
+          <Profile
+            imageUrl={profileImageUrl}
+            nickname={nickname}
+            variant="horizontal-large"
+          />
+        </motion.div>
         <span className="text-grayscale-60 text-xs ml-3">
           {formatDate(createdAt)}
         </span>
@@ -58,7 +67,11 @@ export default function PostCard({
         <div className="flex gap-4">
           {/* 게시글 이미지 있는 경우에만 표시 */}
           {!!postImageUrls.length && (
-            <div className="w-[400px] h-[300px] flex-shrink-0 relative">
+            <motion.div
+              className="w-[400px] h-[300px] flex-shrink-0 relative"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
               <Image
                 src={postImageUrls[0]}
                 width={400}
@@ -80,16 +93,28 @@ export default function PostCard({
                   </span>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* 게시글 제목 및 내용 */}
           <div className="flex-1 space-y-3 overflow-hidden">
-            <div className="tag_container">
+            <motion.div
+              className="tag_container"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               {postHobbyTags.map((tag, index) => (
-                <Tag key={index} label={tag} variant="white" />
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <Tag label={tag} variant="white" />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
             <h3 className="text-2xl font-bold text-grayscale-100">{title}</h3>
             <p className="text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm">
               {content}
@@ -102,14 +127,24 @@ export default function PostCard({
       <div className="flex items-center space-x-4 text-grayscale-60 justify-end mt-4">
         {/* 좋아요 카운트 */}
         <div className="flex items-center space-x-3">
-          <button onClick={handleLikeClick}>
+          <motion.button
+            onClick={handleLikeClick}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.1 }}
+          >
             <SvgIcon
               name="heart"
               size={28}
               color={liked ? 'var(--like)' : 'var(--grayscale-20)'}
             />
-          </button>
-          <span>{likeCount}</span>
+          </motion.button>
+          <motion.span
+            key={likeCount}
+            initial={{ scale: 1.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            {likeCount}
+          </motion.span>
         </div>
         {/* 댓글 카운트 */}
         <div className="flex items-center space-x-3">
@@ -117,6 +152,6 @@ export default function PostCard({
           <span>{commentCount}</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

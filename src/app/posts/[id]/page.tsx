@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { PostDetail } from '@/types/post';
@@ -153,62 +154,124 @@ export default function PostDetailPage() {
   // 오류 발생
   if (error) {
     return (
-      <div className="max-w-[960px] mx-auto  p-9 text-light-red">{error}</div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-[960px] mx-auto p-9 text-light-red"
+      >
+        {error}
+      </motion.div>
     );
   }
 
   // 게시글 없음
   if (!post) {
     return (
-      <div className="max-w-[960px] mx-auto my-12 p-9">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-[960px] mx-auto my-12 p-9"
+      >
         게시글을 찾을 수 없습니다.
-      </div>
+      </motion.div>
     );
   }
 
   // 게시글 상세 페이지 렌더링
   return (
     <div className="py-12">
-      <div className="max-w-[960px] mx-auto p-9 rounded-xl shadow-md bg-grayscale-0">
-        <PostHeader
-          nickname={post.nickname}
-          profileImageUrl={post.profileImageUrl}
-          isOwner={isOwner}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-[960px] mx-auto p-9 rounded-xl shadow-md bg-grayscale-0"
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <PostHeader
+            nickname={post.nickname}
+            profileImageUrl={post.profileImageUrl}
+            isOwner={isOwner}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </motion.div>
 
-        <h1 className="text-[32px] font-bold mb-3">{post.title}</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-[32px] font-bold mb-3"
+        >
+          {post.title}
+        </motion.h1>
 
-        <div className="tag_container mb-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="tag_container mb-6"
+        >
           {post.postHobbyTags.map((tag, index) => (
-            <Tag key={index} label={tag} variant="white" />
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 + index * 0.1 }}
+            >
+              <Tag label={tag} variant="white" />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <PostImageSlider images={post.postImageUrls} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <PostImageSlider images={post.postImageUrls} />
+        </motion.div>
 
-        <div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
           <p className="whitespace-pre-wrap mb-6">{post.content}</p>
-        </div>
+        </motion.div>
 
-        <PostActionBar
-          postId={post.postId}
-          likeCount={post.likeCount}
-          commentCount={post.commentCount}
-          createdAt={post.createdAt}
-          liked={post.liked}
-          onLikeClick={handleLikeClick}
-          onCommentClick={handleCommentClick}
-          onShareClick={handleShareClick}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <PostActionBar
+            postId={post.postId}
+            likeCount={post.likeCount}
+            commentCount={post.commentCount}
+            createdAt={post.createdAt}
+            liked={post.liked}
+            onLikeClick={handleLikeClick}
+            onCommentClick={handleCommentClick}
+            onShareClick={handleShareClick}
+          />
+        </motion.div>
 
-        <PostComment
-          postId={Number(id)}
-          userImageUrl={post.userImageUrl}
-          onCommentUpdate={handleCommentUpdate}
-        />
-      </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <PostComment
+            postId={Number(id)}
+            userImageUrl={post.userImageUrl}
+            onCommentUpdate={handleCommentUpdate}
+          />
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

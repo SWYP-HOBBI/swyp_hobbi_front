@@ -6,6 +6,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 
 import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
@@ -183,17 +184,24 @@ export default function PostsPage() {
         ) : (
           <div className="space-y-12">
             {/* 게시글 목록 렌더링 */}
-            {data?.pages.flatMap(
-              (group: PostCardProps[]) =>
-                group.map((post) => (
-                  <div key={post.postId}>
-                    <PostCard
-                      {...post}
-                      onLikeClick={() => handleLike(post.postId, post.liked)}
-                    />
-                  </div>
-                )) ?? [],
-            )}
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="space-y-6"
+            >
+              {data?.pages.flatMap(
+                (group: PostCardProps[]) =>
+                  group.map((post) => (
+                    <div key={post.postId}>
+                      <PostCard
+                        {...post}
+                        onLikeClick={() => handleLike(post.postId, post.liked)}
+                      />
+                    </div>
+                  )) ?? [],
+              )}
+            </motion.div>
 
             {/* 무한 스크롤 옵저버 */}
             <div
@@ -212,3 +220,13 @@ export default function PostsPage() {
     </div>
   );
 }
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};

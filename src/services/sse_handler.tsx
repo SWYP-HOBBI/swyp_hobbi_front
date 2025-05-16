@@ -3,19 +3,23 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/auth';
 import { connectNotificationSSE } from '@/services/sse';
+import { usePathname } from 'next/navigation';
 
 export default function SSEHandler() {
   const { isAuthenticated } = useAuthStore();
+  const pathname = usePathname();
+
+  const isAuthPage = pathname === '/' || pathname === '/signup';
 
   useEffect(() => {
+    if (isAuthPage || !isAuthenticated) return;
+
     let eventSource: EventSource | null = null;
     let retryCount = 0;
     const maxRetries = 5;
     const retryDelay = 10000;
 
     const connectSSE = () => {
-      if (!isAuthenticated) return null;
-
       try {
         eventSource = connectNotificationSSE((data: string) => {
           try {
@@ -71,7 +75,7 @@ export default function SSEHandler() {
         eventSource = null;
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, pathname]);
 
   return null;
 }
