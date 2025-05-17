@@ -139,14 +139,7 @@ export default function EditMyPage() {
               onNicknameChange={setCurrentNickname}
               setShowNicknameEdit={setShowNicknameEdit}
             />
-            <EditPassword
-              currentPassword={currentPassword}
-              setCurrentPassword={setCurrentPassword}
-              newPassword={newPassword}
-              setNewPassword={setNewPassword}
-              confirmPassword={confirmPassword}
-              setConfirmPassword={setConfirmPassword}
-            />
+            <EditPassword />
           </div>
 
           <div className="flex w-full gap-[20px]">

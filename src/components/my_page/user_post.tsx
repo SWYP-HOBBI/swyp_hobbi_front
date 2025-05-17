@@ -63,9 +63,7 @@ export default function UserPost() {
             postContents={post.postContents}
             postHobbyTags={post.postHobbyTags}
             createdAt={post.createdAt}
-            representativeImageUrl={
-              post.representativeImageUrl ? [post.representativeImageUrl] : []
-            }
+            representativeImageUrl={post.representativeImageUrl}
             likeCount={post.likeCount}
             commentCount={post.commentCount}
             onEdit={(postId) => {
