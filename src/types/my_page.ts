@@ -14,8 +14,7 @@ export interface UserPostCardProps {
   postHobbyTags: string[];
   representativeImageUrl: string[];
   createdAt: string;
-  updatedAt: string;
-
+  updatedAt?: string;
   likeCount: number;
   commentCount: number;
   onEdit: (postId: number) => void;
