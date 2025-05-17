@@ -12,7 +12,7 @@ export interface UserPostCardProps {
   postTitle: string;
   postContents: string;
   postHobbyTags: string[];
-  representativeImageUrl: string[];
+  representativeImageUrl: string;
   createdAt: string;
   updatedAt?: string;
   likeCount: number;
