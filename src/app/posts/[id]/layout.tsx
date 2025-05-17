@@ -14,10 +14,10 @@ export default function PostDetailLayout({
 
   return (
     <Providers>
-      <div className="bg-grayscale-1">
+      <div className="bg-grayscale-1 h-screen">
         <div className="absolute top-12 left-6">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/posts')}
             className="flex items-center  text-grayscale-60 hover:text-grayscale-80"
           >
             <SvgIcon name="arrow_left" size={48} />

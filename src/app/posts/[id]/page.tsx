@@ -27,17 +27,26 @@ import Loader from '@/components/common/loader';
 export default function PostDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-
   const { userId } = useAuthStore();
-  const isLoggedIn = Boolean(userId);
-
   const { openModal } = useModalStore();
-
   const [post, setPost] = useState<PostDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isOwner = post?.userId === userId;
 
-  const isOwner = post?.userId === userId; // 게시글 작성자 여부
+  const checkLoginStatus = () => {
+    try {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        const { state } = JSON.parse(authStorage);
+        return state.isAuthenticated;
+      }
+      return false;
+    } catch (error) {
+      console.error('로그인 상태 확인 중 오류:', error);
+      return false;
+    }
+  };
 
   // 게시글 상세 정보 조회
   useEffect(() => {
@@ -45,13 +54,28 @@ export default function PostDetailPage() {
       try {
         setIsLoading(true);
 
-        // 로그인 여부에 따라 호출할 API 선택
-        const data = isLoggedIn
-          ? await postService.getPostDetail(Number(id)) // 회원용
-          : await postService.getPublicPostDetail(Number(id)); // 비회원용
+        // auth-storage의 isAuthenticated 값으로 로그인 상태 확인
+        const isLoggedIn = checkLoginStatus();
+
+        let data;
+        try {
+          // 먼저 회원용 API 시도
+          if (isLoggedIn) {
+            data = await postService.getPostDetail(Number(id));
+          } else {
+            // 비로그인 상태면 공개 API 호출
+            data = await postService.getPublicPostDetail(Number(id));
+          }
+        } catch (apiError) {
+          // 회원용 API 호출 실패 시 공개 API로 fallback
+          if (isLoggedIn) {
+            data = await postService.getPublicPostDetail(Number(id));
+          } else {
+            throw apiError;
+          }
+        }
 
         setPost(data);
-
         setError(null);
       } catch (err) {
         setError(
@@ -193,7 +217,7 @@ export default function PostDetailPage() {
         >
           <PostHeader
             nickname={post.nickname}
-            profileImageUrl={post.profileImageUrl}
+            userImageUrl={post.userImageUrl}
             isOwner={isOwner}
             onEdit={handleEdit}
             onDelete={handleDelete}
