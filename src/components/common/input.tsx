@@ -5,7 +5,7 @@ import SvgIcon from './svg_icon';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
+  error?: string | null;
   helperText?: string;
   className?: string;
   containerClassName?: string;
@@ -40,7 +40,10 @@ export default function Input({
   const clearInput = () => {
     if (onChange) {
       const event = {
-        target: { value: '' },
+        target: {
+          name: props.name,
+          value: '',
+        },
       } as React.ChangeEvent<HTMLInputElement>;
       onChange(event);
     }
@@ -50,16 +53,19 @@ export default function Input({
   const inputType = type === 'password' && showPassword ? 'text' : type;
 
   // 컨테이너 스타일 (기본/에러 상태)
-  const inputContainerStyles = `relative flex items-center w-full rounded-lg border ${
+  const inputContainerStyles = `relative flex items-center w-full rounded-lg border  ${
     error
       ? 'border-like focus-within:border-like'
       : 'border-grayscale-20 focus-within:border-primary'
   } ${disabled ? 'bg-grayscale-5 cursor-not-allowed' : ''}`;
 
   return (
-    <div className={`w-full font-medium ${containerClassName}`}>
+    <div className={`w-full font-medium max-md:text-sm ${containerClassName}`}>
       {label && (
-        <label htmlFor={id} className="block text-grayscale-100 mb-3">
+        <label
+          htmlFor={id}
+          className="block text-grayscale-100 mb-3 max-md:mb-2"
+        >
           {label}
           {required && <span className="text-like ml-1">*</span>}
         </label>
@@ -69,7 +75,7 @@ export default function Input({
         <input
           id={id}
           type={inputType}
-          className={`w-full p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed ${className}`}
+          className={`w-full h-[60px] max-md:h-[48px] p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed [-webkit-autofill:hover]:!bg-none [-webkit-autofill:focus]:!bg-none [-webkit-autofill:active]:!bg-none [-webkit-autofill]:!bg-none max-md:placeholder:text-xs placeholder:text-sm ${className}`}
           value={value}
           onChange={onChange}
           disabled={disabled}
@@ -125,9 +131,13 @@ export default function Input({
       </div>
 
       {/* 에러 메시지 또는 도움말 텍스트 */}
-      {error && <p className="mt-1 text-like text-xs">{error}</p>}
+      {error && (
+        <p className="mt-1 text-like text-xs max-md:text-[8px]">{error}</p>
+      )}
       {helperText && !error && (
-        <p className="mt-1 text-grayscale-100 text-xs">{helperText}</p>
+        <p className="mt-1 text-grayscale-100 text-xs max-md:text-[8px]">
+          {helperText}
+        </p>
       )}
     </div>
   );

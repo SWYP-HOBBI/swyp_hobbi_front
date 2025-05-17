@@ -1,12 +1,12 @@
 export interface ModalState {
-  isOpen: boolean;
-  title?: string;
-  message?: string;
-  confirmText?: string;
-  onConfirm?: () => void;
+  isOpen: boolean; // 모달 열림 여부
+  title?: string; // 모달 제목
+  message?: string; // 모달 메시지
+  confirmText?: string; // 확인 버튼 텍스트
+  onConfirm?: () => void; // 확인 버튼 클릭 시 실행될 함수
 }
 
 export interface ModalStore extends ModalState {
-  openModal: (options: Omit<ModalState, 'isOpen'>) => void;
-  closeModal: () => void;
+  openModal: (options: Omit<ModalState, 'isOpen'>) => void; // 모달 열기
+  closeModal: () => void; // 모달 닫기
 }

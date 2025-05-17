@@ -161,18 +161,17 @@ export type HobbyTag = {
 };
 
 export interface HobbyState {
-  selectedMainCategory: keyof typeof HOBBY_MAIN_CATEGORIES | ''; // 선택된 대분류
+  selectedMainCategory: string; // 선택된 대분류
   selectedSubCategories: string[]; // 선택된 소분류
   selectedHobbyTags: HobbyTag[]; // 선택된 취미 태그
-  isMainCategoryOpen: boolean; // 대분류 드롭다운 열림/닫힘
-  isSubCategoryOpen: boolean; // 소분류 드롭다운 열림/닫힘
-  setSelectedMainCategory: (
-    category: keyof typeof HOBBY_MAIN_CATEGORIES | '',
-  ) => void; //  대분류 선택
-  toggleMainCategoryOpen: () => void; // 대분류 드롭다운 열림/닫힘 토글
-  toggleSubCategoryOpen: () => void; // 소분류 드롭다운 열림/닫힘 토글
+  isMainCategoryOpen: boolean; // 대분류 열림 여부
+  isSubCategoryOpen: boolean; // 소분류 열림 여부
+  setSelectedMainCategory: (category: string) => void; // 대분류 선택
+  toggleMainCategoryOpen: () => void; // 대분류 열림 토글
+  toggleSubCategoryOpen: () => void; // 소분류 열림 토글
   toggleSubCategory: (subCategory: string) => void; // 소분류 선택
   addSelectedHobbyTags: () => void; // 취미 태그 추가
-  removeHobbyTag: (tag: HobbyTag) => void; // 취미 태그 삭제
+  removeHobbyTag: (tag: HobbyTag) => void; // 취미 태그 제거
   resetSelections: () => void; // 선택 초기화
+  setSelectedHobbyTags: (tags: HobbyTag[]) => void; // 취미 태그 설정
 }

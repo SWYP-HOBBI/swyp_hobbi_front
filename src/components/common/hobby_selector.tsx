@@ -1,6 +1,10 @@
 'use client';
 
-import { HOBBY_MAIN_CATEGORIES, HOBBY_SUB_CATEGORIES } from '@/types/hobby';
+import {
+  HOBBY_MAIN_CATEGORIES,
+  HOBBY_SUB_CATEGORIES,
+  HobbyTag,
+} from '@/types/hobby';
 import { useHobbyStore } from '@/store/hobby';
 import Tag, { TagVariant } from './tag';
 import Button from './button';
@@ -10,10 +14,13 @@ interface HobbySelectorProps {
   className?: string;
   maxCount?: number;
   variant?: TagVariant;
+  selectedTags?: HobbyTag[];
+  onTagsChange?: (tags: HobbyTag[]) => void;
+  isSearchMode?: boolean;
 }
 
 // 수정된 드롭다운 버튼 컴포넌트
-const CustomDropdownButton = ({
+export const CustomDropdownButton = ({
   value,
   placeholder,
   isOpen,
@@ -34,7 +41,7 @@ const CustomDropdownButton = ({
         type="button"
         onClick={onToggle}
         disabled={disabled}
-        className={`flex items-center text-sm font-medium justify-between w-full p-5 rounded-lg ${
+        className={`flex items-center text-sm max-md:text-xs font-medium justify-between w-full p-5 rounded-lg h-[60px] max-md:h-[48px] whitespace-normal break-keep ${
           disabled
             ? 'bg-grayscale-10 text-grayscale-40'
             : 'bg-grayscale-0 text-grayscale-60'
@@ -55,7 +62,7 @@ const CustomDropdownButton = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-grayscale-0 border border-grayscale-20 rounded-lg shadow-md">
+        <div className="absolute z-10 w-full mt-1 bg-grayscale-0 border border-grayscale-20 rounded-lg shadow-md max-md:text-xs text-sm whitespace-normal break-keep">
           <div className="max-h-52 overflow-y-auto mr-2">
             <div className="p-2">{children}</div>
           </div>
@@ -66,7 +73,7 @@ const CustomDropdownButton = ({
 };
 
 // 수정된 드롭다운 아이템 컴포넌트
-const CustomDropdownItem = ({
+export const CustomDropdownItem = ({
   label,
   isSelected,
   onClick,
@@ -103,6 +110,9 @@ export default function HobbySelector({
   className = '',
   maxCount,
   variant = 'primary',
+  selectedTags,
+  onTagsChange,
+  isSearchMode = false,
 }: HobbySelectorProps) {
   const {
     selectedMainCategory,
@@ -116,16 +126,78 @@ export default function HobbySelector({
     toggleSubCategory,
     addSelectedHobbyTags,
     removeHobbyTag,
+    setSelectedHobbyTags,
   } = useHobbyStore();
+
+  // 현재 표시할 태그들
+  const currentTags = isSearchMode ? selectedTags || [] : selectedHobbyTags;
+
+  // 태그 추가 핸들러
+  const handleAddTags = () => {
+    if (!selectedMainCategory || selectedSubCategories.length === 0) return;
+
+    const newTags = selectedSubCategories.map((subCategory) => ({
+      mainCategory: selectedMainCategory,
+      subCategory: subCategory,
+    }));
+
+    if (isSearchMode && onTagsChange) {
+      // 검색 모드일 때
+      const totalTags = [...currentTags, ...newTags];
+
+      // 중복 제거
+      const uniqueTags = totalTags.filter(
+        (tag, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              t.mainCategory === tag.mainCategory &&
+              t.subCategory === tag.subCategory,
+          ),
+      );
+
+      // 최대 개수 체크
+      if (maxCount && uniqueTags.length > maxCount) return;
+
+      onTagsChange(uniqueTags as HobbyTag[]);
+    } else {
+      // 일반 모드일 때
+      addSelectedHobbyTags();
+    }
+
+    // 드롭다운 닫기
+    if (isMainCategoryOpen) toggleMainCategoryOpen();
+    if (isSubCategoryOpen) toggleSubCategoryOpen();
+  };
+
+  // 태그 삭제 핸들러
+  const handleRemoveTag = (tagToRemove: HobbyTag) => {
+    if (isSearchMode && onTagsChange) {
+      // 검색 모드일 때
+      const newTags = currentTags.filter(
+        (tag) =>
+          !(
+            tag.mainCategory === tagToRemove.mainCategory &&
+            tag.subCategory === tagToRemove.subCategory
+          ),
+      );
+      onTagsChange(newTags);
+    } else {
+      // 일반 모드일 때
+      removeHobbyTag(tagToRemove);
+    }
+  };
 
   // 선택된 대분류의 표시 텍스트
   const selectedMainCategoryLabel = selectedMainCategory
-    ? HOBBY_MAIN_CATEGORIES[selectedMainCategory]
+    ? HOBBY_MAIN_CATEGORIES[
+        selectedMainCategory as keyof typeof HOBBY_MAIN_CATEGORIES
+      ]
     : '';
 
   return (
     <div className={`${className}`}>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <div className="flex-1">
           <CustomDropdownButton
             value={selectedMainCategoryLabel}
@@ -159,7 +231,9 @@ export default function HobbySelector({
             disabled={!selectedMainCategory}
           >
             {selectedMainCategory &&
-              HOBBY_SUB_CATEGORIES[selectedMainCategory].map((subCategory) => (
+              HOBBY_SUB_CATEGORIES[
+                selectedMainCategory as keyof typeof HOBBY_SUB_CATEGORIES
+              ].map((subCategory) => (
                 <CustomDropdownItem
                   key={subCategory}
                   value={subCategory}
@@ -174,22 +248,14 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
-          onClick={() => {
-            if (
-              !maxCount ||
-              selectedHobbyTags.length + selectedSubCategories.length <=
-                maxCount
-            ) {
-              addSelectedHobbyTags();
-            }
-          }}
+          className="flex-1 max-md:text-xs"
+          onClick={handleAddTags}
           disabled={
             !selectedMainCategory ||
             selectedSubCategories.length === 0 ||
             Boolean(
               maxCount &&
-                selectedHobbyTags.length + selectedSubCategories.length >
-                  maxCount,
+                currentTags.length + selectedSubCategories.length > maxCount,
             )
           }
         >
@@ -198,12 +264,12 @@ export default function HobbySelector({
       </div>
 
       <div className="flex flex-wrap gap-2 mt-3">
-        {selectedHobbyTags.map((tag) => (
+        {currentTags.map((tag) => (
           <Tag
             key={`${tag.mainCategory}-${tag.subCategory}`}
             label={tag.subCategory}
             variant={variant}
-            onDelete={() => removeHobbyTag(tag)}
+            onDelete={() => handleRemoveTag(tag)}
           />
         ))}
       </div>

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 // import localFont from 'next/font/local';
+import Script from 'next/script';
 import './globals.css';
-import Modal from '@/components/common/modal';
+import SSEHandler from '@/services/sse_handler';
+import Providers from '@/services/providers';
 
 // const pretendard = localFont({
 //   src: '../assets/fonts/PretendardVariable.woff2',
@@ -22,10 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={` antialiased`}>
-        {children}
-        <div id="modal-portal" />
-        <Modal />
+      <body className={`antialiased`}>
+        <Script
+          src="https://cdn.swygbro.com/public/widget/swyg-widget.js"
+          strategy="afterInteractive"
+          defer
+        />
+        <Providers>
+          {children}
+          <div id="modal-portal" />
+          <SSEHandler />
+        </Providers>
       </body>
     </html>
   );
