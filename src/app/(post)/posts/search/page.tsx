@@ -163,7 +163,7 @@ export default function SearchPage() {
                       postId={String(post.postId)}
                       userId={post.userId}
                       nickname={post.nickname}
-                      profileImageUrl={post.userImageUrl}
+                      userImageUrl={post.userImageUrl}
                       title={post.title}
                       content={post.content}
                       createdAt={post.createdAt}

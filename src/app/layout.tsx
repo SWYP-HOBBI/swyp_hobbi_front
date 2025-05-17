@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 // import localFont from 'next/font/local';
+import Script from 'next/script';
 import './globals.css';
 import SSEHandler from '@/services/sse_handler';
 import Providers from '@/services/providers';
@@ -23,7 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={` antialiased`}>
+      <body className={`antialiased`}>
+        <Script
+          src="https://cdn.swygbro.com/public/widget/swyg-widget.js"
+          strategy="afterInteractive"
+          defer
+        />
         <Providers>
           {children}
           <div id="modal-portal" />

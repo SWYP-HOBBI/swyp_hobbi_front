@@ -74,8 +74,9 @@ export default function TabBar() {
     }
   }, [isAuthenticated]);
 
-  return (
-    <div className="w-[198px] h-screen bg-white sticky top-0 flex flex-col z-[9999]">
+  // PC 버전 탭바
+  const DesktopTabBar = () => (
+    <div className="w-[198px] h-screen bg-white sticky top-0 hidden md:flex flex-col z-[9999]">
       <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
         <motion.div
           variants={{
@@ -297,5 +298,76 @@ export default function TabBar() {
         </div>
       </div>
     </div>
+  );
+
+  // 모바일 버전 탭바
+  const MobileTabBar = () => (
+    <div className="fixed bottom-0 left-0 w-full h-[72px] bg-white border-t border-[var(--grayscale-10)] md:hidden z-[9999]">
+      <div className="flex justify-around items-center h-full px-4">
+        {/* 홈 */}
+        <button
+          onClick={() => router.push('/posts')}
+          className="flex flex-col items-center space-y-1"
+        >
+          <SvgIcon
+            name="home"
+            size={24}
+            color={isHome ? 'var(--primary)' : '#999999'}
+          />
+          <span
+            className={`text-[10px] ${
+              isHome ? 'text-[var(--primary)]' : 'text-[var(--grayscale-40)]'
+            }`}
+          >
+            홈
+          </span>
+        </button>
+
+        {/* 검색 */}
+        <button
+          onClick={toggleSearch}
+          className="flex flex-col items-center space-y-1"
+        >
+          <SvgIcon name="search" size={24} color="#999999" />
+          <span className="text-[10px] text-[var(--grayscale-40)]">검색</span>
+        </button>
+
+        {/* 알림 */}
+        <button
+          onClick={() => handleProtectedRoute(toggleNotification)}
+          className="flex flex-col items-center space-y-1"
+        >
+          <SvgIcon name="alarm" size={24} color="#999999" />
+          <span className="text-[10px] text-[var(--grayscale-40)]">알림</span>
+        </button>
+
+        {/* 게시글 작성 */}
+        <button
+          onClick={() =>
+            handleProtectedRoute(() => router.push('/posts/write'))
+          }
+          className="flex flex-col items-center space-y-1"
+        >
+          <SvgIcon name="write" size={24} color="#999999" />
+          <span className="text-[10px] text-[var(--grayscale-40)]">글쓰기</span>
+        </button>
+
+        {/* 마이페이지 */}
+        <button
+          onClick={() => handleProtectedRoute(() => router.push('/my_page'))}
+          className="flex flex-col items-center space-y-1"
+        >
+          <SvgIcon name="my_page" size={24} color="#999999" />
+          <span className="text-[10px] text-[var(--grayscale-40)]">마이</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <DesktopTabBar />
+      <MobileTabBar />
+    </>
   );
 }
