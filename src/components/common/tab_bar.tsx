@@ -31,7 +31,7 @@ export default function TabBar() {
     if (!isAuthenticated) {
       openModal({
         title: '로그인이 필요합니다',
-        message: '이 기능은 로그인 후 이용 가능합니다.',
+        message: '로그인 후 이용해 주세요',
         confirmText: '로그인 하기',
         onConfirm: () => router.push('/'),
       });
