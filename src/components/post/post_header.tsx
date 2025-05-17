@@ -12,7 +12,7 @@ import Profile from '../common/profile';
  */
 interface PostHeaderProps {
   nickname: string;
-  profileImageUrl: string;
+  userImageUrl: string;
   isOwner: boolean;
   onEdit: () => void;
   onDelete: () => void;
@@ -27,7 +27,7 @@ interface PostHeaderProps {
  */
 export default function PostHeader({
   nickname,
-  profileImageUrl,
+  userImageUrl,
   isOwner,
   onEdit,
   onDelete,
@@ -55,7 +55,7 @@ export default function PostHeader({
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
           <Profile
-            imageUrl={profileImageUrl}
+            imageUrl={userImageUrl}
             nickname={nickname}
             variant="horizontal-large"
           />
