@@ -6,7 +6,6 @@ import Providers from '@/services/providers';
 import NotificationPage from '@/components/notification/notification_page';
 import { useNotificationStore } from '@/store/notification';
 import Header from '@/components/common/header';
-// import { useState } from 'react';
 
 export default function PostLayout({
   children,

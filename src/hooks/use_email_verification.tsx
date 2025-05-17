@@ -164,7 +164,7 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
     // 스토리지 이벤트 등록
     window.addEventListener('storage', handleStorageChange);
 
-    // 클린업 ㅏㅎㅁ수
+    // 클린업 함수
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
