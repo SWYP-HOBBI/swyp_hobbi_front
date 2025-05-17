@@ -5,6 +5,7 @@ import Search from '@/components/search/search';
 import Providers from '@/services/providers';
 import NotificationPage from '@/components/notification/notification_page';
 import { useNotificationStore } from '@/store/notification';
+import Header from '@/components/common/header';
 // import { useState } from 'react';
 
 export default function PostLayout({
@@ -16,6 +17,7 @@ export default function PostLayout({
   return (
     <Providers>
       <div className="flex relative">
+        <Header />
         <TabBar />
         <div className="flex-1 bg-grayscale-1">
           {children}

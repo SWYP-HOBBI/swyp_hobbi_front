@@ -49,25 +49,25 @@ export default function PostCard({
       className="w-full bg-grayscale-0 rounded-xl shadow-md p-5"
     >
       {/* 작성자 정보 */}
-      <div className="flex items-center space-x-3 mb-6">
-        <Profile
-          imageUrl={userImageUrl}
-          nickname={nickname}
-          variant="horizontal-large"
-        />
-
-        <span className="text-grayscale-60 text-xs ml-3">
-          {formatDate(createdAt)}
-        </span>
-      </div>
-
-      {/* 게시글 내용 부분은 Link로 감싸기 */}
       <Link href={`/posts/${postId}`} className="block">
+        <div className="flex items-center mb-6 max-md:px-0">
+          <Profile
+            imageUrl={userImageUrl}
+            nickname={nickname}
+            variant={
+              window.innerWidth <= 768 ? 'horizontal-small' : 'horizontal-large'
+            }
+          />
+          <span className="text-grayscale-60 text-xs ml-3">
+            {formatDate(createdAt)}
+          </span>
+        </div>
+
         <div className="flex gap-4">
           {/* 게시글 이미지 있는 경우에만 표시 */}
           {!!postImageUrls.length && (
             <motion.div
-              className="w-[400px] h-[300px] flex-shrink-0 relative"
+              className="w-[400px] h-[300px] max-md:w-[350px] max-md:h-[262.5px] flex-shrink-0 relative"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >

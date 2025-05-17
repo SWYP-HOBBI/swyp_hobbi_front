@@ -23,7 +23,7 @@ export default function SearchCard({
   nickname,
   title,
   content,
-  profileImageUrl,
+  userImageUrl,
   postImageUrls,
   postHobbyTags,
   likeCount,
@@ -35,7 +35,7 @@ export default function SearchCard({
       {/* 작성자 정보 */}
       <div className="w-[80px] flex items-center space-x-3 mb-4">
         <Profile
-          imageUrl={profileImageUrl}
+          imageUrl={userImageUrl}
           nickname={nickname}
           variant="vertical"
         />
