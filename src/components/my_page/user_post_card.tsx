@@ -78,24 +78,12 @@ export default function UserPostCard({
           {representativeImageUrl && representativeImageUrl.length > 0 && (
             <div className="w-[140px] h-[140px] relative">
               <Image
-                src={representativeImageUrl[0]}
+                src={representativeImageUrl}
                 fill
-                alt={postTitle}
+                alt={representativeImageUrl}
                 className="object-cover rounded-lg"
                 unoptimized
               />
-              {representativeImageUrl.length > 1 && (
-                <div className="absolute flex items-center justify-center gap-1 bottom-2 right-2 bg-grayscale-10 rounded-xl px-2 py-1">
-                  <SvgIcon
-                    name="camera"
-                    size={16}
-                    color="var(--grayscale-60)"
-                  />
-                  <span className="text-xs text-grayscale-60">
-                    +{representativeImageUrl.length}
-                  </span>
-                </div>
-              )}
             </div>
           )}
 
