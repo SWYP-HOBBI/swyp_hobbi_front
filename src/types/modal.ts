@@ -7,6 +7,9 @@ export interface ModalState {
   message?: string; // 모달 메시지
   confirmText?: string; // 확인 버튼 텍스트
   onConfirm?: () => void; // 확인 버튼 클릭 시 실행될 함수
+  cancelText?: string; // 취소 버튼 텍스트
+  onCancel?: () => void; // 취소 버튼 클릭 시 실행될 함수
+  showCancelButton?: boolean; // 취소 버튼 표시 여부
 }
 
 export interface ModalStore extends ModalState {
