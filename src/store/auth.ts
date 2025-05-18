@@ -36,7 +36,10 @@ export const useAuthStore = create<AuthState>()(
           nickname: params.nickname,
         }));
       },
-
+      // 비회원
+      setPublicUser: () => {
+        set(initialState);
+      },
       // 로그아웃
       logout: async () => {
         try {

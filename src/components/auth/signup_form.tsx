@@ -8,6 +8,7 @@ import {
   getPasswordConfirmError,
   getPasswordError,
 } from '@/utils/password_validation';
+import { useState } from 'react';
 
 /**
  * 회원가입 폼 Props 인터페이스
@@ -33,32 +34,77 @@ export default function SignupForm({
   onBackButton,
 }: SignupFormProps) {
   const {
-    signupData, // 회원가입 데이터
-    updateSignupData, // 회원가입 데이터 업데이트
-    isEmailVerified, // 이메일 인증 상태
-    isLoading, // 로딩 상태
-    isError, // 에러 상태
-    errorMessage, // 에러 메시지
+    signupData,
+    updateSignupData,
+    isEmailVerified,
+    isLoading,
+    isError,
+    setIsError,
+    errorMessage,
+    setErrorMessage,
   } = useSignupStore();
 
-  const {
-    isEmailSent, // 이메일 인증 메일 발송 상태
-    emailTimer, // 이메일 인증 타이머
-    formatTime, // 타이머 시간 포맷
-    checkEmailAndSendVerification, // 이메일 중복 확인 및 인증 메일 발송
-  } = useEmailVerification();
+  const { isEmailSent, emailTimer, formatTime, checkEmailAndSendVerification } =
+    useEmailVerification();
 
-  // // 폼 진입 시 비밀번호 필드 초기화
-  // useEffect(() => {
-  //   updateSignupData({ password: '', passwordConfirm: '' });
-  // }, []);
+  // 이름 유효성 검사 상태
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+
+  // 이름 유효성 검사 함수
+  const validateUsername = (
+    username: string,
+  ): { isValid: boolean; message: string } => {
+    // 공백 검사
+    if (!username.trim()) {
+      return { isValid: false, message: '이름을 입력해주세요.' };
+    }
+
+    // 길이 검사 (2~10자)
+    if (username.length < 2 || username.length > 10) {
+      return {
+        isValid: false,
+        message: '이름은 2~10자 사이로 입력해주세요.',
+      };
+    }
+
+    // 특수문자 검사
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (specialCharRegex.test(username)) {
+      return { isValid: false, message: '특수문자는 사용할 수 없습니다.' };
+    }
+
+    // 숫자 검사
+    const numberRegex = /[0-9]/;
+    if (numberRegex.test(username)) {
+      return { isValid: false, message: '숫자는 사용할 수 없습니다.' };
+    }
+
+    // 공백 문자 포함 검사
+    if (username.includes(' ')) {
+      return { isValid: false, message: '공백은 포함할 수 없습니다.' };
+    }
+
+    return { isValid: true, message: '' };
+  };
 
   /**
    * 입력 필드 변경 핸들러
    * 모든 입력 필드의 변경사항을 Zustand 스토어에 업데이트
    */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
+
+    if (name === 'username') {
+      const validation = validateUsername(value);
+      if (!validation.isValid) {
+        setUsernameError(validation.message);
+      } else {
+        setUsernameError(null);
+      }
+    }
+
     updateSignupData({ [name]: value });
   };
 
@@ -115,16 +161,23 @@ export default function SignupForm({
       </div>
 
       {/* 이름 입력 */}
-      <Input
-        id="username"
-        name="username"
-        type="text"
-        label="이름"
-        value={signupData.username}
-        onChange={handleChange}
-        showClearButton
-        required
-      />
+      <div className="space-y-2">
+        <Input
+          id="username"
+          name="username"
+          type="text"
+          label="이름"
+          value={signupData.username}
+          onChange={handleChange}
+          showClearButton
+          required
+        />
+        {usernameError && (
+          <p className="text-xs text-like mt-2 max-md:text-[8px]">
+            *{usernameError}
+          </p>
+        )}
+      </div>
 
       {/* 이메일 인증 */}
       <div className="mt-6 mb-3 max-md:mb-2">
@@ -189,7 +242,7 @@ export default function SignupForm({
 
         {/* 이메일 인증 완료 */}
         {isEmailVerified && (
-          <p className="text-xs text-primary">*인증이 완료되었습니다.</p>
+          <p className="text-xs text-grayscale-80">*인증이 완료되었습니다.</p>
         )}
 
         {isEmailSent && !isEmailVerified && (

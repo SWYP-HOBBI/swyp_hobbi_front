@@ -76,7 +76,7 @@ export default function Signup() {
 
       // 회원가입 성공 모달 표시
       openModal({
-        title: '환영합니다.',
+        title: '환영합니다!',
         message: '회원가입이 완료되었어요.',
         confirmText: '확인',
         onConfirm: () => {

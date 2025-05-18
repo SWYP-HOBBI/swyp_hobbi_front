@@ -137,17 +137,20 @@ export default function PostComment({
   const allComments = data?.pages.flatMap((page) => page) ?? [];
   const structuredComments = structureComments(allComments);
 
-  // 댓글 작성
+  // 댓글 작성 함수를 async로 수정하고 중복 제출 방지를 위한 상태 추가
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 댓글 작성 핸들러 수정
   const handleCreateComment = async (
     content: string,
     parentCommentId?: number | null,
   ) => {
-    if (!content.trim()) {
-      alert('댓글 내용을 입력해주세요.');
+    if (!content.trim() || isSubmitting) {
       return;
     }
 
     try {
+      setIsSubmitting(true);
       await commentService.createComment(
         postId,
         content,
@@ -156,13 +159,13 @@ export default function PostComment({
       );
       setNewComment('');
       setReplyTo(null);
-      // 댓글 목록 쿼리 무효화
       await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
-      // 상위 컴포넌트에 알림
       onCommentUpdate?.();
     } catch (error) {
       console.error('댓글 작성에 실패했습니다:', error);
       alert('댓글 작성에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -249,7 +252,7 @@ export default function PostComment({
         className={`space-y-6 ${!!structuredComments.length ? 'flex-1 overflow-y-auto' : ''}`}
       >
         {structuredComments.map((comment) => (
-          <div key={comment.commentId} className="space-y-4">
+          <div key={comment.commentId} className="space-y-4 pr-6">
             {/* 부모 댓글 */}
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -267,7 +270,7 @@ export default function PostComment({
                       type="text"
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
-                      className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5"
+                      className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 "
                     />
                     <div className="flex gap-2">
                       <button
@@ -288,7 +291,7 @@ export default function PostComment({
                   </div>
                 ) : (
                   // 일반 모드 UI
-                  <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5">
+                  <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 inline-block">
                     <p className="text-grayscale-100 text-sm">
                       {comment.deleted ? '삭제된 댓글입니다.' : comment.content}
                     </p>
@@ -367,7 +370,7 @@ export default function PostComment({
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5">
+                        <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 inline-block">
                           <p className="text-grayscale-100 text-sm">
                             {reply.deleted
                               ? '삭제된 댓글입니다.'
@@ -445,33 +448,43 @@ export default function PostComment({
         )}
 
         <div className="flex gap-2">
-          {userImageUrl && userImageUrl !== '' ? (
-            <Image
-              src={userImageUrl}
-              alt="profile"
-              width={56}
-              height={56}
-              className="rounded-full"
-            />
-          ) : (
-            <DefaultProfile size={56} />
-          )}
+          <div className="w-[56px] h-[56px] flex-shrink-0">
+            {userImageUrl && userImageUrl !== '' ? (
+              <Image
+                src={userImageUrl}
+                alt="프로필 이미지"
+                className="rounded-full w-full h-full object-cover"
+                width={56}
+                height={56}
+                unoptimized
+              />
+            ) : (
+              <DefaultProfile size={56} />
+            )}
+          </div>
           <input
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            onKeyDown={(e) => {
+            onKeyDown={async (e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                handleCreateComment(newComment, replyTo?.commentId);
+                await handleCreateComment(newComment, replyTo?.commentId);
               }
             }}
             placeholder="댓글을 입력하세요."
             className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
+            disabled={isSubmitting}
+            maxLength={1000}
           />
           <Button
             variant="outline"
-            onClick={() => handleCreateComment(newComment, replyTo?.commentId)}
+            className="w-[140px]"
+            size="sm"
+            onClick={async () =>
+              await handleCreateComment(newComment, replyTo?.commentId)
+            }
+            disabled={isSubmitting}
           >
             등록
           </Button>

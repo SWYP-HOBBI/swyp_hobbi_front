@@ -14,7 +14,7 @@ export default function PostDetailLayout({
 
   return (
     <Providers>
-      <div className="bg-grayscale-1 h-screen">
+      <div className="bg-grayscale-1 min-h-screen">
         <div className="absolute top-12 left-6">
           <button
             onClick={() => router.push('/posts')}

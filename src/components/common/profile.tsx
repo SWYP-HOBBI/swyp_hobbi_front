@@ -67,8 +67,8 @@ export function DefaultProfile({ size }: { size: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="124"
-      height="125"
+      width={size}
+      height={size}
       viewBox="0 0 124 125"
       fill="none"
     >
