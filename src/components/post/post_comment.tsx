@@ -463,7 +463,7 @@ export default function PostComment({
       />
 
       {/* 댓글 입력 영역 - 고정 위치 */}
-      <div className="mt-6 bg-grayscale-0">
+      <div className="bg-grayscale-0">
         {/* 답글 작성 중인 경우 표시 */}
         {replyTo && (
           <div className="flex items-center mb-3">
