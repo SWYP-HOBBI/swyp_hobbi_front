@@ -5,6 +5,8 @@ import { useAuthStore } from '@/store/auth';
 import { useUserProfileStore } from '@/store/user_profile';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { InfiniteData } from '@tanstack/react-query';
+import { useModalStore } from '@/store/modal';
+import { useRouter } from 'next/navigation';
 import SvgIcon from '../common/svg_icon';
 import Profile from '../common/profile';
 import Image from 'next/image';
@@ -52,6 +54,8 @@ export default function PostComment({
   postId,
   onCommentUpdate,
 }: PostCommentProps) {
+  const router = useRouter();
+  const { openModal } = useModalStore();
   const [newComment, setNewComment] = useState('');
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null); // 수정 중인 댓글 ID
@@ -149,6 +153,19 @@ export default function PostComment({
     content: string,
     parentCommentId?: number | null,
   ) => {
+    // 로그인 상태 체크
+    if (!currentUserId) {
+      openModal({
+        title: '로그인이 필요합니다',
+        message: '댓글을 작성하려면 로그인이 필요합니다.',
+        confirmText: '로그인하기',
+        onConfirm: () => {
+          router.push('/');
+        },
+      });
+      return;
+    }
+
     if (!content.trim() || isSubmitting) {
       return;
     }
@@ -167,7 +184,11 @@ export default function PostComment({
       onCommentUpdate?.();
     } catch (error) {
       console.error('댓글 작성에 실패했습니다:', error);
-      alert('댓글 작성에 실패했습니다.');
+      openModal({
+        title: '댓글 작성 실패',
+        message: '댓글 작성 중 오류가 발생했습니다.',
+        confirmText: '확인',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -453,7 +474,7 @@ export default function PostComment({
 
         <div className="flex gap-2">
           <div className="w-[56px] h-[56px] flex-shrink-0">
-            {userInfo?.userImageUrl ? (
+            {currentUserId && userInfo?.userImageUrl ? (
               <Image
                 src={userInfo.userImageUrl}
                 alt="프로필 이미지"
@@ -476,9 +497,13 @@ export default function PostComment({
                 await handleCreateComment(newComment, replyTo?.commentId);
               }
             }}
-            placeholder="댓글을 입력하세요."
+            placeholder={
+              currentUserId
+                ? '댓글을 입력하세요.'
+                : '로그인 후 댓글을 작성할 수 있습니다.'
+            }
             className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !currentUserId}
             maxLength={1000}
           />
           <Button
@@ -488,7 +513,7 @@ export default function PostComment({
             onClick={async () =>
               await handleCreateComment(newComment, replyTo?.commentId)
             }
-            disabled={isSubmitting}
+            disabled={isSubmitting || !currentUserId}
           >
             등록
           </Button>
