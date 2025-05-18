@@ -264,7 +264,7 @@ export default function PostDetailPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <p className="whitespace-pre-wrap mb-6">{post.content}</p>
+          <p className="whitespace-pre-wrap mb-6 break-all">{post.content}</p>
         </motion.div>
 
         <motion.div
