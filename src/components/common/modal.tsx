@@ -16,6 +16,7 @@ export default function Modal() {
     cancelText,
     onCancel,
     showCancelButton,
+    hideButtons,
     closeModal,
   } = useModalStore();
 
@@ -59,22 +60,24 @@ export default function Modal() {
           {title && <h2>{title}</h2>}
           {message && <p className="whitespace-pre-line">{message}</p>}
         </div>
-        <div className={`w-full ${showCancelButton ? 'flex gap-3' : ''}`}>
-          {showCancelButton && (
+        {!hideButtons && (
+          <div className={`w-full ${showCancelButton ? 'flex gap-3' : ''}`}>
+            {showCancelButton && (
+              <button
+                onClick={handleCancel}
+                className={`p-4 border border-primary-b60 bg-grayscale-0 text-primary-b60 hover:bg-primary-b60 hover:text-grayscale-0 rounded-xl button_transition font-semibold ${showCancelButton ? 'flex-1' : 'w-full'}`}
+              >
+                {cancelText}
+              </button>
+            )}
             <button
-              onClick={handleCancel}
-              className={`p-4 border border-primary-b60  bg-grayscale-0 text-primary-b60 hover:bg-primary-b60 hover:text-grayscale-0 rounded-xl button_transition font-semibold ${showCancelButton ? 'flex-1' : 'w-full'}`}
+              onClick={handleConfirm}
+              className={`p-4 bg-primary text-primary-b80 rounded-xl hover:bg-primary/80 button_transition font-semibold ${showCancelButton ? 'flex-1' : 'w-full'}`}
             >
-              {cancelText}
+              {confirmText}
             </button>
-          )}
-          <button
-            onClick={handleConfirm}
-            className={`p-4 bg-primary text-primary-b80 rounded-xl hover:bg-primary/80 button_transition font-semibold ${showCancelButton ? 'flex-1' : 'w-full'}`}
-          >
-            {confirmText}
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </div>,
     portalElement,
