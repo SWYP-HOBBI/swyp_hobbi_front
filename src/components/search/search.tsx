@@ -176,10 +176,20 @@ export default function Search() {
               </div>
             </div>
 
-            {/* 검색 버튼 */}
             <button
-              className="mt-6 w-[380px] h-[60px] bg-[var(--primary)] rounded-[12px] text-[14px] font-semibold text-white"
+              className={`mt-6 w-[380px] h-[60px] rounded-[12px] text-[14px] font-semibold ${
+                searchQuery.trim().length === 0 &&
+                selectedMbti.length === 0 &&
+                searchHobbyTags.length === 0
+                  ? 'bg-[var(--grayscale-10)] text-[var(--grayscale-50)]'
+                  : 'bg-[var(--primary)]'
+              }`}
               onClick={handleSearch}
+              disabled={
+                searchQuery.trim().length === 0 &&
+                selectedMbti.length === 0 &&
+                searchHobbyTags.length === 0
+              }
             >
               검색하기
             </button>
