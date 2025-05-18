@@ -6,7 +6,7 @@ import HobbySelector from '../common/hobby_selector';
 import Input from '../common/input';
 import PostImageUploader from './post_image_uploader';
 import { motion } from 'framer-motion';
-import heic2any from 'heic2any';
+
 import {
   HOBBY_MAIN_CATEGORIES,
   HOBBY_SUB_CATEGORIES,
@@ -126,126 +126,14 @@ export default function PostForm({
   }, [initialData?.postHobbyTags, setSelectedHobbyTags]);
 
   /**
-   * 이미지 파일 처리 함수
-   * 지원되지 않는 이미지 포맷을 JPEG/PNG로 변환
-   */
-  const processImageFile = async (file: File): Promise<File> => {
-    // 서버 사이드에서 실행되는 경우 처리하지 않음
-    if (typeof window === 'undefined') {
-      return file;
-    }
-
-    // 지원되는 이미지 포맷
-    const supportedFormats = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
-
-    // 파일 확장자 확인
-    const extension = file.name.split('.').pop()?.toLowerCase();
-
-    // 지원되는 포맷이면 그대로 반환
-    if (extension && supportedFormats.includes(extension)) {
-      return file;
-    }
-
-    // HEIC/HEIF 파일 처리
-    if (extension === 'heic' || extension === 'heif') {
-      try {
-        const blob = await heic2any({
-          blob: file,
-          toType: 'image/jpeg',
-          quality: 0.8,
-        });
-
-        const convertedBlob = Array.isArray(blob) ? blob[0] : blob;
-        const newFileName = file.name.replace(/\.[^/.]+$/, '.jpg');
-        return new File([convertedBlob], newFileName, { type: 'image/jpeg' });
-      } catch (error) {
-        console.error('HEIC 변환 실패:', error);
-        throw new Error('HEIC 이미지 변환에 실패했습니다.');
-      }
-    }
-
-    // 기타 지원되지 않는 포맷 처리
-    try {
-      // Canvas를 사용하여 이미지 변환
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      // 파일을 Data URL로 변환
-      const imageUrl = URL.createObjectURL(file);
-
-      // 이미지 로드 및 변환 Promise
-      const convertedFile = await new Promise<File>((resolve, reject) => {
-        img.onload = () => {
-          // 캔버스 크기 설정
-          canvas.width = img.width;
-          canvas.height = img.height;
-
-          // 이미지를 캔버스에 그리기
-          ctx?.drawImage(img, 0, 0);
-
-          // 캔버스를 Blob으로 변환
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                // 새 파일명 생성 (.jpg 확장자 사용)
-                const newFileName = file.name.replace(/\.[^/.]+$/, '.jpg');
-                resolve(new File([blob], newFileName, { type: 'image/jpeg' }));
-              } else {
-                reject(new Error('이미지 변환에 실패했습니다.'));
-              }
-            },
-            'image/jpeg',
-            0.8,
-          );
-        };
-
-        img.onerror = () => {
-          reject(new Error('지원되지 않는 이미지 형식입니다.'));
-        };
-
-        img.src = imageUrl;
-      });
-
-      // Data URL 해제
-      URL.revokeObjectURL(imageUrl);
-
-      return convertedFile;
-    } catch (error) {
-      console.error('이미지 변환 실패:', error);
-      throw new Error(
-        '이미지 변환에 실패했습니다. 지원되는 이미지 형식을 사용해주세요.',
-      );
-    }
-  };
-
-  /**
    * 이미지 업로드 핸들러
    */
-  const handleImageUpload = async (files: File[]) => {
-    try {
-      const processedFiles = await Promise.all(
-        files.map(async (file) => {
-          // 파일 크기 제한 (10MB)
-          if (file.size > 10 * 1024 * 1024) {
-            throw new Error('파일 크기는 10MB를 초과할 수 없습니다.');
-          }
-
-          const processedFile = await processImageFile(file);
-          return {
-            file: processedFile,
-            preview: URL.createObjectURL(processedFile),
-          };
-        }),
-      );
-
-      setImages((prev) => [...prev, ...processedFiles]);
-    } catch (error) {
-      console.error('이미지 처리 실패:', error);
-      alert(
-        error instanceof Error ? error.message : '이미지 처리에 실패했습니다.',
-      );
-    }
+  const handleImageUpload = (files: File[]) => {
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImages((prev) => [...prev, ...newImages]);
   };
 
   /**
