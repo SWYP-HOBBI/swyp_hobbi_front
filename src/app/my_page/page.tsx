@@ -5,7 +5,6 @@ import UserProfile from '@/components/my_page/user_profile';
 import UserHobby from '@/components/my_page/user_hobby';
 import UserRank from '@/components/my_page/user_rank';
 import UserPost from '@/components/my_page/user_post';
-import { userService } from '@/services/api';
 
 export default function MyPage() {
   const router = useRouter();
