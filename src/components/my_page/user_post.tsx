@@ -92,6 +92,13 @@ export default function UserPost() {
         )),
       )}
 
+      {data?.pages.flatMap((group: MyPostsResponse) => group.posts).length ===
+        0 && (
+        <div className="text-center text-grayscale-60">
+          작성한 게시글이 없습니다.
+        </div>
+      )}
+
       <div ref={observerRef} className="h-4 flex items-center justify-center">
         {isFetchingNextPage && (
           <div className="text-grayscale-60">로딩 중...</div>
