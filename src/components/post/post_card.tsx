@@ -6,6 +6,8 @@ import Image from 'next/image';
 import Profile from '../common/profile';
 import { formatDate } from '@/utils/date';
 import { motion } from 'framer-motion';
+import { useAuthStore } from '@/store/auth';
+import { useModalStore } from '@/store/modal';
 
 /**
  *  게시글 카드 컴포넌트
@@ -33,10 +35,22 @@ export default function PostCard({
   liked,
   onLikeClick,
 }: PostCardProps) {
+  const { openModal } = useModalStore();
+  const currentUserId = useAuthStore((state) => state.userId);
+
   // 좋아요 버튼 클릭 핸들러
   const handleLikeClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // 이벤트 전파 방지
-    e.stopPropagation(); // 이벤트 버블링 방지
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!currentUserId) {
+      openModal({
+        title: '로그인이 필요합니다',
+        message: '좋아요를 누르려면 로그인이 필요합니다.',
+        confirmText: '확인',
+      });
+      return;
+    }
     onLikeClick();
   };
 

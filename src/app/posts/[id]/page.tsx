@@ -33,6 +33,7 @@ export default function PostDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isOwner = post?.userId === userId;
+  const currentUserId = useAuthStore((state) => state.userId);
 
   const checkLoginStatus = () => {
     try {
@@ -123,6 +124,15 @@ export default function PostDetailPage() {
   // 좋아요 클릭
   const handleLikeClick = async () => {
     if (!post) return;
+
+    if (!currentUserId) {
+      openModal({
+        title: '로그인이 필요합니다',
+        message: '좋아요를 누르려면 로그인이 필요합니다.',
+        confirmText: '확인',
+      });
+      return;
+    }
 
     try {
       if (post.liked) {
