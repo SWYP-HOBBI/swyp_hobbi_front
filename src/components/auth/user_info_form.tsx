@@ -275,7 +275,7 @@ export default function UserInfoForm({
       )}
 
       {isNicknameVerified && (
-        <p className="text-xs text-primary mt-2 max-md:text-[8px]">
+        <p className="text-xs text-grayscale-80 mt-2 max-md:text-[8px]">
           *사용 가능한 닉네임입니다.
         </p>
       )}

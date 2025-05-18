@@ -189,7 +189,7 @@ export default function SignupForm({
 
         {/* 이메일 인증 완료 */}
         {isEmailVerified && (
-          <p className="text-xs text-primary">*인증이 완료되었습니다.</p>
+          <p className="text-xs text-grayscale-80">*인증이 완료되었습니다.</p>
         )}
 
         {isEmailSent && !isEmailVerified && (

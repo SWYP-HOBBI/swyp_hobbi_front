@@ -29,7 +29,7 @@ export default function LoginForm() {
     setIsError, // 에러 상태 설정
     errorMessage, // 에러 메시지
     setErrorMessage, // 에러 메시지 설정
-    logout, // 사용자 로그아웃 및 인증 정보 초기화
+    setPublicUser, // 비회원 상태 설정
   } = useAuthStore();
 
   // 로그인 폼 데이터 상태
@@ -206,7 +206,7 @@ export default function LoginForm() {
           fullWidth
           variant="secondary"
           className="max-md:text-sm"
-          onClick={() => logout()}
+          onClick={() => setPublicUser()}
         >
           <Link href="/posts">비회원으로 둘러보기</Link>
         </Button>

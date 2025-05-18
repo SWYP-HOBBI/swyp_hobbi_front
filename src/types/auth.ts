@@ -103,6 +103,7 @@ export interface AuthState {
   setAuth: (params: LoginResponse) => void;
   logout: () => void;
   setIsLoading: (loading: boolean) => void;
+  setPublicUser: () => void;
   setIsError: (error: boolean) => void;
   setErrorMessage: (message: string | null) => void;
   reissueToken: () => Promise<boolean>;
