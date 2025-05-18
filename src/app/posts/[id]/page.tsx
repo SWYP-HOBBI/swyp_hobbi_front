@@ -224,20 +224,11 @@ export default function PostDetailPage() {
           />
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-[32px] font-bold mb-3"
-        >
-          {post.title}
-        </motion.h1>
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="tag_container mb-6"
+          className="tag_container mb-3"
         >
           {post.postHobbyTags.map((tag, index) => (
             <motion.div
@@ -250,6 +241,15 @@ export default function PostDetailPage() {
             </motion.div>
           ))}
         </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-[32px] font-bold mb-6"
+        >
+          {post.title}
+        </motion.h1>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -264,7 +264,7 @@ export default function PostDetailPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <p className="whitespace-pre-wrap mb-6">{post.content}</p>
+          <p className="whitespace-pre-wrap mb-6 break-all">{post.content}</p>
         </motion.div>
 
         <motion.div

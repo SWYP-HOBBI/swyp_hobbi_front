@@ -78,29 +78,9 @@ export default function TabBar() {
   const DesktopTabBar = () => (
     <div className="w-[198px] h-screen bg-white sticky top-0 hidden md:flex flex-col z-[9999]">
       <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
-        <motion.div
-          variants={{
-            hidden: {
-              opacity: 0.2,
-              y: 15,
-            },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: {
-                delay: 0.2,
-                duration: 1,
-                repeat: 4,
-                repeatType: 'reverse',
-              },
-            },
-          }}
-          initial="hidden"
-          animate="visible"
-          className="flex justify-center items-center"
-        >
+        <div className="flex justify-center items-center">
           <SvgIcon name="logo" width={150} height={44} />
-        </motion.div>
+        </div>
       </div>
       <div className="flex-1 flex flex-col justify-between">
         <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-[24px]">

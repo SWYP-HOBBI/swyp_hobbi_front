@@ -110,7 +110,28 @@ async function handleResponse(response: Response) {
   }
 
   if (!response.ok) {
-    throw new Error(typeof data === 'string' ? data : data.message);
+    console.error('API Error Response:', {
+      status: response.status,
+      data: data,
+    });
+
+    // 에러 객체 생성
+    const error = new Error('API Error') as any;
+    error.status = response.status;
+    error.data = data;
+
+    // errorCode가 있는 경우 처리
+    if (typeof data === 'object' && data.errorCode) {
+      error.code = data.errorCode;
+      error.message = data.message || '서버 에러가 발생했습니다.';
+    } else {
+      error.message =
+        typeof data === 'string'
+          ? data
+          : data.message || '서버 에러가 발생했습니다.';
+    }
+
+    throw error;
   }
 
   return data;
