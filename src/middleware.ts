@@ -5,6 +5,9 @@ import type { NextRequest } from 'next/server';
 const PUBLIC_PATH_PATTERNS = [
   /^\/$/, // 홈
   /^\/signup$/, // 회원가입
+  /^\/find_password$/, // 비밀번호 찾기
+  /^\/verify_email$/, // 이메일 인증
+  /^\/verify_fail$/, // 이메일 인증 실패
   /^\/posts$/, // 게시글 목록
   /^\/posts\/search/, // 게시글 검색
   /^\/posts\/\d+$/, // 게시글 상세보기 (/posts/1, /posts/123 등)
