@@ -27,6 +27,7 @@ export const CustomDropdownButton = ({
   onToggle,
   disabled = false,
   children,
+  isSearchMode = false,
 }: {
   value: string | string[];
   placeholder: string;
@@ -34,31 +35,53 @@ export const CustomDropdownButton = ({
   onToggle: () => void;
   disabled?: boolean;
   children: React.ReactNode;
+  isSearchMode?: boolean;
 }) => {
+  const displayValue = Array.isArray(value)
+    ? value.length > 0
+      ? value.length > 2
+        ? `${value.slice(0, 2).join(', ')} 외 ${value.length - 2}개`
+        : value.join(', ')
+      : placeholder
+    : value || placeholder;
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={onToggle}
         disabled={disabled}
-        className={`flex items-center text-sm max-md:text-xs font-medium justify-between w-full p-5 rounded-lg h-[60px] max-md:h-[48px] whitespace-normal break-keep ${
+        className={`flex items-center text-sm max-md:text-xs font-medium w-full p-5 rounded-lg h-[60px] max-md:h-[48px] whitespace-normal break-keep ${
           disabled
             ? 'bg-grayscale-10 text-grayscale-40'
             : 'bg-grayscale-0 text-grayscale-60'
-        } border border-grayscale-20`}
+        } border border-grayscale-20 ${
+          isSearchMode ? 'justify-center' : 'justify-between'
+        }`}
       >
-        <span>
-          {Array.isArray(value)
-            ? value.length > 0
-              ? value.join(', ')
-              : placeholder
-            : value || placeholder}
-        </span>
-        <SvgIcon
-          name="arrow_down"
-          size={24}
-          className={`transform ${isOpen ? 'rotate-180' : 'rotate-0'}`}
-        />
+        {isSearchMode ? (
+          <div className="flex items-center gap-1 w-full justify-center">
+            <div className="flex-1 min-w-0">
+              <span className="block truncate text-center">{displayValue}</span>
+            </div>
+            <SvgIcon
+              name="arrow_down"
+              size={24}
+              className={`transform ${isOpen ? 'rotate-180' : 'rotate-0'} flex-shrink-0`}
+            />
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 min-w-0">
+              <span className="block truncate">{displayValue}</span>
+            </div>
+            <SvgIcon
+              name="arrow_down"
+              size={24}
+              className={`transform ${isOpen ? 'rotate-180' : 'rotate-0'} flex-shrink-0 ml-2`}
+            />
+          </>
+        )}
       </button>
 
       {isOpen && (
@@ -204,6 +227,7 @@ export default function HobbySelector({
             placeholder="대분류를 선택해주세요."
             isOpen={isMainCategoryOpen}
             onToggle={toggleMainCategoryOpen}
+            isSearchMode={isSearchMode}
           >
             {Object.entries(HOBBY_MAIN_CATEGORIES).map(([key, value]) => (
               <CustomDropdownItem
@@ -229,6 +253,7 @@ export default function HobbySelector({
             isOpen={isSubCategoryOpen}
             onToggle={toggleSubCategoryOpen}
             disabled={!selectedMainCategory}
+            isSearchMode={isSearchMode}
           >
             {selectedMainCategory &&
               HOBBY_SUB_CATEGORIES[
