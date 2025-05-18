@@ -32,7 +32,6 @@ export default function SSEHandler() {
         // SSE 이벤트 핸들러 설정
         if (eventSource) {
           eventSource.onopen = () => {
-            console.log('SSE 연결이 열렸습니다.');
             retryCount = 0; // 연결 성공시 재시도 카운트 초기화
           };
 
@@ -45,7 +44,6 @@ export default function SSEHandler() {
 
             // 재연결 로직
             if (retryCount < maxRetries) {
-              console.log('SSE 연결 재시도 중...');
               retryCount++;
 
               setTimeout(() => {
@@ -70,7 +68,6 @@ export default function SSEHandler() {
     // 클린업
     return () => {
       if (eventSource) {
-        console.log('SSE 연결을 종료합니다.');
         eventSource.close();
         eventSource = null;
       }

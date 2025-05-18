@@ -11,21 +11,15 @@ export const connectNotificationSSE = (onMessage) => {
 
   const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/subscribe`;
 
-  console.log('Connecting to SSE URL:', url);
-  console.log(' Sending Authorization header:', `Bearer ${accessToken}`);
-
   const eventSource = new EventSourcePolyfill(url, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
 
-  eventSource.onopen = () => {
-    console.log(' SSE connection opened');
-  };
+  eventSource.onopen = () => {};
 
   eventSource.onmessage = (event) => {
-    console.log('Received event:', event.data);
     onMessage(event.data);
   };
 

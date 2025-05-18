@@ -277,11 +277,6 @@ export const authService = {
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
     const REDIRECT_URI = `${API_URL}/api/v1/user/login/oauth2/code/${provider}`;
 
-    console.log('소셜 로그인 설정:', {
-      provider,
-      redirectUri: REDIRECT_URI,
-    });
-
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,
       google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email profile`,

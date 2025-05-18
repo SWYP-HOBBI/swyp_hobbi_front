@@ -46,7 +46,7 @@ export default function SocialButton({
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log(`${provider} 버튼 클릭`);
+
     onClick();
   };
 

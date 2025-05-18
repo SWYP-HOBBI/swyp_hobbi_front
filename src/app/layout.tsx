@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`antialiased`}>
+      <body className={`antialiased ${pretendard.variable}`}>
         <Script
           src="https://cdn.swygbro.com/public/widget/swyg-widget.js"
           strategy="afterInteractive"
