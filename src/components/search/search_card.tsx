@@ -31,22 +31,22 @@ export default function SearchCard({
   createdAt,
 }: PostCardProps) {
   return (
-    <div className="flex w-full bg-grayscale-0 rounded-xl shadow-md p-5">
+    <div className="flex gap-6 items-center w-full bg-grayscale-0 rounded-xl shadow-md p-5">
       {/* 작성자 정보 */}
-      <div className="w-[80px] flex items-center space-x-3 mb-4">
+      <div>
         <Profile
           imageUrl={userImageUrl}
           nickname={nickname}
-          variant="vertical"
+          variant="vertical-large"
         />
       </div>
 
       {/* 게시글 내용 부분은 Link로 감싸기 */}
       <Link href={`/posts/${postId}`} className="block w-full">
-        <div className="flex gap-4">
+        <div className="flex items-center gap-6">
           {/* 게시글 이미지가 있을 때만 표시 */}
           {postImageUrls.length > 0 ? (
-            <div className="w-[195px] h-[146px] flex-shrink-0 mt-2 relative">
+            <div className="w-[195px] h-[146px] flex-shrink-0 relative">
               <Image
                 src={postImageUrls[0]}
                 width={195}
@@ -56,7 +56,7 @@ export default function SearchCard({
                 unoptimized
               />
               {postImageUrls.length > 1 && (
-                <div className="absolute flex items-center justify-center gap-1 bottom-5 right-5 bg-grayscale-10 rounded-xl px-2 py-1">
+                <div className="absolute flex items-center justify-center gap-1 bottom-2 right-2 bg-grayscale-10 rounded-xl px-2 py-1">
                   <SvgIcon
                     name="camera"
                     size={16}
@@ -89,22 +89,22 @@ export default function SearchCard({
               </span>
             </div>
             <h3 className="text-2xl font-bold text-grayscale-100">{title}</h3>
-            <p className="w-full text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm">
+            <p className="w-full text-grayscale-100 overflow-hidden line-clamp-2 text-sm">
               {content}
             </p>
-          </div>
-        </div>
-        {/* 좋아요, 댓글 카운트 - Link 밖에 배치 */}
-        <div className="flex items-center space-x-4 text-grayscale-60 justify-end">
-          {/* 좋아요 카운트 */}
-          <div className="flex items-center space-x-3">
-            <span>좋아요:</span>
-            <span>{likeCount}개</span>
-          </div>
-          {/* 댓글 카운트 */}
-          <div className="flex items-center space-x-3">
-            <span>댓글:</span>
-            <span>{commentCount}개</span>
+            {/* 좋아요, 댓글 카운트 - Link 밖에 배치 */}
+            <div className="flex items-center space-x-4 text-grayscale-60 justify-end">
+              {/* 좋아요 카운트 */}
+              <div className="flex items-center space-x-3">
+                <span>좋아요:</span>
+                <span>{likeCount}개</span>
+              </div>
+              {/* 댓글 카운트 */}
+              <div className="flex items-center space-x-3">
+                <span>댓글:</span>
+                <span>{commentCount}개</span>
+              </div>
+            </div>
           </div>
         </div>
       </Link>
