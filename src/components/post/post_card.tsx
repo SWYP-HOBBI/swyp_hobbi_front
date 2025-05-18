@@ -102,7 +102,7 @@ export default function PostCard({
                     className="flex-shrink-0"
                   />
                   <span className="text-xs text-grayscale-60 leading-none flex items-center">
-                    +{postImageUrls.length}
+                    +{postImageUrls.length - 1}
                   </span>
                 </div>
               )}
