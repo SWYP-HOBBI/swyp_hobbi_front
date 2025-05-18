@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 const initialState: ModalState = {
   isOpen: false, // 모달 열림 여부
+  type: 'default', // 모달 타입
   title: '', // 모달 제목
   message: '', // 모달 메시지
   confirmText: '확인', // 확인 버튼 텍스트
