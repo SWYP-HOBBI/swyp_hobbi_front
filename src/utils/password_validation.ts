@@ -48,7 +48,7 @@ export const validatePasswordMatch = (
   if (password !== confirmPassword) {
     return {
       isValid: false,
-      message: '입력한 비밀번호와 일치하지 않습니다.',
+      message: '입력한 비밀번호와 일치하는지 다시 한 번 확인해주세요.',
     };
   }
   return { isValid: true };

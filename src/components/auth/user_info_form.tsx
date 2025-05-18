@@ -99,10 +99,53 @@ export default function UserInfoForm({
   };
 
   /**
+   * 닉네임 유효성 검사 함수 추가
+   */
+  const validateNickname = (
+    nickname: string,
+  ): { isValid: boolean; message: string } => {
+    // 공백 검사
+    if (!nickname.trim()) {
+      return { isValid: false, message: '닉네임을 입력해주세요.' };
+    }
+
+    // 길이 검사 (2~10자)
+    if (nickname.length < 2 || nickname.length > 10) {
+      return {
+        isValid: false,
+        message: '닉네임은 2~10자 사이로 입력해주세요.',
+      };
+    }
+
+    // 특수문자 검사 (특수문자 불가)
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (specialCharRegex.test(nickname)) {
+      return { isValid: false, message: '특수문자는 사용할 수 없습니다.' };
+    }
+
+    // 공백 문자 포함 검사
+    if (nickname.includes(' ')) {
+      return { isValid: false, message: '공백은 포함할 수 없습니다.' };
+    }
+
+    return { isValid: true, message: '' };
+  };
+
+  /**
    * 닉네임 중복 검사 핸들러
    * API 호출을 통해 닉네임 중복 여부 확인
    */
   const handleNicknameCheck = async () => {
+    // 유효성 검사 수행
+    const validation = validateNickname(signupData.nickname);
+
+    if (!validation.isValid) {
+      setIsError(true);
+      setErrorMessage(validation.message);
+      setIsNicknameVerified(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setIsError(false);
@@ -275,7 +318,7 @@ export default function UserInfoForm({
       )}
 
       {isNicknameVerified && (
-        <p className="text-xs text-primary mt-2 max-md:text-[8px]">
+        <p className="text-xs text-grayscale-80 mt-2 max-md:text-[8px]">
           *사용 가능한 닉네임입니다.
         </p>
       )}
