@@ -241,15 +241,30 @@ export default function PostComment({
 
   // 댓글 삭제
   const handleDeleteComment = async (commentId: number) => {
-    try {
-      await commentService.deleteComment(commentId);
-      // 댓글 목록 쿼리 무효화
-      await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
-      // 상위 컴포넌트에 알림
-      onCommentUpdate?.();
-    } catch (error) {
-      console.error('댓글 삭제에 실패했습니다:', error);
-    }
+    openModal({
+      message: '댓글을 정말로\n삭제하시겠습니까?',
+      confirmText: '삭제',
+      cancelText: '취소',
+      showCancelButton: true,
+      onConfirm: async () => {
+        try {
+          await commentService.deleteComment(commentId);
+          // 댓글 목록 쿼리 무효화
+          await queryClient.invalidateQueries({
+            queryKey: ['comments', postId],
+          });
+          // 상위 컴포넌트에 알림
+          onCommentUpdate?.();
+        } catch (error) {
+          console.error('댓글 삭제에 실패했습니다:', error);
+          openModal({
+            type: 'error',
+            message: '댓글 삭제에 실패했습니다.\n다시 시도해 주세요.',
+            confirmText: '확인',
+          });
+        }
+      },
+    });
   };
 
   if (status === 'pending')

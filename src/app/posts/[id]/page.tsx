@@ -112,9 +112,10 @@ export default function PostDetailPage() {
     if (!post) return;
 
     openModal({
-      title: '게시글 삭제',
-      message: '정말로 이 게시글을 삭제하시겠습니까?',
+      message: '피드를 정말로\n삭제하시겠습니까?',
+      cancelText: '취소',
       confirmText: '삭제',
+      showCancelButton: true,
       onConfirm: async () => {
         try {
           await postService.deletePost(post.postId);
