@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 /**
  *  게시글 카드 컴포넌트
@@ -39,6 +40,24 @@ export default function PostCard({
   const { openModal } = useModalStore();
   const currentUserId = useAuthStore((state) => state.userId);
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // 초기값 설정
+    handleResize();
+
+    // 리사이즈 이벤트 리스너 등록
+    window.addEventListener('resize', handleResize);
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // 좋아요 버튼 클릭 핸들러
   const handleLikeClick = (e: React.MouseEvent) => {
@@ -81,9 +100,7 @@ export default function PostCard({
           <Profile
             imageUrl={userImageUrl}
             nickname={nickname}
-            variant={
-              window.innerWidth <= 768 ? 'horizontal-small' : 'horizontal-large'
-            }
+            variant={isMobile ? 'horizontal-small' : 'horizontal-large'}
           />
           <span className="text-grayscale-60 text-xs ml-3">
             {formatDate(createdAt)}
