@@ -2,6 +2,7 @@ import { Comment } from '@/types/post';
 import { commentService } from '@/services/api';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/store/auth';
+import { useUserProfileStore } from '@/store/user_profile';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { InfiniteData } from '@tanstack/react-query';
 import SvgIcon from '../common/svg_icon';
@@ -35,7 +36,6 @@ interface ReplyTo {
 
 interface PostCommentProps {
   postId: number;
-  userImageUrl: string;
   onCommentUpdate?: () => void;
 }
 
@@ -50,7 +50,6 @@ interface PostCommentProps {
  */
 export default function PostComment({
   postId,
-  userImageUrl,
   onCommentUpdate,
 }: PostCommentProps) {
   const [newComment, setNewComment] = useState('');
@@ -59,8 +58,13 @@ export default function PostComment({
   const [editContent, setEditContent] = useState(''); // 수정 중인 댓글 내용
   const queryClient = useQueryClient();
 
-  // 현재 로그인한 사용자의 userId를 가져오도록 수정
   const currentUserId = useAuthStore((state) => state.userId);
+  const { userInfo, fetchUserInfo } = useUserProfileStore();
+
+  // 컴포넌트 마운트 시 사용자 정보 가져오기
+  useEffect(() => {
+    fetchUserInfo();
+  }, [fetchUserInfo]);
 
   const truncateContent = (content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
@@ -449,9 +453,9 @@ export default function PostComment({
 
         <div className="flex gap-2">
           <div className="w-[56px] h-[56px] flex-shrink-0">
-            {userImageUrl && userImageUrl !== '' ? (
+            {userInfo?.userImageUrl ? (
               <Image
-                src={userImageUrl}
+                src={userInfo.userImageUrl}
                 alt="프로필 이미지"
                 className="rounded-full w-full h-full object-cover"
                 width={56}

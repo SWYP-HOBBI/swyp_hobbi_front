@@ -291,7 +291,6 @@ export default function PostDetailPage() {
         >
           <PostComment
             postId={Number(id)}
-            userImageUrl={post.userImageUrl}
             onCommentUpdate={handleCommentUpdate}
           />
         </motion.div>
