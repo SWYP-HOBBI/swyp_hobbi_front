@@ -130,6 +130,11 @@ export default function PostForm({
    * 지원되지 않는 이미지 포맷을 JPEG/PNG로 변환
    */
   const processImageFile = async (file: File): Promise<File> => {
+    // 서버 사이드에서 실행되는 경우 처리하지 않음
+    if (typeof window === 'undefined') {
+      return file;
+    }
+
     // 지원되는 이미지 포맷
     const supportedFormats = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
 
