@@ -123,66 +123,73 @@ export default function PostCard({
           )}
 
           {/* 게시글 제목 및 내용 */}
-          <div className="flex-1 space-y-3 overflow-hidden">
-            <motion.div
-              className="tag_container"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {postHobbyTags.map((tag, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * index }}
+          <div className="flex-1 flex flex-col space-y-3 overflow-hidden">
+            <div className="flex-1">
+              <motion.div
+                className="tag_container"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                {postHobbyTags.map((tag, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <Tag label={tag} variant="white" />
+                  </motion.div>
+                ))}
+              </motion.div>
+              <h3 className="text-2xl font-bold text-grayscale-100 mt-3">
+                {title}
+              </h3>
+              <p className="text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm whitespace-pre-wrap mt-3">
+                {content}
+              </p>
+            </div>
+            {/* 좋아요, 댓글 카운트 */}
+            <div className="flex items-center space-x-4 text-grayscale-60 justify-end">
+              {/* 좋아요 카운트 */}
+              <div className="flex items-center space-x-3">
+                <motion.button
+                  onClick={handleLikeClick}
+                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.1 }}
                 >
-                  <Tag label={tag} variant="white" />
-                </motion.div>
-              ))}
-            </motion.div>
-            <h3 className="text-2xl font-bold text-grayscale-100">{title}</h3>
-            <p className="text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm whitespace-pre-wrap mb-6">
-              {content}
-            </p>
+                  <SvgIcon
+                    name="heart"
+                    size={28}
+                    color={liked ? 'var(--like)' : 'var(--grayscale-20)'}
+                  />
+                </motion.button>
+                <motion.span
+                  key={likeCount}
+                  initial={{ scale: 1.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                >
+                  {likeCount}
+                </motion.span>
+              </div>
+              {/* 댓글 카운트 */}
+              <div
+                className="flex items-center space-x-3 cursor-pointer hover:opacity-80"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCommentClick();
+                }}
+                role="button"
+                aria-label="댓글 보기"
+              >
+                <SvgIcon name="chat" size={28} color="var(--grayscale-20)" />
+                <span>{commentCount}</span>
+              </div>
+            </div>
           </div>
         </div>
       </Link>
-
-      {/* 좋아요, 댓글 카운트 - Link 밖에 배치 */}
-      <div className="flex items-center space-x-4 text-grayscale-60 justify-end mt-4">
-        {/* 좋아요 카운트 */}
-        <div className="flex items-center space-x-3">
-          <motion.button
-            onClick={handleLikeClick}
-            whileTap={{ scale: 0.9 }}
-            whileHover={{ scale: 1.1 }}
-          >
-            <SvgIcon
-              name="heart"
-              size={28}
-              color={liked ? 'var(--like)' : 'var(--grayscale-20)'}
-            />
-          </motion.button>
-          <motion.span
-            key={likeCount}
-            initial={{ scale: 1.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-          >
-            {likeCount}
-          </motion.span>
-        </div>
-        {/* 댓글 카운트 */}
-        <div
-          className="flex items-center space-x-3 cursor-pointer hover:opacity-80"
-          onClick={handleCommentClick}
-          role="button"
-          aria-label="댓글 보기"
-        >
-          <SvgIcon name="chat" size={28} color="var(--grayscale-20)" />
-          <span>{commentCount}</span>
-        </div>
-      </div>
     </motion.div>
   );
 }
