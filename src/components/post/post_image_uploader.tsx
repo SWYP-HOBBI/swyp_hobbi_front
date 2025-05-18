@@ -53,11 +53,6 @@ export default function PostImageUploader({
         <span className="text-xs text-grayscale-50 ml-2">
           *사진을 최대 5장까지 업로드할 수 있습니다.
         </span>
-        <div className="mt-2 text-xs text-grayscale-50">
-          <p>• 지원 포맷: JPG, JPEG, PNG, GIF, BMP, WEBP, HEIC, HEIF</p>
-          <p>• 파일당 최대 10MB</p>
-          <p>• HEIC, HEIF 등 일부 포맷은 자동으로 JPG로 변환됩니다.</p>
-        </div>
       </div>
       {/* 이미지 그리드 */}
       <div className="flex gap-4 flex-wrap">
