@@ -152,7 +152,7 @@ export default function SearchContent() {
         ) : (
           <>
             <h1 className="text-2xl font-bold mb-3">게시글</h1>
-            <div className="space-y-12">
+            <div className="space-y-3">
               {data?.pages.map((page) =>
                 page.posts.map((post) => (
                   <div key={post.postId}>
