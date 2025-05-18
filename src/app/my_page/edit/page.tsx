@@ -19,6 +19,7 @@ import {
   getPasswordConfirmError,
   getPasswordError,
 } from '@/utils/password_validation';
+import Loader from '@/components/common/loader';
 
 export default function EditMyPage() {
   const router = useRouter();
@@ -181,8 +182,34 @@ export default function EditMyPage() {
     }
   };
 
-  // 로딩 중이면 저장 버튼 비활성화
-  if (!userInfo) return <div>로딩 중</div>;
+  const [isModified, setIsModified] = useState(false);
+
+  useEffect(() => {
+    if (
+      username !== userInfo?.username ||
+      birthYear !== userInfo?.birthYear.toString() ||
+      birthMonth !== String(userInfo?.birthMonth).padStart(2, '0') ||
+      birthDay !== String(userInfo?.birthDay).padStart(2, '0') ||
+      mbti !== userInfo?.mbti ||
+      selectedHobbyTags.some(
+        (tag) => !userInfo?.hobbyTags.includes(tag.subCategory),
+      )
+    ) {
+      setIsModified(true);
+    } else {
+      setIsModified(false);
+    }
+  }, [
+    username,
+    birthYear,
+    birthMonth,
+    birthDay,
+    mbti,
+    selectedHobbyTags,
+    userInfo,
+  ]);
+
+  if (!userInfo) return <Loader />;
 
   return (
     <main className="w-full min-h-screen flex justify-center">
@@ -401,11 +428,15 @@ export default function EditMyPage() {
             수정취소
           </button>
           <button
-            className="w-[234px] h-[60px] rounded-[12px] bg-[var(--primary)] text-[14px] text-[var(--grayscale-50)]"
+            className={`w-[234px] h-[60px] rounded-[12px] ${
+              isModified
+                ? 'bg-[var(--primary)] text-[var(--primary-b80)]'
+                : 'bg-[var(--grayscale-10)] text-[var(--grayscale-50)]'
+            }`}
             onClick={handleSave}
-            disabled={isLoading}
+            disabled={!isModified || isLoading}
           >
-            {isLoading ? '저장 중...' : '저장하기'}
+            {isLoading ? '저장 중' : '저장하기'}
           </button>
         </div>
 

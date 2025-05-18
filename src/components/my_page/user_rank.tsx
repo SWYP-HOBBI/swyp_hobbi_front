@@ -9,7 +9,9 @@ export default function UserRank() {
         <div className="w-[445px] h-[130px] bg-[#D9D9D9] rounded-[24px]"></div>
       </div> */}
       </div>
-      <span>기능 준비 중..</span>
+      <div className="text-center text-grayscale-60">
+        <span>준비 중인 기능입니다!</span>
+      </div>
     </>
   );
 }
