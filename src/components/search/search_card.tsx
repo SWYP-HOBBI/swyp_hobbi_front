@@ -43,10 +43,10 @@ export default function SearchCard({
 
       {/* 게시글 내용 부분은 Link로 감싸기 */}
       <Link href={`/posts/${postId}`} className="block w-full">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center">
           {/* 게시글 이미지가 있을 때만 표시 */}
           {postImageUrls.length > 0 ? (
-            <div className="w-[195px] h-[146px] flex-shrink-0 relative">
+            <div className="w-[195px] h-[146px] flex-shrink-0 relative mr-6">
               <Image
                 src={postImageUrls[0]}
                 width={195}
