@@ -137,17 +137,20 @@ export default function PostComment({
   const allComments = data?.pages.flatMap((page) => page) ?? [];
   const structuredComments = structureComments(allComments);
 
-  // 댓글 작성
+  // 댓글 작성 함수를 async로 수정하고 중복 제출 방지를 위한 상태 추가
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 댓글 작성 핸들러 수정
   const handleCreateComment = async (
     content: string,
     parentCommentId?: number | null,
   ) => {
-    if (!content.trim()) {
-      alert('댓글 내용을 입력해주세요.');
+    if (!content.trim() || isSubmitting) {
       return;
     }
 
     try {
+      setIsSubmitting(true);
       await commentService.createComment(
         postId,
         content,
@@ -156,13 +159,13 @@ export default function PostComment({
       );
       setNewComment('');
       setReplyTo(null);
-      // 댓글 목록 쿼리 무효화
       await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
-      // 상위 컴포넌트에 알림
       onCommentUpdate?.();
     } catch (error) {
       console.error('댓글 작성에 실패했습니다:', error);
       alert('댓글 작성에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -460,18 +463,22 @@ export default function PostComment({
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            onKeyDown={(e) => {
+            onKeyDown={async (e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                handleCreateComment(newComment, replyTo?.commentId);
+                await handleCreateComment(newComment, replyTo?.commentId);
               }
             }}
             placeholder="댓글을 입력하세요."
             className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
+            disabled={isSubmitting}
           />
           <Button
             variant="outline"
-            onClick={() => handleCreateComment(newComment, replyTo?.commentId)}
+            onClick={async () =>
+              await handleCreateComment(newComment, replyTo?.commentId)
+            }
+            disabled={isSubmitting}
           >
             등록
           </Button>
