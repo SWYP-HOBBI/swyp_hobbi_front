@@ -3,6 +3,7 @@
 import { useModalStore } from '@/store/modal';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import Button from './button';
 
 export default function Modal() {
   const {
@@ -12,6 +13,9 @@ export default function Modal() {
     message,
     confirmText,
     onConfirm,
+    cancelText,
+    onCancel,
+    showCancelButton,
     closeModal,
   } = useModalStore();
 
@@ -40,6 +44,11 @@ export default function Modal() {
     closeModal();
   };
 
+  const handleCancel = () => {
+    onCancel?.();
+    closeModal();
+  };
+
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-grayscale-100/50" />
@@ -50,10 +59,18 @@ export default function Modal() {
           {title && <h2>{title}</h2>}
           {message && <p className="whitespace-pre-line">{message}</p>}
         </div>
-        <div className="w-full">
+        <div className={`w-full ${showCancelButton ? 'flex gap-3' : ''}`}>
+          {showCancelButton && (
+            <button
+              onClick={handleCancel}
+              className={`p-4 border border-primary-b60  bg-grayscale-0 text-primary-b60 hover:bg-primary-b60 hover:text-grayscale-0 rounded-xl button_transition font-semibold ${showCancelButton ? 'flex-1' : 'w-full'}`}
+            >
+              {cancelText}
+            </button>
+          )}
           <button
             onClick={handleConfirm}
-            className="w-full p-4 bg-primary text-primary-b80 rounded-xl hover:bg-primary/80 button_transition font-semibold"
+            className={`p-4 bg-primary text-primary-b80 rounded-xl hover:bg-primary/80 button_transition font-semibold ${showCancelButton ? 'flex-1' : 'w-full'}`}
           >
             {confirmText}
           </button>
