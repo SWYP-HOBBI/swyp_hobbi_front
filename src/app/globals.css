@@ -36,7 +36,7 @@
   --radius-lg: 12px;
   --radius-xl: 24px;
 
-  /* --font-pretendard: 'Pretendard Variable', sans-serif; */
+  --font-pretendard: 'Pretendard Variable', sans-serif;
 }
 
 @theme inline {
@@ -75,7 +75,7 @@
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
 
-  /* --font-pretendard: var(--font-pretendard); */
+  --font-pretendard: var(--font-pretendard);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,7 +87,7 @@ html {
 }
 
 body {
-  /* font-family: var(--font-pretendard); */
+  font-family: var(--font-pretendard);
 }
 
 button {
