@@ -185,7 +185,7 @@ export default function EditMyPage() {
   if (!userInfo) return <div>로딩 중</div>;
 
   return (
-    <main className="w-full min-h-screen bg-gray-100 flex justify-center">
+    <main className="w-full min-h-screen flex justify-center">
       <div>
         <div className="w-[960px] bg-white rounded-[24px] mt-[48px] flex flex-col items-center px-[20px] pb-[48px]">
           <div className="text-[32px] font-bold pt-[48px] pb-[48px]">
