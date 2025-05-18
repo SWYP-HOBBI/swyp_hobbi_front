@@ -10,6 +10,7 @@ export interface ModalState {
   cancelText?: string; // 취소 버튼 텍스트
   onCancel?: () => void; // 취소 버튼 클릭 시 실행될 함수
   showCancelButton?: boolean; // 취소 버튼 표시 여부
+  hideButtons?: boolean; // 모든 버튼 숨김 여부
 }
 
 export interface ModalStore extends ModalState {
