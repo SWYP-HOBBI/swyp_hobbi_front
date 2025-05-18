@@ -3,7 +3,11 @@
 import Image from 'next/image';
 import React from 'react';
 
-type ProfileVariant = 'vertical' | 'horizontal-large' | 'horizontal-small';
+type ProfileVariant =
+  | 'vertical'
+  | 'horizontal-large'
+  | 'horizontal-small'
+  | 'vertical-large';
 
 interface ProfileProps {
   imageUrl?: string;
@@ -16,11 +20,12 @@ export default function Profile({
   nickname = 'nickname',
   variant = 'vertical',
 }: ProfileProps) {
-  const isVertical = variant === 'vertical';
+  const isVerticalLarge = variant === 'vertical-large';
+  const isVertical = variant === 'vertical' || isVerticalLarge;
   const isHorizontalSmall = variant === 'horizontal-small';
 
-  const imageSize = isHorizontalSmall ? 36 : 52;
-  const svgSize = isHorizontalSmall ? 36 : 52;
+  const imageSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
+  const svgSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
 
   // imageUrl이 없는 경우 기본 프로필 표시
   const showDefaultProfile = !imageUrl;
