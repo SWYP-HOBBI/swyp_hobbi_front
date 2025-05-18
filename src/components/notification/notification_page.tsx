@@ -113,7 +113,7 @@ export default function NotificationPage() {
               ) : (
                 <div className="flex space-x-2 items-center mt-2">
                   <button
-                    className={`w-[59px] h-[24px] rounded-[24px] text-[14px] border ${
+                    className={`px-2 py-1 rounded-[24px] text-[14px] border ${
                       selectedButton === '전체 읽음'
                         ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
                         : 'border-[var(--grayscale-20)]'
@@ -143,7 +143,7 @@ export default function NotificationPage() {
                     전체 읽음
                   </button>
                   <button
-                    className={`w-[37px] h-[24px] rounded-[24px] text-[14px] border ${
+                    className={`px-2 py-1 rounded-[24px] text-[14px] border ${
                       selectedButton === '읽음'
                         ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
                         : 'border-[var(--grayscale-20)]'
@@ -152,6 +152,7 @@ export default function NotificationPage() {
                       handleButtonClick('읽음');
                       handleMarkSelectedRead();
                     }}
+                    disabled={selectedNotifications.length === 0}
                   >
                     읽음
                   </button>
