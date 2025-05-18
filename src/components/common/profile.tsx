@@ -19,8 +19,8 @@ export default function Profile({
   const isVertical = variant === 'vertical';
   const isHorizontalSmall = variant === 'horizontal-small';
 
-  const imageSize = isHorizontalSmall ? 36 : 72;
-  const svgSize = isHorizontalSmall ? 36 : 72;
+  const imageSize = isHorizontalSmall ? 36 : 52;
+  const svgSize = isHorizontalSmall ? 36 : 52;
 
   // default.png이거나 imageUrl이 없는 경우 기본 프로필 표시
   const shouldShowDefaultProfile = !imageUrl || imageUrl === 'default.png';
