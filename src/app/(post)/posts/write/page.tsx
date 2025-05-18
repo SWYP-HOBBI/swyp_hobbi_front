@@ -35,11 +35,23 @@ export default function PostWrite() {
           router.push(`/posts/${postId}`);
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('게시글 작성 실패:', error);
-      alert(
-        error instanceof Error ? error.message : '게시글 작성에 실패했습니다.',
-      );
+
+      let errorMessage = '게시글 작성에 실패했습니다.';
+
+      if (error.code === 'EXCEED_FILE_SIZE_LIMIT') {
+        errorMessage =
+          '이미지 파일의 크기가 너무 큽니다. 50MB 이하의 파일을 업로드해주세요.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      openModal({
+        title: '게시글 작성 실패',
+        message: errorMessage,
+        confirmText: '확인',
+      });
     }
   };
 
