@@ -24,6 +24,8 @@ export interface UserPostCardProps {
 export interface MyPostsResponse {
   posts: UserPostCardProps[];
   isLast: boolean;
+  likeCount: number;
+  commentCount: number;
 }
 
 // 개인정보 수정 페이지 정보
