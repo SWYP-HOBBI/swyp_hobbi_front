@@ -6,7 +6,7 @@ export default function DeleteConfirm() {
   const router = useRouter();
 
   return (
-    <div className="w-[1440px] h-[1022px] flex flex-col items-center justify-center">
+    <div className="w-full min-h-screen bg-white flex flex-col justify-center items-center">
       <div className="w-[960px] h-[302px] flex flex-col items-center justify-center rounded-[24px] border border-[var(--grayscale-20)]">
         <span className="text-[48px] text-[var(--like)] font-bold">
           회원 탈퇴가 완료 되었습니다.

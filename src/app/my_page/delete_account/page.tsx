@@ -38,7 +38,7 @@ export default function MyPageEdit() {
   };
 
   return (
-    <main className="w-[1440px] h-[1022px] bg-white flex flex-col items-center justify-center pt-12">
+    <main className="w-full min-h-screen bg-white flex flex-col justify-center items-center">
       <h1 className="text-[32px] font-bold mb-6">회원 탈퇴 안내</h1>
       <p className="flex flex-col text-[20px] text-center mb-3">
         <span>
