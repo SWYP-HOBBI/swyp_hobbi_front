@@ -78,7 +78,10 @@ export default function TabBar() {
   const DesktopTabBar = () => (
     <div className="w-[198px] h-screen bg-white sticky top-0 hidden md:flex flex-col z-[9999]">
       <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
-        <div className="flex justify-center items-center">
+        <div
+          className="flex justify-center items-center cursor-pointer"
+          onClick={() => router.push('/posts')}
+        >
           <SvgIcon name="logo" width={150} height={44} />
         </div>
       </div>

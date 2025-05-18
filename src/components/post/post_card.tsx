@@ -129,7 +129,7 @@ export default function PostCard({
               ))}
             </motion.div>
             <h3 className="text-2xl font-bold text-grayscale-100">{title}</h3>
-            <p className="text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm">
+            <p className="text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm whitespace-pre-wrap mb-6">
               {content}
             </p>
           </div>
