@@ -13,7 +13,7 @@ export default function MyPage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-gray-100 flex justify-center">
+    <main className="w-full min-h-screen flex justify-center">
       <div className="w-[960px] pt-12">
         <div className="flex gap-[20px]">
           <UserProfile />

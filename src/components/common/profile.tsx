@@ -22,8 +22,8 @@ export default function Profile({
   const imageSize = isHorizontalSmall ? 36 : 52;
   const svgSize = isHorizontalSmall ? 36 : 52;
 
-  // default.png이거나 imageUrl이 없는 경우 기본 프로필 표시
-  const shouldShowDefaultProfile = !imageUrl || imageUrl === 'default.png';
+  // imageUrl이 없는 경우 기본 프로필 표시
+  const showDefaultProfile = !imageUrl;
 
   return (
     <div
@@ -35,7 +35,7 @@ export default function Profile({
         style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
         className="rounded-full bg-grayscale-10 flex items-center justify-center overflow-hidden"
       >
-        {!shouldShowDefaultProfile ? (
+        {!showDefaultProfile ? (
           <Image
             src={imageUrl}
             alt="프로필 이미지"
