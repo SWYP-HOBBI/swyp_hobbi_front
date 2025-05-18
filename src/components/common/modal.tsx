@@ -48,7 +48,7 @@ export default function Modal() {
           className={`font-semibold text-xl ${type === 'error' ? 'text-like' : 'text-grayscale-100'}`}
         >
           {title && <h2>{title}</h2>}
-          {message && <p>{message}</p>}
+          {message && <p className="whitespace-pre-line">{message}</p>}
         </div>
         <div className="w-full">
           <button
