@@ -11,6 +11,7 @@ import {
 } from '@/utils/password_validation';
 import { authService } from '@/services/api';
 import { useRouter } from 'next/navigation';
+import { useModalStore } from '@/store/modal';
 
 export default function PasswordFind({}) {
   const {
@@ -23,6 +24,7 @@ export default function PasswordFind({}) {
   } = useSignupStore();
 
   const router = useRouter();
+  const { openModal } = useModalStore();
 
   const { isEmailSent, emailTimer, formatTime, checkEmailAndSendVerification } =
     useEmailVerification({
@@ -78,9 +80,21 @@ export default function PasswordFind({}) {
         localStorage.removeItem('verifiedEmail');
         localStorage.removeItem('emailVerified');
 
-        router.push('/');
+        // 성공 모달 표시
+        openModal({
+          message: '새 비밀번호가 설정되었습니다.\n다시 로그인 해주세요.',
+          confirmText: '로그인 하기',
+          onConfirm: () => router.push('/'),
+        });
       } catch (error) {
         console.error('비밀번호 변경 중 오류:', error);
+        // 에러 모달 표시
+        openModal({
+          title: '비밀번호 변경 실패',
+          message: '비밀번호 변경 중 오류가 발생했습니다.\n다시 시도해 주세요.',
+          confirmText: '확인',
+          type: 'error',
+        });
       }
     }
   };
