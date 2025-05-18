@@ -198,7 +198,7 @@ export default function HobbySelector({
   return (
     <div className={`${className}`}>
       <div className="flex items-center gap-3">
-        <div className="flex-1">
+        <div className={`${isSearchMode ? 'w-[122px]' : 'flex-1'}`}>
           <CustomDropdownButton
             value={selectedMainCategoryLabel}
             placeholder="대분류를 선택해주세요."
@@ -222,7 +222,7 @@ export default function HobbySelector({
           </CustomDropdownButton>
         </div>
 
-        <div className="flex-1">
+        <div className={`${isSearchMode ? 'w-[122px]' : 'flex-1'}`}>
           <CustomDropdownButton
             value={selectedSubCategories}
             placeholder="소분류를 선택해주세요."
@@ -248,7 +248,7 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
-          className="flex-1 max-md:text-xs"
+          className={`${isSearchMode ? 'w-[122px]' : 'flex-1'} max-md:text-xs`}
           onClick={handleAddTags}
           disabled={
             !selectedMainCategory ||
