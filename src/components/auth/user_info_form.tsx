@@ -56,12 +56,17 @@ export default function UserInfoForm({
   const [isDayOpen, setIsDayOpen] = useState(false); // 일 선택 상태
   const [isMbtiOpen, setIsMbtiOpen] = useState(false); // MBTI 선택 상태
 
+  // 현재 날짜 관련 상수 추가
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1; // getMonth()는 0부터 시작하므로 1을 더함
+  const currentDay = today.getDate();
+
   /**
    * 년도 선택 옵션 생성 (1900년 ~ 현재년도)
    * useMemo를 사용하여 불필요한 재계산 방지
    */
   const years = useMemo(() => {
-    const currentYear = new Date().getFullYear();
     return Array.from(
       { length: currentYear - 1900 + 1 },
       (_, i) => currentYear - i,
@@ -247,6 +252,33 @@ export default function UserInfoForm({
     return new Date(year, month, 0).getDate();
   };
 
+  // 월 선택 제한 함수 추가
+  const getAvailableMonths = () => {
+    if (signupData.birthYear === currentYear) {
+      return Array.from({ length: currentMonth }, (_, i) => i + 1);
+    }
+    return Array.from({ length: 12 }, (_, i) => i + 1);
+  };
+
+  // 일 선택 제한 함수 수정
+  const getAvailableDays = () => {
+    const daysInMonth = getDaysInMonth(
+      signupData.birthYear,
+      signupData.birthMonth,
+    );
+    let maxDay = daysInMonth;
+
+    // 현재 년도와 월이 선택되었을 때 현재 일자까지만 선택 가능
+    if (
+      signupData.birthYear === currentYear &&
+      signupData.birthMonth === currentMonth
+    ) {
+      maxDay = Math.min(daysInMonth, currentDay);
+    }
+
+    return Array.from({ length: maxDay }, (_, i) => i + 1);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-0">
       {/* 헤더 */}
@@ -350,7 +382,11 @@ export default function UserInfoForm({
                 showCheckbox
                 isSelected={signupData.birthYear === year}
                 onClick={() => {
-                  updateSignupData({ birthYear: year });
+                  updateSignupData({
+                    birthYear: year,
+                    birthMonth: 0,
+                    birthDay: 0,
+                  });
                   setIsYearOpen(false);
                 }}
               />
@@ -365,7 +401,7 @@ export default function UserInfoForm({
             isOpen={isMonthOpen}
             onToggle={() => setIsMonthOpen(!isMonthOpen)}
           >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+            {getAvailableMonths().map((month) => (
               <CustomDropdownItem
                 key={month}
                 showCheckbox
@@ -373,7 +409,11 @@ export default function UserInfoForm({
                 label={`${month}월`}
                 isSelected={signupData.birthMonth === month}
                 onClick={() => {
-                  updateSignupData({ birthMonth: month });
+                  // 월이 변경되면 일 초기화
+                  updateSignupData({
+                    birthMonth: month,
+                    birthDay: 0,
+                  });
                   setIsMonthOpen(false);
                 }}
               />
@@ -388,15 +428,7 @@ export default function UserInfoForm({
             isOpen={isDayOpen}
             onToggle={() => setIsDayOpen(!isDayOpen)}
           >
-            {Array.from(
-              {
-                length: getDaysInMonth(
-                  signupData.birthYear,
-                  signupData.birthMonth,
-                ),
-              },
-              (_, i) => i + 1,
-            ).map((day) => (
+            {getAvailableDays().map((day) => (
               <CustomDropdownItem
                 key={day}
                 showCheckbox
