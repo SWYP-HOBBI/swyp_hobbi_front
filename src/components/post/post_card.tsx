@@ -8,6 +8,7 @@ import { formatDate } from '@/utils/date';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
+import { useRouter } from 'next/navigation';
 
 /**
  *  게시글 카드 컴포넌트
@@ -37,6 +38,7 @@ export default function PostCard({
 }: PostCardProps) {
   const { openModal } = useModalStore();
   const currentUserId = useAuthStore((state) => state.userId);
+  const router = useRouter();
 
   // 좋아요 버튼 클릭 핸들러
   const handleLikeClick = (e: React.MouseEvent) => {
@@ -52,6 +54,17 @@ export default function PostCard({
       return;
     }
     onLikeClick();
+  };
+
+  // 댓글 클릭
+  const handleCommentClick = () => {
+    router.push(`/posts/${postId}#comments`);
+    setTimeout(() => {
+      const commentsSection = document.getElementById('comments');
+      if (commentsSection) {
+        commentsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -160,7 +173,12 @@ export default function PostCard({
           </motion.span>
         </div>
         {/* 댓글 카운트 */}
-        <div className="flex items-center space-x-3">
+        <div
+          className="flex items-center space-x-3 cursor-pointer hover:opacity-80"
+          onClick={handleCommentClick}
+          role="button"
+          aria-label="댓글 보기"
+        >
           <SvgIcon name="chat" size={28} color="var(--grayscale-20)" />
           <span>{commentCount}</span>
         </div>
