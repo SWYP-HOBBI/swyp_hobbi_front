@@ -1,6 +1,6 @@
 import { AuthState } from '@/types/auth';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { authService } from '@/services/api';
 
 const initialState = {
@@ -118,6 +118,33 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      storage: createJSONStorage(() => ({
+        getItem: (name) => {
+          // 로컬스토리지에서 먼저 확인
+          const localData = localStorage.getItem(name);
+
+          // 쿠키에서도 확인
+          const cookie = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith(name + '='));
+          const cookieData = cookie ? cookie.split('=')[1] : null;
+
+          // 둘 중 하나라도 있으면 반환
+          return localData || cookieData;
+        },
+        setItem: (name, value) => {
+          // 로컬스토리지에 저장
+          localStorage.setItem(name, value);
+          // 쿠키에도 저장
+          document.cookie = `${name}=${value};path=/`;
+        },
+        removeItem: (name) => {
+          // 로컬스토리지에서 제거
+          localStorage.removeItem(name);
+          // 쿠키에서도 제거
+          document.cookie = `${name}=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        },
+      })),
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         accessToken: state.accessToken,
