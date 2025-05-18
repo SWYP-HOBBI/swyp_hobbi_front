@@ -170,6 +170,21 @@ export default function PostComment({
       return;
     }
 
+    // 부모 댓글이 이미 대댓글인 경우 작성 방지
+    if (parentCommentId) {
+      const parentComment = allComments.find(
+        (comment) => comment.commentId === parentCommentId,
+      );
+      if (parentComment?.parentCommentId) {
+        openModal({
+          title: '댓글 작성 실패',
+          message: '대댓글에는 답글을 작성할 수 없습니다.',
+          confirmText: '확인',
+        });
+        return;
+      }
+    }
+
     try {
       setIsSubmitting(true);
       await commentService.createComment(
@@ -405,16 +420,9 @@ export default function PostComment({
                       )}
                       {!editingCommentId && !reply.deleted && (
                         <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
-                          <button
-                            className="font-medium"
-                            onClick={() => handleReplyTo(reply)}
-                          >
-                            답글달기
-                          </button>
-                          {/* userId로 권한 체크 */}
+                          {/* 대댓글에는 답글달기 버튼 제거 */}
                           {canModifyComment(reply.userId) && (
                             <>
-                              <span className="mx-1">·</span>
                               <button
                                 onClick={() => handleStartEdit(reply)}
                                 className="hover:text-primary"
