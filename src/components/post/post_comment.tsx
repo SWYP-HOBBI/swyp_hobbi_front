@@ -2,8 +2,11 @@ import { Comment } from '@/types/post';
 import { commentService } from '@/services/api';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/store/auth';
+import { useUserProfileStore } from '@/store/user_profile';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { InfiniteData } from '@tanstack/react-query';
+import { useModalStore } from '@/store/modal';
+import { useRouter } from 'next/navigation';
 import SvgIcon from '../common/svg_icon';
 import Profile from '../common/profile';
 import Image from 'next/image';
@@ -35,7 +38,6 @@ interface ReplyTo {
 
 interface PostCommentProps {
   postId: number;
-  userImageUrl: string;
   onCommentUpdate?: () => void;
 }
 
@@ -50,17 +52,23 @@ interface PostCommentProps {
  */
 export default function PostComment({
   postId,
-  userImageUrl,
   onCommentUpdate,
 }: PostCommentProps) {
+  const router = useRouter();
+  const { openModal } = useModalStore();
   const [newComment, setNewComment] = useState('');
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null); // 수정 중인 댓글 ID
   const [editContent, setEditContent] = useState(''); // 수정 중인 댓글 내용
   const queryClient = useQueryClient();
 
-  // 현재 로그인한 사용자의 userId를 가져오도록 수정
   const currentUserId = useAuthStore((state) => state.userId);
+  const { userInfo, fetchUserInfo } = useUserProfileStore();
+
+  // 컴포넌트 마운트 시 사용자 정보 가져오기
+  useEffect(() => {
+    fetchUserInfo();
+  }, [fetchUserInfo]);
 
   const truncateContent = (content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
@@ -145,8 +153,36 @@ export default function PostComment({
     content: string,
     parentCommentId?: number | null,
   ) => {
+    // 로그인 상태 체크
+    if (!currentUserId) {
+      openModal({
+        title: '로그인이 필요합니다',
+        message: '댓글을 작성하려면 로그인이 필요합니다.',
+        confirmText: '로그인하기',
+        onConfirm: () => {
+          router.push('/');
+        },
+      });
+      return;
+    }
+
     if (!content.trim() || isSubmitting) {
       return;
+    }
+
+    // 부모 댓글이 이미 대댓글인 경우 작성 방지
+    if (parentCommentId) {
+      const parentComment = allComments.find(
+        (comment) => comment.commentId === parentCommentId,
+      );
+      if (parentComment?.parentCommentId) {
+        openModal({
+          title: '댓글 작성 실패',
+          message: '대댓글에는 답글을 작성할 수 없습니다.',
+          confirmText: '확인',
+        });
+        return;
+      }
     }
 
     try {
@@ -163,7 +199,11 @@ export default function PostComment({
       onCommentUpdate?.();
     } catch (error) {
       console.error('댓글 작성에 실패했습니다:', error);
-      alert('댓글 작성에 실패했습니다.');
+      openModal({
+        title: '댓글 작성 실패',
+        message: '댓글 작성 중 오류가 발생했습니다.',
+        confirmText: '확인',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -380,16 +420,9 @@ export default function PostComment({
                       )}
                       {!editingCommentId && !reply.deleted && (
                         <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
-                          <button
-                            className="font-medium"
-                            onClick={() => handleReplyTo(reply)}
-                          >
-                            답글달기
-                          </button>
-                          {/* userId로 권한 체크 */}
+                          {/* 대댓글에는 답글달기 버튼 제거 */}
                           {canModifyComment(reply.userId) && (
                             <>
-                              <span className="mx-1">·</span>
                               <button
                                 onClick={() => handleStartEdit(reply)}
                                 className="hover:text-primary"
@@ -449,9 +482,9 @@ export default function PostComment({
 
         <div className="flex gap-2">
           <div className="w-[56px] h-[56px] flex-shrink-0">
-            {userImageUrl && userImageUrl !== '' ? (
+            {currentUserId && userInfo?.userImageUrl ? (
               <Image
-                src={userImageUrl}
+                src={userInfo.userImageUrl}
                 alt="프로필 이미지"
                 className="rounded-full w-full h-full object-cover"
                 width={56}
@@ -472,9 +505,13 @@ export default function PostComment({
                 await handleCreateComment(newComment, replyTo?.commentId);
               }
             }}
-            placeholder="댓글을 입력하세요."
+            placeholder={
+              currentUserId
+                ? '댓글을 입력하세요.'
+                : '로그인 후 댓글을 작성할 수 있습니다.'
+            }
             className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !currentUserId}
             maxLength={1000}
           />
           <Button
@@ -484,7 +521,7 @@ export default function PostComment({
             onClick={async () =>
               await handleCreateComment(newComment, replyTo?.commentId)
             }
-            disabled={isSubmitting}
+            disabled={isSubmitting || !currentUserId}
           >
             등록
           </Button>
