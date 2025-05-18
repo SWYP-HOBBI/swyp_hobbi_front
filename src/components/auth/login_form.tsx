@@ -82,24 +82,15 @@ export default function LoginForm() {
 
       setAuth(userData);
       router.push('/posts');
-    } catch (error) {
+    } catch (error: any) {
       setIsError(true);
-
-      // 에러 메시지에 따른 처리
-      if (error instanceof Error) {
-        if (error.message.includes('PASSWORD_NOT_MATCH')) {
-          setErrorMessage('비밀번호가 일치하지 않습니다.');
-        } else if (error.message.includes('USER_NOT_FOUND')) {
-          setErrorMessage('등록되지 않은 이메일입니다.');
-        } else {
-          setErrorMessage(
-            '로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-          );
-        }
-      } else {
+      // 404(이메일 오류)나 401(비밀번호 오류) 모두 동일한 메시지 표시
+      if (error.status === 404 || error.status === 401) {
         setErrorMessage(
-          '로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          '이메일 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요.',
         );
+      } else {
+        setErrorMessage('로그인 중 오류가 발생했습니다');
       }
     } finally {
       setIsLoading(false);
