@@ -13,6 +13,7 @@ import Image from 'next/image';
 import Loader from '../common/loader';
 import Button from '../common/button';
 import { DefaultProfile } from '../common/profile';
+import { formatDate } from '@/utils/date';
 
 /**
  * 댓글 데이터 인터페이스
@@ -312,7 +313,7 @@ export default function PostComment({
                       onChange={(e) => setEditContent(e.target.value)}
                       className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 "
                     />
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <button
                         onClick={() =>
                           handleUpdateComment(comment.commentId, editContent)
@@ -327,6 +328,9 @@ export default function PostComment({
                       >
                         취소
                       </button>
+                      <span className="text-xs text-grayscale-40">
+                        {formatDate(comment.createdAt)}
+                      </span>
                     </div>
                   </div>
                 ) : (
@@ -345,17 +349,16 @@ export default function PostComment({
                     >
                       답글달기
                     </button>
+
                     {/* userId로 권한 체크 */}
                     {canModifyComment(comment.userId) && (
                       <>
-                        <span className="mx-1">·</span>
                         <button
                           onClick={() => handleStartEdit(comment)}
                           className="hover:text-primary"
                         >
                           수정
                         </button>
-                        <span className="mx-1">·</span>
                         <button
                           onClick={() => handleDeleteComment(comment.commentId)}
                           className="hover:text-primary"
@@ -364,6 +367,9 @@ export default function PostComment({
                         </button>
                       </>
                     )}
+                    <span className="text-xs text-grayscale-40">
+                      {formatDate(comment.createdAt)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -389,7 +395,7 @@ export default function PostComment({
                             onChange={(e) => setEditContent(e.target.value)}
                             className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5"
                           />
-                          <div className="flex gap-2">
+                          <div className="flex gap-1">
                             <button
                               onClick={() =>
                                 handleUpdateComment(
@@ -407,6 +413,9 @@ export default function PostComment({
                             >
                               취소
                             </button>
+                            <span className="text-xs text-grayscale-40">
+                              {formatDate(reply.createdAt)}
+                            </span>
                           </div>
                         </div>
                       ) : (
@@ -429,7 +438,6 @@ export default function PostComment({
                               >
                                 수정
                               </button>
-                              <span className="mx-1">·</span>
                               <button
                                 onClick={() =>
                                   handleDeleteComment(reply.commentId)
@@ -440,6 +448,9 @@ export default function PostComment({
                               </button>
                             </>
                           )}
+                          <span className="text-xs text-grayscale-40">
+                            {formatDate(reply.createdAt)}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -480,7 +491,7 @@ export default function PostComment({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-6">
           <div className="w-[56px] h-[56px] flex-shrink-0">
             {currentUserId && userInfo?.userImageUrl ? (
               <Image
