@@ -8,6 +8,7 @@ import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 import Button from '../common/button';
 import SocialButton from '../common/social_button';
+import { useModalStore } from '@/store/modal';
 
 /**
  * 로그인 폼 컴포넌트
@@ -21,6 +22,7 @@ import SocialButton from '../common/social_button';
 
 export default function LoginForm() {
   const router = useRouter();
+  const { openModal } = useModalStore();
 
   const {
     setAuth, // 인증 상태 설정
@@ -109,8 +111,11 @@ export default function LoginForm() {
    * - 소셜 로그인 페이지로 리다이렉트
    */
   const handleSocialLogin = (provider: 'kakao' | 'google') => {
-    const url = authService.getSocialLoginUrl(provider);
-    window.location.href = url;
+    openModal({
+      title: '준비 중인 기능입니다',
+      message: `${provider === 'kakao' ? '카카오' : '구글'} 로그인은 현재 개발 중입니다. 잠시만 기다려 주세요.`,
+      confirmText: '확인',
+    });
   };
 
   return (
@@ -185,12 +190,14 @@ export default function LoginForm() {
             onClick={() => handleSocialLogin('kakao')}
             fullWidth
             className="max-md:text-sm"
+            disabled
           />
           <SocialButton
             provider="google"
             onClick={() => handleSocialLogin('google')}
             fullWidth
             className="max-md:text-sm"
+            disabled
           />
         </div>
       </div>

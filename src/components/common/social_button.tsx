@@ -7,6 +7,7 @@ interface SocialButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   provider: SocialProvider;
   fullWidth?: boolean;
   className?: string;
+  onClick: () => void;
 }
 
 interface ProviderConfig {
@@ -37,14 +38,21 @@ const providerConfig: Record<SocialProvider, ProviderConfig> = {
 
 export default function SocialButton({
   provider,
+  onClick,
   fullWidth = false,
   className = '',
-  ...props
 }: SocialButtonProps) {
   const config = providerConfig[provider];
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log(`${provider} 버튼 클릭`);
+    onClick();
+  };
+
   return (
     <button
+      onClick={handleClick}
       className={`
         h-[60px] max-md:h-[48px] px-6 rounded-lg
         flex items-center justify-center gap-2
@@ -70,7 +78,6 @@ export default function SocialButton({
         const target = e.currentTarget;
         target.style.backgroundColor = config.background;
       }}
-      {...props}
     >
       <SvgIcon name={provider} size={24} color={config.iconColor} />
       <span>{config.text}</span>
