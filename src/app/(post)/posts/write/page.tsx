@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHobbyStore } from '@/store/hobby';
 import { postService } from '@/services/api';
@@ -21,6 +22,11 @@ export default function PostWrite() {
   const router = useRouter();
   const { openModal } = useModalStore();
   const resetSelections = useHobbyStore((state) => state.resetSelections);
+
+  // 페이지 진입 시 취미 태그 초기화
+  useEffect(() => {
+    resetSelections();
+  }, [resetSelections]);
 
   const handleSubmit = async (formData: FormData) => {
     try {
