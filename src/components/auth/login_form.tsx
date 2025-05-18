@@ -7,6 +7,7 @@ import Input from '@/components/common/input';
 import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 import Button from '../common/button';
+import SocialButton from '../common/social_button';
 
 /**
  * 로그인 폼 컴포넌트
@@ -179,23 +180,18 @@ export default function LoginForm() {
       <div className="mt-12 w-full">
         <p className="text-center text-grayscale-100 mb-6">소셜 로그인</p>
         <div className="flex justify-center space-x-3 max-md:flex-col max-md:space-x-0 max-md:space-y-3">
-          {/* 소셜 로그인 버튼들 */}
-          <Button
-            variant="outline"
-            fullWidth
+          <SocialButton
+            provider="kakao"
             onClick={() => handleSocialLogin('kakao')}
-            className="max-md:text-sm"
-          >
-            카카오로 로그인
-          </Button>
-          <Button
-            variant="outline"
             fullWidth
-            onClick={() => handleSocialLogin('google')}
             className="max-md:text-sm"
-          >
-            구글로 로그인
-          </Button>
+          />
+          <SocialButton
+            provider="google"
+            onClick={() => handleSocialLogin('google')}
+            fullWidth
+            className="max-md:text-sm"
+          />
         </div>
       </div>
 
