@@ -1,5 +1,8 @@
+export type ModalType = 'default' | 'error';
+
 export interface ModalState {
   isOpen: boolean; // 모달 열림 여부
+  type?: ModalType; // 모달 타입
   title?: string; // 모달 제목
   message?: string; // 모달 메시지
   confirmText?: string; // 확인 버튼 텍스트

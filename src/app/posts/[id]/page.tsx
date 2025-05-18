@@ -78,13 +78,23 @@ export default function PostDetailPage() {
 
         setPost(data);
         setError(null);
+        setIsLoading(false);
+
+        // 데이터 로드 완료 후 URL에 #comments가 있으면 스크롤
+        if (window.location.hash === '#comments') {
+          setTimeout(() => {
+            const commentsSection = document.getElementById('comments');
+            if (commentsSection) {
+              commentsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 500);
+        }
       } catch (err) {
         setError(
           err instanceof Error
             ? err.message
             : '게시글을 불러오는데 실패했습니다.',
         );
-      } finally {
         setIsLoading(false);
       }
     };
@@ -299,10 +309,12 @@ export default function PostDetailPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <PostComment
-            postId={Number(id)}
-            onCommentUpdate={handleCommentUpdate}
-          />
+          <div id="comments">
+            <PostComment
+              postId={Number(id)}
+              onCommentUpdate={handleCommentUpdate}
+            />
+          </div>
         </motion.div>
       </motion.div>
     </div>
