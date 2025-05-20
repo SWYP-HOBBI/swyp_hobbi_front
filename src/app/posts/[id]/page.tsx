@@ -196,26 +196,26 @@ export default function PostDetailPage() {
     );
   }
 
-  // 오류 발생
-  if (error) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-[960px] mx-auto p-9 text-light-red"
-      >
-        {error}
-      </motion.div>
-    );
-  }
-
   // 게시글 없음
   if (!post) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-[960px] mx-auto my-12 p-9"
+        className="max-w-[960px] mx-auto  p-9 text-center"
+      >
+        게시글을 찾을 수 없습니다.
+      </motion.div>
+    );
+  }
+
+  // 오류 발생
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-[960px] mx-auto  p-9 text-center"
       >
         게시글을 찾을 수 없습니다.
       </motion.div>
@@ -224,12 +224,12 @@ export default function PostDetailPage() {
 
   // 게시글 상세 페이지 렌더링
   return (
-    <div className="py-12">
+    <div className="py-12 max-md:pt-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-[960px] mx-auto p-9 rounded-xl shadow-md bg-grayscale-0"
+        className="max-w-[960px] mx-auto p-9 max-md:p-5 rounded-xl shadow-md bg-grayscale-0"
       >
         <motion.div
           initial={{ opacity: 0 }}
@@ -267,7 +267,7 @@ export default function PostDetailPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-[32px] font-bold mb-6"
+          className="text-[32px] font-bold mb-6 max-md:text-lg"
         >
           {post.title}
         </motion.h1>
@@ -285,7 +285,9 @@ export default function PostDetailPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <p className="whitespace-pre-wrap mb-6 break-all">{post.content}</p>
+          <p className="whitespace-pre-wrap mb-6 break-all max-md:text-sm">
+            {post.content}
+          </p>
         </motion.div>
 
         <motion.div

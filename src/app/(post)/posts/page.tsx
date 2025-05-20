@@ -160,7 +160,7 @@ export default function PostsPage() {
   if (status === 'error') return <div>에러가 발생했습니다.</div>;
 
   return (
-    <div className="flex justify-center my-12 mx-auto">
+    <div className="flex justify-center my-12 max-md:my-6 mx-auto">
       <div className="w-[960px] max-md:w-[390px]">
         {data?.pages[0].length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
