@@ -44,7 +44,7 @@ export default function PostCard({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 784);
     };
 
     // 초기값 설정
@@ -96,7 +96,7 @@ export default function PostCard({
     >
       {/* 작성자 정보 */}
       <Link href={`/posts/${postId}`} className="block">
-        <div className="flex items-center mb-6 max-md:px-0">
+        <div className="flex items-center mb-6 max-md:px-0 max-md:mb-2">
           <Profile
             imageUrl={userImageUrl}
             nickname={nickname}
@@ -107,14 +107,10 @@ export default function PostCard({
           </span>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row gap-4 max-md:gap-0">
           {/* 게시글 이미지 있는 경우에만 표시 */}
           {!!postImageUrls.length && (
-            <motion.div
-              className="w-[400px] h-[300px] max-md:w-[350px] max-md:h-[262.5px] flex-shrink-0 relative"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div className="w-full md:w-[400px] h-[262.5px] md:h-[300px] flex-shrink-0 relative">
               <Image
                 src={postImageUrls[0]}
                 width={400}
@@ -136,11 +132,11 @@ export default function PostCard({
                   </span>
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
 
           {/* 게시글 제목 및 내용 */}
-          <div className="flex-1 flex flex-col space-y-3 overflow-hidden">
+          <div className="flex-1 flex flex-col space-y-3 overflow-hidden mt-4 md:mt-0">
             <div className="flex-1">
               <motion.div
                 className="tag_container"
@@ -159,7 +155,7 @@ export default function PostCard({
                   </motion.div>
                 ))}
               </motion.div>
-              <h3 className="text-2xl font-bold text-grayscale-100 mt-3">
+              <h3 className="text-2xl font-bold text-grayscale-100 mt-3 max-md:text-lg max-md:mt-2">
                 {title}
               </h3>
               <p className="text-grayscale-100 overflow-hidden line-clamp-10 break-all text-sm whitespace-pre-wrap mt-3">

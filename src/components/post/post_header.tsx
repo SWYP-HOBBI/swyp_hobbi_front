@@ -35,6 +35,25 @@ export default function PostHeader({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 784);
+    };
+
+    // 초기값 설정
+    handleResize();
+
+    // 리사이즈 이벤트 리스너 등록
+    window.addEventListener('resize', handleResize);
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   // 메뉴 외부 클릭 시 메뉴 닫기
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -57,7 +76,7 @@ export default function PostHeader({
           <Profile
             imageUrl={userImageUrl}
             nickname={nickname}
-            variant="horizontal-large"
+            variant={isMobile ? 'horizontal-small' : 'horizontal-large'}
           />
         </div>
       </div>

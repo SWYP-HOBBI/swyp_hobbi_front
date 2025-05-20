@@ -84,6 +84,7 @@ export default function LoginForm() {
       router.push('/posts');
     } catch (error: any) {
       setIsError(true);
+
       // 404(이메일 오류)나 401(비밀번호 오류) 모두 동일한 메시지 표시
       if (error.status === 404 || error.status === 401) {
         setErrorMessage(

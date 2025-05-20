@@ -41,7 +41,7 @@ export default function PostActionBar({
   onShareClick,
 }: PostActionBarProps) {
   return (
-    <div className="flex justify-between text-xs text-grayscale-80">
+    <div className="flex justify-between items-center text-xs text-grayscale-80">
       <div className="flex items-center gap-3">
         <button onClick={onLikeClick}>
           <SvgIcon
@@ -70,7 +70,7 @@ export default function PostActionBar({
           />
         </button>
       </div>
-      <span className="text-grayscale-40">{formatDate(createdAt)}</span>
+      <span className="text-grayscale-40r">{formatDate(createdAt)}</span>
     </div>
   );
 }

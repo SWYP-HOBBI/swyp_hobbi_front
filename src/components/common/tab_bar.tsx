@@ -320,7 +320,12 @@ export default function TabBar() {
           onClick={() => handleProtectedRoute(toggleNotification)}
           className="flex flex-col items-center space-y-1"
         >
-          <SvgIcon name="alarm" size={24} color="#999999" />
+          <div className="flex flex-row items-center relative">
+            <SvgIcon name="alarm" size={24} color="#999999" />
+            {unreadCount > 0 && (
+              <div className="ml-1 w-[8px] h-[8px] bg-red-500 rounded-full absolute top-0 right-0" />
+            )}
+          </div>
           <span className="text-[10px] text-[var(--grayscale-40)]">알림</span>
         </button>
 
