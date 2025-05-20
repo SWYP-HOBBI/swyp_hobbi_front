@@ -76,6 +76,8 @@
   --radius-xl: var(--radius-xl);
 
   --font-pretendard: var(--font-pretendard);
+
+  --breakpoint-md: 49rem;
 }
 
 @media (prefers-color-scheme: dark) {
