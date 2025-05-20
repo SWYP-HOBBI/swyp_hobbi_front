@@ -61,6 +61,7 @@ export default function PostComment({
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null); // 수정 중인 댓글 ID
   const [editContent, setEditContent] = useState(''); // 수정 중인 댓글 내용
+  const [isMobile, setIsMobile] = useState(false);
   const queryClient = useQueryClient();
 
   const currentUserId = useAuthStore((state) => state.userId);
@@ -70,6 +71,23 @@ export default function PostComment({
   useEffect(() => {
     fetchUserInfo();
   }, [fetchUserInfo]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 784);
+    };
+
+    // 초기값 설정
+    handleResize();
+
+    // 리사이즈 이벤트 리스너 등록
+    window.addEventListener('resize', handleResize);
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const truncateContent = (content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
@@ -351,7 +369,7 @@ export default function PostComment({
                 ) : (
                   // 일반 모드 UI
                   <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 inline-block">
-                    <p className="text-grayscale-100 text-sm">
+                    <p className="text-grayscale-100 text-sm max-md:text-xs">
                       {comment.deleted ? '삭제된 댓글입니다.' : comment.content}
                     </p>
                   </div>
@@ -435,7 +453,7 @@ export default function PostComment({
                         </div>
                       ) : (
                         <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 inline-block">
-                          <p className="text-grayscale-100 text-sm">
+                          <p className="text-grayscale-100 text-sm max-md:text-xs">
                             {reply.deleted
                               ? '삭제된 댓글입니다.'
                               : reply.content}
@@ -506,19 +524,19 @@ export default function PostComment({
           </div>
         )}
 
-        <div className="flex gap-2 mt-6">
-          <div className="w-[56px] h-[56px] flex-shrink-0">
+        <div className="flex gap-2 mt-6 items-center">
+          <div className="w-[56px] h-[56px] max-md:w-[32px] max-md:h-[32px] flex-shrink-0">
             {currentUserId && userInfo?.userImageUrl ? (
               <Image
                 src={userInfo.userImageUrl}
                 alt="프로필 이미지"
                 className="rounded-full w-full h-full object-cover"
-                width={56}
-                height={56}
+                width={isMobile ? 32 : 56}
+                height={isMobile ? 32 : 56}
                 unoptimized
               />
             ) : (
-              <DefaultProfile size={56} />
+              <DefaultProfile size={isMobile ? 32 : 56} />
             )}
           </div>
           <input
@@ -536,7 +554,7 @@ export default function PostComment({
                 ? '댓글을 입력하세요.'
                 : '로그인 후 댓글을 작성할 수 있습니다.'
             }
-            className="w-full bg-grayscale-5 rounded-2xl px-4 py-3 outline-none"
+            className="w-full h-[60px] bg-grayscale-5 rounded-2xl px-4 py-3 outline-none max-md:h-[48px]"
             disabled={isSubmitting || !currentUserId}
             maxLength={1000}
           />

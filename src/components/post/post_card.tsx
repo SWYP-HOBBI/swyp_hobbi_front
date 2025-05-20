@@ -44,7 +44,7 @@ export default function PostCard({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 784);
     };
 
     // 초기값 설정
