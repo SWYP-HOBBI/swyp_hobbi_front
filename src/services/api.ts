@@ -56,10 +56,9 @@ export async function fetchApi<T>(
         return handleResponse(retryResponse);
       } else {
         // 여기서는 에러를 던지지 않고, 로그인 페이지로 리다이렉트됨
-
-        return Promise.reject(
-          new Error('인증이 만료되었습니다. 다시 로그인해주세요.'),
-        );
+        const error = new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+        (error as any).status = 401;
+        return Promise.reject(error);
       }
     }
 
