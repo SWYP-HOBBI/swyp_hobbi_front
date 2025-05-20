@@ -14,8 +14,7 @@ interface TagProps {
 const variantStyles: Record<TagVariant, string> = {
   primary:
     'bg-primary-w80 text-primary-b80 border-primary-b20 hover:bg-primary-w40',
-  white:
-    'bg-grayscale-0 text-grayscale-80 border-grayscale-20 hover:bg-grayscale-5',
+  white: 'bg-grayscale-0 text-grayscale-80 border-grayscale-20',
   gray: 'bg-grayscale-10 text-grayscale-80 border-grayscale-20 hover:bg-grayscale-20',
 };
 
