@@ -18,7 +18,7 @@ export default function PostLayout({
       <div className="flex relative">
         <Header />
         <TabBar />
-        <div className="flex-1 bg-grayscale-1">
+        <div className="flex-1 bg-grayscale-1 max-md:pt-[64px]">
           {children}
           <Search />
           {isNotificationOpen && (
