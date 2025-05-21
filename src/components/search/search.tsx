@@ -156,17 +156,15 @@ export default function Search() {
             </div>
 
             {/* 취미 */}
-            <div className="w-full px-4 max-md:px-2">
+            <div className="w-full px-4">
               <div className="text-lg font-semibold my-6 max-md:mb-3">
                 취미검색
               </div>
-              <div className="max-md:px-2">
-                <HobbySelector
-                  selectedTags={searchHobbyTags}
-                  onTagsChange={setSearchHobbyTags}
-                  isSearchMode={true}
-                />
-              </div>
+              <HobbySelector
+                selectedTags={searchHobbyTags}
+                onTagsChange={setSearchHobbyTags}
+                isSearchMode={true}
+              />
             </div>
 
             {/* MBTI */}

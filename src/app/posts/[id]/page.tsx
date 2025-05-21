@@ -224,7 +224,7 @@ export default function PostDetailPage() {
 
   // 게시글 상세 페이지 렌더링
   return (
-    <div className="py-12 max-md:pt-6">
+    <div className="py-12 max-md:pt-6 max-md:pb-0">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

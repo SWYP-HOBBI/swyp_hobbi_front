@@ -251,7 +251,7 @@ export default function PostForm({
 
   return (
     <motion.div
-      className="w-[960px] mx-auto my-12 space-y-6"
+      className="w-[960px] mx-auto my-12 space-y-6 max-md:w-full max-md:mt-6 max-md:mb-[93px]"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -266,7 +266,7 @@ export default function PostForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={30}
-          className="placeholder:text-lg placeholder:text-grayscale-60 placeholder:font-medium"
+          className="placeholder:text-lg placeholder:text-grayscale-60 placeholder:font-medium border-none"
         />
       </motion.div>
 
@@ -280,8 +280,9 @@ export default function PostForm({
             *관심 취미 대그룹 추가해 보세요. 최대 5개
           </span>
         </div>
-
-        <HobbySelector maxCount={5} />
+        <div className="max-sm:w-[350px]">
+          <HobbySelector maxCount={5} />
+        </div>
       </div>
 
       {/* 3. 이미지 업로드 */}
@@ -299,7 +300,7 @@ export default function PostForm({
         variants={itemVariants}
       >
         <textarea
-          className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          className="w-full h-64 p-4  rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
           placeholder="게시글을 작성해주세요. *최소 10자~최대 2,000자 이하"
           minLength={10}
           maxLength={2000}
@@ -310,12 +311,12 @@ export default function PostForm({
 
       {/* 5. 게시글 작성 버튼 */}
       <motion.div className="flex justify-end" variants={itemVariants}>
-        <div className="w-1/3">
+        <div className="w-1/3 max-md:w-full max-md:px-5">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               type="submit"
               fullWidth
-              className="px-6 py-2"
+              className="px-6 py-2 max-md:h-[60px]"
               onClick={handleSubmit}
               disabled={!title || !content || !selectedHobbyTags.length}
             >
