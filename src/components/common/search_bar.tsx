@@ -31,7 +31,7 @@ export default function SearchBar({
   };
 
   return (
-    <div className="w-[380px] h-[48px] relative">
+    <div className="w-[380px] h-[48px] relative max-md:w-full">
       <input
         type="text"
         value={value}

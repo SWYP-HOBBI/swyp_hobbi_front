@@ -13,7 +13,9 @@ export default function Header() {
   const isPostWritePage = pathname === '/posts/write';
   const isPostDetailPage =
     pathname.startsWith('/posts/') && pathname !== '/posts/write';
-  const shouldShowHeader = isPostsPage || isPostWritePage || isPostDetailPage;
+  const isMyPage = pathname === '/my_page';
+  const shouldShowHeader =
+    isPostsPage || isPostWritePage || isPostDetailPage || isMyPage;
   const [showFeedMenu, setShowFeedMenu] = useState(false);
   const { feedType, setFeedType } = useFeedStore();
 
@@ -22,8 +24,12 @@ export default function Header() {
 
   return (
     <header className="hidden max-md:block w-full h-[64px] bg-white fixed top-0 left-0 z-50 border-b border-[var(--grayscale-10)]">
-      <div className="flex items-center justify-between px-4 h-full">
-        <div className="flex items-center relative">
+      <div
+        className={`flex items-center h-full ${isPostWritePage || isMyPage ? 'justify-center' : 'justify-between px-4'}`}
+      >
+        <div
+          className={`flex items-center relative ${isPostWritePage || isMyPage ? '' : 'justify-between'}`}
+        >
           {isPostDetailPage ? (
             <button
               onClick={() => router.back()}
@@ -97,14 +103,18 @@ export default function Header() {
               </AnimatePresence>
             </>
           ) : (
-            <span className="text-[18px] font-semibold">
-              {isPostWritePage ? '게시글 작성' : '게시글'}
+            <span className="text-lg font-semibold">
+              {isPostWritePage
+                ? '게시글 작성'
+                : isMyPage
+                  ? '마이페이지'
+                  : '게시글'}
             </span>
           )}
         </div>
 
-        {/* 전체 메뉴 버튼 - 게시글 상세 페이지에서는 숨김 */}
-        {!isPostDetailPage && (
+        {/* 전체 메뉴 버튼 - 게시글 상세 페이지와 작성 페이지, 마이페이지에서는 숨김 */}
+        {!isPostDetailPage && !isPostWritePage && !isMyPage && (
           <button className="flex items-center justify-center w-[24px] h-[24px]">
             <SvgIcon name="meatball" width={24} height={24} />
           </button>

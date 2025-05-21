@@ -290,17 +290,17 @@ export default function TabBar() {
         {/* 홈 */}
         <button
           onClick={() => router.push('/posts')}
-          className="flex flex-col items-center space-y-1"
+          className={`flex flex-col items-center space-y-1 ${
+            isSearchOpen ? 'opacity-30 pointer-events-none' : ''
+          }`}
         >
           <SvgIcon
             name="home"
             size={24}
-            color={isHome ? 'var(--primary)' : '#999999'}
+            color={isSearchOpen ? '#999999' : iconColor(isHome)}
           />
           <span
-            className={`text-[10px] ${
-              isHome ? 'text-[var(--primary)]' : 'text-[var(--grayscale-40)]'
-            }`}
+            className={`text-[10px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isHome)}`}
           >
             홈
           </span>
@@ -311,22 +311,32 @@ export default function TabBar() {
           onClick={toggleSearch}
           className="flex flex-col items-center space-y-1"
         >
-          <SvgIcon name="search" size={24} color="#999999" />
-          <span className="text-[10px] text-[var(--grayscale-40)]">검색</span>
+          <SvgIcon name="search" size={24} color={iconColor(isSearchOpen)} />
+          <span className={`text-[10px] ${textColor(isSearchOpen)}`}>검색</span>
         </button>
 
         {/* 알림 */}
         <button
           onClick={() => handleProtectedRoute(toggleNotification)}
-          className="flex flex-col items-center space-y-1"
+          className={`flex flex-col items-center space-y-1 ${
+            isSearchOpen ? 'opacity-30 pointer-events-none' : ''
+          }`}
         >
           <div className="flex flex-row items-center relative">
-            <SvgIcon name="alarm" size={24} color="#999999" />
+            <SvgIcon
+              name="alarm"
+              size={24}
+              color={isSearchOpen ? '#999999' : iconColor(isNotificationOpen)}
+            />
             {unreadCount > 0 && (
               <div className="ml-1 w-[8px] h-[8px] bg-red-500 rounded-full absolute top-0 right-0" />
             )}
           </div>
-          <span className="text-[10px] text-[var(--grayscale-40)]">알림</span>
+          <span
+            className={`text-[10px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isNotificationOpen)}`}
+          >
+            알림
+          </span>
         </button>
 
         {/* 게시글 작성 */}
@@ -334,19 +344,39 @@ export default function TabBar() {
           onClick={() =>
             handleProtectedRoute(() => router.push('/posts/write'))
           }
-          className="flex flex-col items-center space-y-1"
+          className={`flex flex-col items-center space-y-1 ${
+            isSearchOpen ? 'opacity-30 pointer-events-none' : ''
+          }`}
         >
-          <SvgIcon name="write" size={24} color="#999999" />
-          <span className="text-[10px] text-[var(--grayscale-40)]">글쓰기</span>
+          <SvgIcon
+            name="write"
+            size={24}
+            color={isSearchOpen ? '#999999' : iconColor(isWrite)}
+          />
+          <span
+            className={`text-[10px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isWrite)}`}
+          >
+            글쓰기
+          </span>
         </button>
 
         {/* 마이페이지 */}
         <button
           onClick={() => handleProtectedRoute(() => router.push('/my_page'))}
-          className="flex flex-col items-center space-y-1"
+          className={`flex flex-col items-center space-y-1 ${
+            isSearchOpen ? 'opacity-30 pointer-events-none' : ''
+          }`}
         >
-          <SvgIcon name="my_page" size={24} color="#999999" />
-          <span className="text-[10px] text-[var(--grayscale-40)]">마이</span>
+          <SvgIcon
+            name="my_page"
+            size={24}
+            color={isSearchOpen ? '#999999' : iconColor(isMyPage)}
+          />
+          <span
+            className={`text-[10px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isMyPage)}`}
+          >
+            마이
+          </span>
         </button>
       </div>
     </div>

@@ -87,7 +87,7 @@ export default function Search() {
       {isSearchOpen && (
         <motion.div
           key="search-panel-wrapper"
-          className="fixed top-0 left-[198px] z-50 w-full h-full"
+          className="fixed top-0 max-md:left-0 left-[198px] z-50 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -108,63 +108,71 @@ export default function Search() {
             animate={{ x: 0 }}
             exit={{ x: -420 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative top-0 w-[420px] bg-[var(--grayscale-1)] shadow-lg h-screen overflow-y-auto z-50 flex items-center flex-col"
+            className="relative top-0 w-[420px] max-md:w-full bg-[var(--grayscale-1)] shadow-lg h-screen overflow-y-auto z-50 flex items-center flex-col"
           >
             {/* 상단 검색바 */}
-            <div className="w-[420px] h-[141px] bg-white flex flex-col items-center justify-center">
-              <SearchBar
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onSearch={handleSearch}
-              />
-              <div className="relative flex justify-end w-full mt-2 pr-4">
-                <button
-                  onClick={() => setIsMenuOpen((prev) => !prev)}
-                  className="flex items-center gap-1 text-sm text-gray-500"
-                >
-                  {selectedOption}
-                  <SvgIcon
-                    name="arrow_down"
-                    size={12}
-                    className={`transform ${isMenuOpen ? 'rotate-180' : 'rotate-0'}`}
+            <div className="w-full h-[141px] bg-grayscale-0 flex flex-col items-center justify-center">
+              <div className="w-full max-w-[420px] max-md:max-w-none px-5">
+                <div className="flex justify-center">
+                  <SearchBar
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onSearch={handleSearch}
                   />
-                </button>
+                </div>
+                <div className="relative flex justify-end w-full mt-2">
+                  <button
+                    onClick={() => setIsMenuOpen((prev) => !prev)}
+                    className="flex items-center gap-1 text-sm text-gray-500"
+                  >
+                    {selectedOption}
+                    <SvgIcon
+                      name="arrow_down"
+                      size={12}
+                      className={`transform ${isMenuOpen ? 'rotate-180' : 'rotate-0'}`}
+                    />
+                  </button>
 
-                {isMenuOpen && (
-                  <div className="absolute right-0 top-8 bg-white rounded-md shadow-md border border-gray-200 z-10">
-                    <div className="flex flex-col w-[100px]">
-                      {['제목+내용', '작성자'].map((option) => (
-                        <button
-                          key={option}
-                          onClick={() => {
-                            setSelectedOption(option);
-                            setIsMenuOpen(false);
-                          }}
-                          className="w-full py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap text-left px-3"
-                        >
-                          {option}
-                        </button>
-                      ))}
+                  {isMenuOpen && (
+                    <div className="absolute right-0 top-8 bg-white rounded-md shadow-md border border-gray-200 z-10">
+                      <div className="flex flex-col w-[100px]">
+                        {['제목+내용', '작성자'].map((option) => (
+                          <button
+                            key={option}
+                            onClick={() => {
+                              setSelectedOption(option);
+                              setIsMenuOpen(false);
+                            }}
+                            className="w-full py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap text-left px-3"
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
             {/* 취미 */}
-            <div className="mt-4 w-full px-4">
-              <span className="text-[20px] font-semibold">취미검색</span>
-              <HobbySelector
-                selectedTags={searchHobbyTags}
-                onTagsChange={setSearchHobbyTags}
-                isSearchMode={true}
-              />
+            <div className="w-full px-4 max-md:px-2">
+              <div className="text-lg font-semibold my-6 max-md:mb-3">
+                취미검색
+              </div>
+              <div className="max-md:px-2">
+                <HobbySelector
+                  selectedTags={searchHobbyTags}
+                  onTagsChange={setSearchHobbyTags}
+                  isSearchMode={true}
+                />
+              </div>
             </div>
 
             {/* MBTI */}
             <div className="mt-6 w-full px-4">
-              <span className="text-[20px] font-semibold">MBTI 선택</span>
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <span className="text-lg font-semibold">MBTI 선택</span>
+              <div className="mt-4 flex flex-wrap justify-center gap-2 max-md:gap-[10px]">
                 {['E', 'S', 'F', 'P', 'I', 'N', 'T', 'J'].map((mbti) => (
                   <MbtiButton
                     key={mbti}
@@ -177,7 +185,7 @@ export default function Search() {
             </div>
 
             <button
-              className={`mt-6 w-[380px] h-[60px] rounded-[12px] text-[14px] font-semibold ${
+              className={`mt-6 w-[380px] max-md:w-[calc(100%-32px)] h-[60px] rounded-[12px] text-[14px] font-semibold ${
                 searchQuery.trim().length === 0 &&
                 selectedMbti.length === 0 &&
                 searchHobbyTags.length === 0
