@@ -24,7 +24,8 @@ export default function Modal() {
   const pathname = usePathname();
   const shouldAddPadding =
     pathname === '/posts' || // 메인 피드
-    pathname === '/my-page'; // 마이페이지
+    pathname === '/my_page' || // 마이페이지
+    pathname === '/posts/write'; // 게시글 작성
 
   useEffect(() => {
     if (isOpen) {
