@@ -75,6 +75,7 @@ export const useHobbyStore = create<HobbyState>((set) => ({
         selectedHobbyTags: [...state.selectedHobbyTags, ...newTags],
         selectedSubCategories: [],
         isSubCategoryOpen: false,
+        isMainCategoryOpen: false,
       };
     }),
 

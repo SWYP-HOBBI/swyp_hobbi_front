@@ -149,7 +149,6 @@ export default function HobbySelector({
     toggleSubCategory,
     addSelectedHobbyTags,
     removeHobbyTag,
-    setSelectedHobbyTags,
   } = useHobbyStore();
 
   // 현재 표시할 태그들
@@ -183,14 +182,14 @@ export default function HobbySelector({
       if (maxCount && uniqueTags.length > maxCount) return;
 
       onTagsChange(uniqueTags as HobbyTag[]);
+
+      // 검색 모드일 때 드롭다운 닫기
+      if (isMainCategoryOpen) toggleMainCategoryOpen();
+      if (isSubCategoryOpen) toggleSubCategoryOpen();
     } else {
       // 일반 모드일 때
-      addSelectedHobbyTags();
+      addSelectedHobbyTags(); // 이 함수 내부에서 자동으로 드롭다운을 닫음
     }
-
-    // 드롭다운 닫기
-    if (isMainCategoryOpen) toggleMainCategoryOpen();
-    if (isSubCategoryOpen) toggleSubCategoryOpen();
   };
 
   // 태그 삭제 핸들러
@@ -220,8 +219,10 @@ export default function HobbySelector({
 
   return (
     <div className={`${className}`}>
-      <div className="flex items-center gap-3">
-        <div className={`${isSearchMode ? 'w-[122px]' : 'flex-1'}`}>
+      <div className="flex items-center gap-3 max-md:gap-1">
+        <div
+          className={`${isSearchMode ? 'w-[122px] max-md:w-[32%]' : 'flex-1'}`}
+        >
           <CustomDropdownButton
             value={selectedMainCategoryLabel}
             placeholder="대분류를 선택해주세요."
@@ -246,7 +247,9 @@ export default function HobbySelector({
           </CustomDropdownButton>
         </div>
 
-        <div className={`${isSearchMode ? 'w-[122px]' : 'flex-1'}`}>
+        <div
+          className={`${isSearchMode ? 'w-[122px] max-md:w-[32%]' : 'flex-1'}`}
+        >
           <CustomDropdownButton
             value={selectedSubCategories}
             placeholder="소분류를 선택해주세요."
@@ -273,7 +276,7 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
-          className={`${isSearchMode ? 'w-[122px]' : 'flex-1'} max-md:text-xs`}
+          className={`${isSearchMode ? 'w-[122px] max-md:w-[32%]' : 'flex-1'} max-md:text-xs`}
           onClick={handleAddTags}
           disabled={
             !selectedMainCategory ||
