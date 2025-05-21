@@ -221,7 +221,7 @@ export default function HobbySelector({
     <div className={`${className}`}>
       <div className="flex items-center gap-3 max-md:gap-1">
         <div
-          className={`${isSearchMode ? 'w-[122px] max-md:w-[32%]' : 'flex-1'}`}
+          className={`${isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3'}`}
         >
           <CustomDropdownButton
             value={selectedMainCategoryLabel}
@@ -248,7 +248,7 @@ export default function HobbySelector({
         </div>
 
         <div
-          className={`${isSearchMode ? 'w-[122px] max-md:w-[32%]' : 'flex-1'}`}
+          className={`${isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3'}`}
         >
           <CustomDropdownButton
             value={selectedSubCategories}
@@ -276,7 +276,7 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
-          className={`${isSearchMode ? 'w-[122px] max-md:w-[32%]' : 'flex-1'} max-md:text-xs`}
+          className={`${isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3'} max-md:text-xs`}
           onClick={handleAddTags}
           disabled={
             !selectedMainCategory ||
