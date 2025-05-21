@@ -6,6 +6,7 @@ import NotificationPage from '@/components/notification/notification_page';
 import Search from '@/components/search/search';
 import Providers from '@/services/providers';
 import { useNotificationStore } from '@/store/notification';
+import Header from '@/components/common/header';
 
 export default function MypageLayout({
   children,
@@ -15,9 +16,10 @@ export default function MypageLayout({
   const { isNotificationOpen } = useNotificationStore();
   return (
     <Providers>
+      <Header />
       <div className="flex relative">
         <TabBar />
-        <div className="flex-1 bg-grayscale-1">
+        <div className="flex-1 bg-grayscale-1 max-md:h-[64px]">
           {children}
           <Search />
           {isNotificationOpen && (
