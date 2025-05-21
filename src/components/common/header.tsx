@@ -32,7 +32,7 @@ export default function Header() {
         >
           {isPostDetailPage ? (
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/posts')}
               className="flex items-center justify-center"
               aria-label="뒤로 가기"
             >
