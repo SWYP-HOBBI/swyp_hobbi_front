@@ -21,11 +21,7 @@ export default function PostLayout({
         <div className="flex-1 bg-grayscale-1 max-md:pt-[64px]">
           {children}
           <Search />
-          {isNotificationOpen && (
-            <div className="fixed left-[200px] z-[9999]">
-              <NotificationPage />
-            </div>
-          )}
+          <NotificationPage />
         </div>
         <Modal />
       </div>

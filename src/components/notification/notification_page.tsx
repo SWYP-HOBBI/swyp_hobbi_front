@@ -78,7 +78,7 @@ export default function NotificationPage() {
       {isNotificationOpen && (
         <motion.div
           key="notification-panel-wrapper"
-          className="fixed top-0 left-[198px] z-50 w-full h-full"
+          className="fixed top-0 max-md:left-0 left-[198px] z-50 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -99,7 +99,7 @@ export default function NotificationPage() {
             animate={{ x: 0 }}
             exit={{ x: -490 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-[198px] z-50 w-[490px] h-full bg-white border border-[var(--grayscale-20)]"
+            className="relative top-0 w-[490px] max-md:w-full bg-[var(--grayscale-1)] shadow-lg h-screen overflow-y-auto z-50"
           >
             <div className="flex justify-between p-4">
               <span className="text-[20px] font-semibold">알림</span>
