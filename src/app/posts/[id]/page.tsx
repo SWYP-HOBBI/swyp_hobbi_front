@@ -167,16 +167,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // 댓글 클릭
-  const handleCommentClick = () => {
-    // 댓글 섹션으로 스크롤
-  };
-
-  // 공유 클릭
-  const handleShareClick = () => {
-    // 공유 기능 구현
-  };
-
   // 댓글 업데이트 시 게시글 정보 다시 불러오기
   const handleCommentUpdate = async () => {
     try {
@@ -302,8 +292,6 @@ export default function PostDetailPage() {
             createdAt={post.createdAt}
             liked={post.liked}
             onLikeClick={handleLikeClick}
-            onCommentClick={handleCommentClick}
-            onShareClick={handleShareClick}
           />
         </motion.div>
 
