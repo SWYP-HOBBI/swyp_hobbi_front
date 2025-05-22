@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import SvgIcon from '@/components/common/svg_icon';
 import { formatDate } from '@/utils/date';
+import ShareMenu from './share_menu';
 
 /**
  * 게시글 액션 바 Props 인터페이스
@@ -17,8 +19,6 @@ interface PostActionBarProps {
   createdAt: string;
   liked: boolean;
   onLikeClick: () => void;
-  onCommentClick: () => void;
-  onShareClick: () => void;
   postId: number;
 }
 
@@ -37,9 +37,14 @@ export default function PostActionBar({
   createdAt,
   liked,
   onLikeClick,
-  onCommentClick,
-  onShareClick,
+  postId,
 }: PostActionBarProps) {
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+
+  const handleShareClick = () => {
+    setIsShareMenuOpen(!isShareMenuOpen);
+  };
+
   return (
     <div className="flex justify-between items-center text-xs text-grayscale-80">
       <div className="flex items-center gap-3">
@@ -52,7 +57,7 @@ export default function PostActionBar({
           />
         </button>
         <span className="text-grayscale-80">{likeCount}</span>
-        <button onClick={onCommentClick}>
+        <button>
           <SvgIcon
             name="chat"
             size={28}
@@ -61,14 +66,21 @@ export default function PostActionBar({
           />
         </button>
         <span className="text-grayscale-80">{commentCount}</span>
-        <button onClick={onShareClick}>
-          <SvgIcon
-            name="share"
-            size={24}
-            color="var(--grayscale-20)"
-            className="cursor-pointer"
+        <div className="relative">
+          <button id="share-button" onClick={handleShareClick}>
+            <SvgIcon
+              name="share"
+              size={24}
+              color="var(--grayscale-20)"
+              className="cursor-pointer"
+            />
+          </button>
+          <ShareMenu
+            url={`${window.location.origin}/posts/${postId}`}
+            isOpen={isShareMenuOpen}
+            onClose={() => setIsShareMenuOpen(false)}
           />
-        </button>
+        </div>
       </div>
       <span className="text-grayscale-40r">{formatDate(createdAt)}</span>
     </div>

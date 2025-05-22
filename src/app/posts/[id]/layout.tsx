@@ -5,6 +5,9 @@ import Providers from '@/services/providers';
 import { useRouter } from 'next/navigation';
 import SvgIcon from '@/components/common/svg_icon';
 import Header from '@/components/common/header';
+import { useToastStore } from '@/store/toast';
+import FloatingToast from '@/components/common/floating_toast';
+import { useEffect } from 'react';
 
 export default function PostDetailLayout({
   children,
@@ -12,6 +15,15 @@ export default function PostDetailLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { isVisible, message, hideToast } = useToastStore();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Kakao) {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID);
+      }
+    }
+  }, []);
 
   return (
     <Providers>
@@ -27,6 +39,7 @@ export default function PostDetailLayout({
         </div>
         {children}
       </div>
+      {isVisible && <FloatingToast message={message} onClose={hideToast} />}
       <Modal />
     </Providers>
   );
