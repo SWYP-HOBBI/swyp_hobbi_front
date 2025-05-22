@@ -50,7 +50,7 @@ export default function UserPost() {
   if (status === 'error') return <div>에러 발생</div>;
 
   return (
-    <div className="w-[960px] bg-white rounded-[24px] p-[20px] space-y-8">
+    <div className="w-[960px] max-md:w-[390px] bg-white rounded-[24px] p-[20px] space-y-8">
       <h2 className="text-xl font-bold">나의 게시글</h2>
 
       {data?.pages.flatMap((group: MyPostsResponse) =>

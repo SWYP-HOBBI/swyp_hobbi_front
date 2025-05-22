@@ -49,10 +49,10 @@ export default function EditPassword({
   };
 
   return (
-    <div className="w-[452px] h-[65px]">
+    <div className="w-[452px] max-md:w-full h-[65px]">
       <span className="text-[20px] font-semibold">비밀번호</span>
       {/* 현재 비밀번호 입력 */}
-      <div className="w-[452px] h-[58px] flex justify-between items-center border-b border-[#D9D9D9]">
+      <div className="w-[452px] max-md:w-full h-[58px] flex justify-between items-center border-b border-[#D9D9D9]">
         <Input
           id="current-password"
           type="password"

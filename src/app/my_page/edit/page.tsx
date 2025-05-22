@@ -212,14 +212,15 @@ export default function EditMyPage() {
   if (!userInfo) return <Loader />;
 
   return (
-    <main className="w-full min-h-screen flex justify-center">
+    <main className="w-full pb-[100px] max-md:pt-6 min-h-screen bg-grayscale-1 flex justify-center">
       <div>
-        <div className="w-[960px] bg-white rounded-[24px] mt-[48px] flex flex-col items-center px-[20px] pb-[48px]">
-          <div className="text-[32px] font-bold pt-[48px] pb-[48px]">
+        <div className="w-[960px] max-md:w-[390px] max-md:mb-3 bg-white rounded-[24px] mt-[48px] flex flex-col items-center px-[20px] pb-[48px]">
+          <div className="text-[32px] max-md:hidden font-bold pt-[48px] pb-[48px]">
             개인정보 수정
           </div>
-
-          <MyProfile imageUrl={userInfo.userImageUrl} editable={true} />
+          <div className="max-md:mt-5">
+            <MyProfile imageUrl={userInfo.userImageUrl} editable={true} />
+          </div>
           <div className="text-[20px] font-semibold">{userInfo.nickname}</div>
           <div className="text-[16px] text-[var(--grayscale-60)] pt-[12px] pb-[48px]">
             {userInfo.email}
@@ -236,7 +237,7 @@ export default function EditMyPage() {
               />
             </div>
 
-            <div className="flex gap-[21px]">
+            <div className="flex max-md:flex-col gap-[21px]">
               <EditNickname
                 currentNickname={currentNickname}
                 onNicknameChange={setCurrentNickname}
@@ -251,10 +252,10 @@ export default function EditMyPage() {
             {showPasswordEdit && (
               <div
                 ref={passwordEditRef}
-                className="w-[920px] h-[172px] relative bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] flex items-center justify-between px-[10px]"
+                className="w-[920px] max-md:w-full max-md:flex-col h-[172px] max-md:h-full relative bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] flex items-center justify-between px-[10px]"
               >
                 {/* 새 비밀번호 입력 */}
-                <div className="flex flex-col">
+                <div className="flex flex-col max-md:w-[330px] max-md:mt-2">
                   <label
                     htmlFor="new-password"
                     className="text-[14px] font-medium mb-1"
@@ -280,7 +281,7 @@ export default function EditMyPage() {
                 </div>
 
                 {/* 비밀번호 확인 입력 */}
-                <div className="flex flex-col">
+                <div className="flex flex-col max-md:w-[330px] max-md:mt-2">
                   <label
                     htmlFor="confirm-password"
                     className="text-[14px] font-medium mb-1"
@@ -306,10 +307,10 @@ export default function EditMyPage() {
                 </div>
 
                 {/* 비밀번호 변경 버튼 */}
-                <div className="flex h-[60px] mt-[25px] gap-3">
+                <div className="flex max-md:w-full h-[60px] mt-[25px] gap-3  max-md:mb-2">
                   <button
                     type="button"
-                    className="w-[180px] h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-[var(--primary)]"
+                    className="w-[180px] max-md:w-full h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-[var(--primary)]"
                     onClick={handlePasswordSave}
                     disabled={isLoading}
                   >
@@ -319,9 +320,9 @@ export default function EditMyPage() {
               </div>
             )}
 
-            <div className="flex w-full gap-[20px]">
+            <div className="flex max-md:flex-col w-full gap-[20px]">
               {/* 생년월일 */}
-              <div className="flex flex-col gap-2 w-1/2">
+              <div className="flex max-md:w-full flex-col gap-2 w-1/2">
                 <span className="text-[20px] font-semibold pb-[8px]">
                   생년월일
                 </span>
@@ -378,7 +379,7 @@ export default function EditMyPage() {
               <div className="flex flex-col gap-2 w-1/2">
                 <span className="text-[20px] font-semibold pb-[8px]">MBTI</span>
                 <select
-                  className="w-[448px] h-[60px] border border-[#D9D9D9] rounded-[8px] px-2"
+                  className="w-[448px] max-md:w-[360px] h-[60px] border border-[#D9D9D9] rounded-[8px] px-2"
                   value={mbti}
                   onChange={(e) => setMbti(e.target.value)}
                 >
@@ -420,15 +421,15 @@ export default function EditMyPage() {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-end gap-[11px] pt-[12px]">
+        <div className="w-full max-md:w-[390px] flex justify-end gap-[11px] pt-[12px]">
           <button
-            className="w-[234px] h-[60px] rounded-[12px] bg-white border border-[var(--primary-b60)] text-[14px] text-[var(--primary-b60)]"
+            className="w-[234px] h-[60px] max-md:hidden rounded-[12px] bg-white border border-[var(--primary-b60)] text-[14px] text-[var(--primary-b60)]"
             onClick={() => router.push('/my_page')}
           >
             수정취소
           </button>
           <button
-            className={`w-[234px] h-[60px] rounded-[12px] ${
+            className={`w-[234px] h-[60px] max-md:w-full rounded-[12px] ${
               isModified
                 ? 'bg-[var(--primary)] text-[var(--primary-b80)]'
                 : 'bg-[var(--grayscale-10)] text-[var(--grayscale-50)]'

@@ -14,8 +14,15 @@ export default function Header() {
   const isPostDetailPage =
     pathname.startsWith('/posts/') && pathname !== '/posts/write';
   const isMyPage = pathname === '/my_page';
+  const isEditMyPage = pathname === '/my_page/edit';
+
   const shouldShowHeader =
-    isPostsPage || isPostWritePage || isPostDetailPage || isMyPage;
+    isPostsPage ||
+    isPostWritePage ||
+    isPostDetailPage ||
+    isMyPage ||
+    isEditMyPage;
+
   const [showFeedMenu, setShowFeedMenu] = useState(false);
   const { feedType, setFeedType } = useFeedStore();
 
@@ -30,7 +37,17 @@ export default function Header() {
         <div
           className={`flex items-center relative ${isPostWritePage || isMyPage ? '' : 'justify-between'}`}
         >
-          {isPostDetailPage ? (
+          {isEditMyPage ? (
+            <div className="flex">
+              <button
+                onClick={() => router.push('/my_page')}
+                aria-label="뒤로 가기"
+              >
+                <SvgIcon name="arrow_left" width={24} height={24} />
+              </button>
+              <span className="text-lg font-semibold">개인정보 수정</span>
+            </div>
+          ) : isPostDetailPage ? (
             <button
               onClick={() => router.push('/posts')}
               className="flex items-center justify-center"
@@ -113,12 +130,15 @@ export default function Header() {
           )}
         </div>
 
-        {/* 전체 메뉴 버튼 - 게시글 상세 페이지와 작성 페이지, 마이페이지에서는 숨김 */}
-        {!isPostDetailPage && !isPostWritePage && !isMyPage && (
-          <button className="flex items-center justify-center w-[24px] h-[24px]">
-            <SvgIcon name="meatball" width={24} height={24} />
-          </button>
-        )}
+        {/* 전체 메뉴 버튼 - 게시글 상세 페이지, 작성 페이지, 마이페이지, 개인정보 수정 페이지에서는 숨김 */}
+        {!isPostDetailPage &&
+          !isPostWritePage &&
+          !isMyPage &&
+          !isEditMyPage && (
+            <button className="flex items-center justify-center w-[24px] h-[24px]">
+              <SvgIcon name="meatball" width={24} height={24} />
+            </button>
+          )}
       </div>
     </header>
   );
