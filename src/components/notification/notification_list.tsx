@@ -118,10 +118,10 @@ export default function NotificationList({
         page.map((notification, index) => (
           <div
             key={notification.notificationId}
-            className="w-[480px] h-[101px] flex flex-col cursor-pointer"
+            className="w-[480px] h-[101px] flex flex-col cursor-pointer max-md:w-full"
             onClick={() => handleClick(notification)}
           >
-            <div className="w-[470px] h-[64px] mt-[12px] ml-[7px] flex items-center space-x-4">
+            <div className="w-[470px] h-[64px] mt-[12px] ml-[7px] flex items-center space-x-4 max-md:w-full">
               {showCheckbox && (
                 <button
                   onClick={(e) => {
