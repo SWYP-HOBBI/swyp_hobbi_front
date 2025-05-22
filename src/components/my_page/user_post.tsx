@@ -47,7 +47,6 @@ export default function UserPost() {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (status === 'pending') return <div>로딩 중..</div>;
   if (status === 'error') return <div>에러 발생</div>;
 
   return (

@@ -54,10 +54,13 @@ export default function Input({
 
   // 컨테이너 스타일 (기본/에러 상태)
   const inputContainerStyles = `relative flex items-center w-full rounded-lg border  ${
-    error
-      ? 'border-like focus-within:border-like'
-      : 'border-grayscale-20 focus-within:border-primary'
-  } ${disabled ? 'bg-grayscale-5 cursor-not-allowed' : ''}`;
+    containerClassName?.includes('border-none')
+      ? ''
+      : error
+        ? 'border-like focus-within:border-like'
+        : 'border-grayscale-20 focus-within:border-primary'
+  } ${disabled ? 'bg-grayscale-5 cursor-not-allowed' : ''}
+  ${containerClassName}`;
 
   return (
     <div className={`w-full font-medium max-md:text-sm ${containerClassName}`}>

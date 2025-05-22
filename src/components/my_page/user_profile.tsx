@@ -21,7 +21,7 @@ export default function UserProfile() {
     fetchUserData();
   }, []);
 
-  if (!userInfo) return <div>Loading...</div>;
+  if (!userInfo) return null;
 
   return (
     <div className="w-[244px] h-[353px] bg-white rounded-[24px] p-[20px] flex flex-col items-center justify-center text-center gap-[12px]">
