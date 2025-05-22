@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { userService } from '@/services/api';
 import Input from '../common/input';
 interface EditPasswordProps {
@@ -56,7 +56,8 @@ export default function EditPassword({
         <Input
           id="current-password"
           type="password"
-          className="w-[250px] h-[27px] px-3 text-[18px] !border-none"
+          className="w-[250px] h-[27px] px-3 text-[18px]"
+          containerClassName="border-none"
           placeholder="현재 비밀번호를 입력해주세요."
           value={currentPassword}
           onChange={handleCurrentPasswordChange}
