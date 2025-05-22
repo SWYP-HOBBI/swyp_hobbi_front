@@ -42,11 +42,13 @@ export default function MyPage() {
   }
 
   return (
-    <main className="w-full min-h-screen flex justify-center">
-      <div className="w-[960px] pt-12">
-        <div className="flex gap-[20px]">
-          <UserProfile />
-          <div className="flex-1 h-[353px] bg-white rounded-[24px] p-[20px]">
+    <main className="w-full min-h-screen flex justify-center bg-grayscale-1">
+      <div className="w-[960px] max-md:w-[390px] max-md:mb-8 pt-12">
+        <div className="flex flex-col md:flex-row gap-[20px]">
+          <div className="max-md:mt-6">
+            <UserProfile />
+          </div>
+          <div className="flex-1 h-[353px]  bg-white  rounded-[24px] p-[20px]">
             <UserHobby />
             <div className="mt-[24px]">
               <UserRank />
@@ -54,7 +56,7 @@ export default function MyPage() {
           </div>
         </div>
 
-        <div className="flex justify-end mt-[10px] mb-[40px] mr-[18px] gap-3">
+        <div className="flex justify-end mt-[10px] max-md:mt-1 mb-[40px] mr-[18px] gap-3">
           <span className="text-[14px] text-[var(--grayscale-60)] cursor-pointer">
             SNS 계정 연동
           </span>
@@ -66,7 +68,9 @@ export default function MyPage() {
             프로필 수정
           </button>
         </div>
-        <UserPost />
+        <div className="max-md:mb-18">
+          <UserPost />
+        </div>
       </div>
     </main>
   );

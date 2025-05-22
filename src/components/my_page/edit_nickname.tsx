@@ -7,10 +7,10 @@ interface EditNicknameProps {
   setShowNicknameEdit: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditNickname = ({
+export default function EditNickname({
   currentNickname,
   onNicknameChange,
-}: EditNicknameProps) => {
+}: EditNicknameProps) {
   const [newNickname, setNewNickname] = useState('');
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +76,7 @@ const EditNickname = ({
   };
 
   return (
-    <div className="w-[452px]">
+    <div className="w-[452px] max-md:w-full">
       <span className="text-[20px] font-semibold">닉네임</span>
       <div className="flex justify-between items-center mt-[24px] border-b border-[var(--grayscale-40)]">
         <span className="text-[18px]">{currentNickname}</span>
@@ -91,39 +91,47 @@ const EditNickname = ({
       {showNicknameEdit && (
         <div
           ref={editBoxRef}
-          className="w-[920px] h-[180px] bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] flex flex-col justify-center px-[24px] mt-6"
+          className="w-[920px] h-[180px] max-md:w-full max-md:h-full flex max-md:flex-col max-md:gap-2 bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] justify-center px-[24px] mt-6 gap-3"
         >
-          <label
-            className="text-[18px] font-semibold mb-[12px]"
-            htmlFor="new-nickname"
-          >
-            새로운 닉네임
-          </label>
-
-          <div className="flex gap-2 items-center">
+          <div className="max-md:mt-2 flex flex-col justify-center">
+            <label
+              className="text-[18px] font-semibold mb-3"
+              htmlFor="new-nickname"
+            >
+              새로운 닉네임
+            </label>
             <input
               id="new-nickname"
               type="text"
               value={newNickname}
               onChange={(e) => setNewNickname(e.target.value)}
-              className="w-[480px] h-[60px] bg-white text-[14px] p-2 border border-[#D9D9D9] rounded-[8px]"
+              className="w-[480px] h-[60px] max-md:w-full bg-white text-[14px] p-2 border border-[#D9D9D9] rounded-[8px]"
               placeholder="새로운 닉네임을 입력하세요.."
               disabled={isLoading || isNicknameVerified}
             />
+            {isError && (
+              <p className="text-[12px] text-[#eb165d] mt-2">{errorMessage}</p>
+            )}
+            {isNicknameVerified && (
+              <p className="text-[12px] mt-2">*사용 가능한 닉네임입니다.</p>
+            )}
+          </div>
+
+          <div className="flex gap-2 mt-7 items-center max-md:mb-2">
             <button
-              className="w-[180px] h-[60px] bg-white border border-[var(--primary-b60)] text-[var(--primary-b60)] text-[14px] font-semibold rounded-[12px]"
+              className="w-[180px] h-[60px] bg-white border border-[var(--primary-b60)] text-[var(--primary-b60)] text-[14px] max-md:text-[12px] font-semibold rounded-[12px]"
               onClick={handleNicknameCheck}
               disabled={!newNickname || isNicknameVerified || isLoading}
             >
               {isLoading
                 ? '처리 중...'
                 : isNicknameVerified
-                  ? '인증완료'
+                  ? '확인완료'
                   : '중복확인'}
             </button>
 
             <button
-              className={`w-[180px] h-[60px] text-[14px] px-4 py-2 rounded-[12px] bg-[var(--primary)] font-semibold cursor-pointer ${
+              className={`w-[180px] h-[60px] text-[14px] max-md:text-[12px] px-4 py-2 rounded-[12px] bg-[var(--primary)] font-semibold cursor-pointer ${
                 !isNicknameVerified ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               onClick={handleSave}
@@ -132,20 +140,8 @@ const EditNickname = ({
               닉네임 변경
             </button>
           </div>
-
-          {isError && errorMessage && (
-            <p className="text-[12px] text-[#eb165d] mt-2">{errorMessage}</p>
-          )}
-
-          {isNicknameVerified && (
-            <p className="text-[12px] mt-2 text-green-600">
-              *인증이 완료되었습니다.
-            </p>
-          )}
         </div>
       )}
     </div>
   );
-};
-
-export default EditNickname;
+}
