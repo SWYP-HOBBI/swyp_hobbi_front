@@ -50,7 +50,7 @@ export default function UserPost() {
   if (status === 'error') return <div>에러 발생</div>;
 
   return (
-    <div className="w-[960px] max-md:w-[390px] bg-white rounded-[24px] p-[20px] space-y-8">
+    <div className="w-[960px] max-md:w-[390px] bg-grayscale-0 rounded-[24px] p-5 space-y-8">
       <h2 className="text-xl font-bold">나의 게시글</h2>
 
       {data?.pages.flatMap((group: MyPostsResponse) =>
@@ -70,14 +70,13 @@ export default function UserPost() {
             }}
             onDelete={(postId) => {
               openModal({
-                title: '게시글 삭제',
-                message: '정말로 이 게시글을 삭제하시겠습니까?',
+                message: '피드를 정말로\n삭제하시겠습니까?',
                 confirmText: '삭제',
+                showCancelButton: true,
                 onConfirm: async () => {
                   try {
                     await postService.deletePost(postId);
                   } catch (err) {
-                    console.error('게시글 삭제 중 오류:', err);
                     openModal({
                       title: '오류',
                       message: '게시글 삭제 중 오류가 발생했습니다.',

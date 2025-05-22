@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import HobbySelector from '@/components/common/hobby_selector';
+import HobbySelector, {
+  CustomDropdownButton,
+  CustomDropdownItem,
+} from '@/components/common/hobby_selector';
 import MyProfile from '@/components/common/my_profile';
 import EditNickname from '@/components/my_page/edit_nickname';
 import EditPassword from '@/components/my_page/edit_password';
-import { userService } from '@/services/api'; // API 서비스 호출
+import { userService } from '@/services/api';
 import { useHobbyStore } from '@/store/hobby';
 import { MyPageModify, UpdateUserInfo } from '@/types/my_page';
 import {
@@ -20,9 +23,12 @@ import {
   getPasswordError,
 } from '@/utils/password_validation';
 import Loader from '@/components/common/loader';
+import { MBTI_OPTIONS } from '@/types/auth';
+import { useModalStore } from '@/store/modal';
 
 export default function EditMyPage() {
   const router = useRouter();
+  const { openModal } = useModalStore();
   const { selectedHobbyTags, setSelectedHobbyTags } = useHobbyStore(); // 선택된 취미 태그 상태
 
   // 상태 변수 설정
@@ -34,6 +40,15 @@ export default function EditMyPage() {
   const [birthDay, setBirthDay] = useState('');
   const [mbti, setMbti] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMbtiOpen, setIsMbtiOpen] = useState(false);
+  const [isYearOpen, setIsYearOpen] = useState(false);
+  const [isMonthOpen, setIsMonthOpen] = useState(false);
+  const [isDayOpen, setIsDayOpen] = useState(false);
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   // 닉네임 수정 폼 상태
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
@@ -172,11 +187,16 @@ export default function EditMyPage() {
     setIsLoading(true);
     try {
       await userService.updateUserInfo(updatedUserInfo);
-      alert('정보가 성공적으로 수정되었습니다!');
-      router.push('/my_page');
+      openModal({
+        title: '개인정보가 수정되었습니다.',
+        message: '마이페이지로 이동합니다.',
+        confirmText: '확인',
+        onConfirm: () => {
+          router.push('/my_page');
+        },
+      });
     } catch (error) {
-      console.error('Error saving user info:', error);
-      alert('정보 수정에 실패했습니다.');
+      alert('개인정보 수정에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -214,20 +234,20 @@ export default function EditMyPage() {
   return (
     <main className="w-full pb-[100px] max-md:pt-6 min-h-screen bg-grayscale-1 flex justify-center">
       <div>
-        <div className="w-[960px] max-md:w-[390px] max-md:mb-3 bg-white rounded-[24px] mt-[48px] flex flex-col items-center px-[20px] pb-[48px]">
-          <div className="text-[32px] max-md:hidden font-bold pt-[48px] pb-[48px]">
+        <div className="w-[960px] max-md:w-[390px] max-md:mb-3 bg-grayscale-0 rounded-[24px] mt-12 flex flex-col items-center px-5 pb-12">
+          <div className="text-[32px] max-md:hidden font-bold pt-12 pb-12">
             개인정보 수정
           </div>
           <div className="max-md:mt-5">
             <MyProfile imageUrl={userInfo.userImageUrl} editable={true} />
           </div>
           <div className="text-[20px] font-semibold">{userInfo.nickname}</div>
-          <div className="text-[16px] text-[var(--grayscale-60)] pt-[12px] pb-[48px]">
+          <div className="text-[16px] text-grayscale-60 pt-3 pb-12">
             {userInfo.email}
           </div>
 
-          <div className="flex flex-col gap-[48px] w-full">
-            <div className="border-b border-[#D9D9D9] pb-[4px]">
+          <div className="flex flex-col gap-12 w-full">
+            <div className="border-b border-grayscale-40 pb-1">
               <span className="text-[20px] font-semibold block mb-4">이름</span>
               <input
                 type="text"
@@ -252,7 +272,7 @@ export default function EditMyPage() {
             {showPasswordEdit && (
               <div
                 ref={passwordEditRef}
-                className="w-[920px] max-md:w-full max-md:flex-col h-[172px] max-md:h-full relative bg-[#F9F9F9] border border-[#D9D9D9] rounded-[12px] flex items-center justify-between px-[10px]"
+                className="w-[920px] max-md:w-full max-md:flex-col h-[172px] max-md:h-full relative bg-[#F9F9F9] rounded-[24px] flex items-center justify-between px-[10px]"
               >
                 {/* 새 비밀번호 입력 */}
                 <div className="flex flex-col max-md:w-[330px] max-md:mt-2">
@@ -265,7 +285,7 @@ export default function EditMyPage() {
                   <Input
                     id="new-password"
                     type="password"
-                    className="!w-[350px] !h-[60px] border border-[var(--grayscale-80)] rounded-[8px] px-3 text-[14px]"
+                    className="!w-[350px] !h-[60px] border border-grayscale-80 rounded-[8px] px-3 text-[14px]"
                     placeholder="새 비밀번호를 입력하세요."
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -274,7 +294,7 @@ export default function EditMyPage() {
                   />
                   {/* 새 비밀번호 오류 메시지 */}
                   {getPasswordError(newPassword) && (
-                    <div className="text-red-500 text-[14px] mt-2">
+                    <div className="text-like text-[14px] mt-2">
                       {getPasswordError(newPassword)}
                     </div>
                   )}
@@ -291,7 +311,7 @@ export default function EditMyPage() {
                   <Input
                     id="confirm-password"
                     type="password"
-                    className="!w-[350px] !h-[60px] border border-[var(--grayscale-80)] rounded-[8px] px-3 text-[14px]"
+                    className="!w-[350px] !h-[60px] border border-grayscale-80 rounded-[8px] px-3 text-[14px]"
                     placeholder="새 비밀번호를 입력하세요."
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -300,7 +320,7 @@ export default function EditMyPage() {
                   />
                   {/* 비밀번호 확인 오류 메시지 */}
                   {getPasswordConfirmError(newPassword, confirmPassword) && (
-                    <div className="text-red-500 text-[14px] mt-2">
+                    <div className="text-like text-[14px] mt-2">
                       {getPasswordConfirmError(newPassword, confirmPassword)}
                     </div>
                   )}
@@ -310,7 +330,7 @@ export default function EditMyPage() {
                 <div className="flex max-md:w-full h-[60px] mt-[25px] gap-3  max-md:mb-2">
                   <button
                     type="button"
-                    className="w-[180px] max-md:w-full h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-[var(--primary)]"
+                    className="w-[180px] max-md:w-full h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-primary"
                     onClick={handlePasswordSave}
                     disabled={isLoading}
                   >
@@ -320,100 +340,116 @@ export default function EditMyPage() {
               </div>
             )}
 
-            <div className="flex max-md:flex-col w-full gap-[20px]">
+            <div className="flex max-md:flex-col w-full gap-5">
               {/* 생년월일 */}
-              <div className="flex max-md:w-full flex-col gap-2 w-1/2">
-                <span className="text-[20px] font-semibold pb-[8px]">
-                  생년월일
-                </span>
+              <div className="flex max-md:w-full flex-col gap-2 w-full">
+                <span className="text-[20px] font-semibold pb-2">생년월일</span>
                 <div className="flex gap-2">
-                  <select
-                    className="w-[184px] h-[60px] border border-[#D9D9D9] rounded-[8px] px-2"
-                    value={birthYear}
-                    onChange={(e) => setBirthYear(e.target.value)}
-                  >
-                    <option value="">년</option>
-                    {Array.from({ length: 100 }, (_, i) => {
-                      const year = new Date().getFullYear() - i;
-                      return (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <select
-                    className="w-[122px] h-[60px] border border-[#D9D9D9] rounded-[8px] px-2"
-                    value={birthMonth}
-                    onChange={(e) => setBirthMonth(e.target.value)}
-                  >
-                    <option value="">월</option>
-                    {[...Array(12)].map((_, i) => (
-                      <option
-                        key={i + 1}
-                        value={String(i + 1).padStart(2, '0')}
-                      >
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className="w-[122px] h-[60px] border border-[#D9D9D9] rounded-[8px] px-2"
-                    value={birthDay}
-                    onChange={(e) => setBirthDay(e.target.value)}
-                  >
-                    <option value="">일</option>
-                    {[...Array(31)].map((_, i) => (
-                      <option
-                        key={i + 1}
-                        value={String(i + 1).padStart(2, '0')}
-                      >
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
+                  {/* 년 */}
+                  <div className="w-[184px]">
+                    <CustomDropdownButton
+                      value={birthYear}
+                      placeholder="년"
+                      isOpen={isYearOpen}
+                      onToggle={() => setIsYearOpen(!isYearOpen)}
+                    >
+                      {years.map((year) => (
+                        <CustomDropdownItem
+                          key={year}
+                          value={year.toString()}
+                          label={year.toString()}
+                          isSelected={birthYear === year.toString()}
+                          onClick={() => {
+                            setBirthYear(year.toString());
+                            setIsYearOpen(false);
+                          }}
+                        />
+                      ))}
+                    </CustomDropdownButton>
+                  </div>
+
+                  {/* 월 */}
+                  <div className="w-[122px]">
+                    <CustomDropdownButton
+                      value={birthMonth}
+                      placeholder="월"
+                      isOpen={isMonthOpen}
+                      onToggle={() => setIsMonthOpen(!isMonthOpen)}
+                    >
+                      {months.map((month) => (
+                        <CustomDropdownItem
+                          key={month}
+                          value={String(month).padStart(2, '0')}
+                          label={month.toString()}
+                          isSelected={
+                            birthMonth === String(month).padStart(2, '0')
+                          }
+                          onClick={() => {
+                            setBirthMonth(String(month).padStart(2, '0'));
+                            setIsMonthOpen(false);
+                          }}
+                        />
+                      ))}
+                    </CustomDropdownButton>
+                  </div>
+
+                  {/* 일 */}
+                  <div className="w-[122px]">
+                    <CustomDropdownButton
+                      value={birthDay}
+                      placeholder="일"
+                      isOpen={isDayOpen}
+                      onToggle={() => setIsDayOpen(!isDayOpen)}
+                    >
+                      {days.map((day) => (
+                        <CustomDropdownItem
+                          key={day}
+                          value={String(day).padStart(2, '0')}
+                          label={day.toString()}
+                          isSelected={birthDay === String(day).padStart(2, '0')}
+                          onClick={() => {
+                            setBirthDay(String(day).padStart(2, '0'));
+                            setIsDayOpen(false);
+                          }}
+                        />
+                      ))}
+                    </CustomDropdownButton>
+                  </div>
                 </div>
               </div>
 
               {/* MBTI */}
-              <div className="flex flex-col gap-2 w-1/2">
-                <span className="text-[20px] font-semibold pb-[8px]">MBTI</span>
-                <select
-                  className="w-[448px] max-md:w-[360px] h-[60px] border border-[#D9D9D9] rounded-[8px] px-2"
-                  value={mbti}
-                  onChange={(e) => setMbti(e.target.value)}
-                >
-                  <option value="">선택</option>
-                  {[
-                    'ENFP',
-                    'INFP',
-                    'INTJ',
-                    'ENTJ',
-                    'ESFP',
-                    'ISFP',
-                    'ISTJ',
-                    'ESTJ',
-                    'ENTP',
-                    'INTP',
-                    'ISFJ',
-                    'ESFJ',
-                    'ENFJ',
-                    'INFJ',
-                    'ESTP',
-                    'ISTP',
-                  ].map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-col gap-2 w-full">
+                <span className="text-[20px] font-semibold pb-2">MBTI</span>
+                <div className="w-full">
+                  <CustomDropdownButton
+                    value={mbti}
+                    placeholder="선택해주세요"
+                    isOpen={isMbtiOpen}
+                    onToggle={() => setIsMbtiOpen(!isMbtiOpen)}
+                  >
+                    {MBTI_OPTIONS.map((mbtiOption) => (
+                      <CustomDropdownItem
+                        key={mbtiOption}
+                        value={mbtiOption}
+                        label={mbtiOption}
+                        isSelected={mbti === mbtiOption}
+                        showCheckbox
+                        onClick={() => {
+                          setMbti(mbtiOption);
+                          setIsMbtiOpen(false);
+                        }}
+                      />
+                    ))}
+                  </CustomDropdownButton>
+                </div>
               </div>
             </div>
 
-            <div className="w-full pb-[48px]">
-              <div className="flex items-center mb-[24px]">
+            <div className="w-full pb-12">
+              <div className="flex items-center mb-6">
                 <span className="text-[24px] font-semibold">내 취미</span>
-                <span className="text-sm ml-2 text-[var(--grayscale-60)]">
+                <span className="text-sm ml-2 text-grayscale-60">
                   *최대 15개까지 선택 가능합니다.
                 </span>
               </div>
@@ -421,9 +457,9 @@ export default function EditMyPage() {
             </div>
           </div>
         </div>
-        <div className="w-full max-md:w-[390px] flex justify-end gap-[11px] pt-[12px]">
+        <div className="w-full max-md:w-[390px] flex justify-end gap-[11px] pt-3">
           <button
-            className="w-[234px] h-[60px] max-md:hidden rounded-[12px] bg-white border border-[var(--primary-b60)] text-[14px] text-[var(--primary-b60)]"
+            className="w-[234px] h-[60px] max-md:hidden rounded-[12px] bg-grayscale-0 border border-primary-b60 text-[14px] text-primary-b60"
             onClick={() => router.push('/my_page')}
           >
             수정취소
@@ -431,8 +467,8 @@ export default function EditMyPage() {
           <button
             className={`w-[234px] h-[60px] max-md:w-full rounded-[12px] ${
               isModified
-                ? 'bg-[var(--primary)] text-[var(--primary-b80)]'
-                : 'bg-[var(--grayscale-10)] text-[var(--grayscale-50)]'
+                ? 'bg-primary text-primary-b80'
+                : 'bg-grayscale-10 text-grayscale-50'
             }`}
             onClick={handleSave}
             disabled={!isModified || isLoading}
@@ -442,7 +478,7 @@ export default function EditMyPage() {
         </div>
 
         <div
-          className="cursor-pointer text-[#00000080] flex justify-end my-4 w-full"
+          className="cursor-pointer text-grayscale-60 flex justify-end my-4 w-full"
           onClick={() => router.push('/my_page/delete_account')}
         >
           회원탈퇴 &gt;
