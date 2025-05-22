@@ -38,9 +38,11 @@ export default function MyPageEdit() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-white flex flex-col justify-center items-center">
-      <h1 className="text-[32px] font-bold mb-6">회원 탈퇴 안내</h1>
-      <p className="flex flex-col text-[20px] text-center mb-3">
+    <main className="w-full max-md:w-full min-h-screen bg-white flex flex-col justify-center items-center">
+      <h1 className="text-[32px] max-md:text-[28px] font-bold mb-6">
+        회원 탈퇴 안내
+      </h1>
+      <p className="flex flex-col text-[20px] max-md:text-[18px] text-center mb-3">
         <span>
           정말 떠나시겠어요? 탈퇴 시 계정과 관련된 모든 정보가 삭제되며, 복구가
           불가능합니다.
@@ -69,7 +71,7 @@ export default function MyPageEdit() {
           />
         </svg>
         <label
-          className={`text-[18px] cursor-pointer ${
+          className={`text-[18px]  cursor-pointer max-md:text-[15px] ${
             agreeChecked
               ? 'text-[var(--primary-b20)]'
               : 'text-[var(--grayscale-40)]'
@@ -79,7 +81,7 @@ export default function MyPageEdit() {
         </label>
       </div>
 
-      <div className="w-[816px] border border-[#9B9B9B] rounded-[24px] p-[32px] mb-[48px]">
+      <div className="w-[816px] max-md:w-full border border-[#9B9B9B] rounded-[24px] p-[32px] mb-[48px]">
         <div className="text-[18px] mb-6">
           서비스 개선을 위해 아래 중 해당하는 탈퇴 사유를 선택해주세요.
           (단수선택)
@@ -117,7 +119,7 @@ export default function MyPageEdit() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 max-md:w-[390px]">
         <button
           className="w-[475px] h-[72px] text-[14px] text-[var(--primary-b60)] font-semibold rounded-[12px] border border-[1.5px] border-[var(--primary-b60)] hover:bg-gray-100"
           onClick={() => router.push('/edit')}
