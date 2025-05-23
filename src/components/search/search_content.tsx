@@ -105,7 +105,7 @@ export default function SearchContent() {
   const hasNoResults = data?.pages[0]?.posts.length === 0;
 
   return (
-    <main className="w-full min-h-screen p-6">
+    <main className="w-full min-h-screen p-6 pb-20">
       <div className="max-w-[960px] mx-auto">
         <h1 className="text-2xl font-bold mb-3">검색</h1>
 

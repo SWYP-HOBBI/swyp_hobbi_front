@@ -1,5 +1,6 @@
 'use client';
 
+import SvgIcon from '@/components/common/svg_icon';
 import { userService } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -39,14 +40,34 @@ export default function MyPageEdit() {
 
   return (
     <main className="w-full max-md:w-full min-h-screen bg-white flex flex-col justify-center items-center">
-      <h1 className="text-[32px] max-md:text-[28px] font-bold mb-6">
+      {/* 모바일 전용 헤더 */}
+      <div className="relative flex items-center justify-center mb-8 w-full md:hidden">
+        <div className="absolute left-4" onClick={() => router.back()}>
+          <SvgIcon
+            name="arrow_left"
+            className="cursor-pointer w-[20px] h-[20px]"
+            color="var(--grayscale-60)"
+          />
+        </div>
+        <h1 className="text-[20px] font-bold">회원 탈퇴 안내</h1>
+      </div>
+
+      <h1 className="text-[32px] max-md:hidden font-bold mb-6">
         회원 탈퇴 안내
       </h1>
-      <p className="flex flex-col text-[20px] max-md:text-[18px] text-center mb-3">
-        <span>
+      <p className="flex flex-col text-[20px] max-md:text-sm text-center mb-3">
+        {/* 데스크탑 전용 */}
+        <span className="max-md:hidden">
           정말 떠나시겠어요? 탈퇴 시 계정과 관련된 모든 정보가 삭제되며, 복구가
           불가능합니다.
         </span>
+
+        {/* 모바일 전용 */}
+        <span className="max-md:text-sm md:hidden">정말 떠나시겠어요?</span>
+        <span className="md:hidden">
+          탈퇴 시 계정과 관련된 모든 정보가 삭제되며, 복구가 불가능합니다.
+        </span>
+
         <span>
           작성한 게시글, 댓글 등의 일부 데이터는 삭제되지 않을 수 있습니다.
         </span>
@@ -121,7 +142,7 @@ export default function MyPageEdit() {
 
       <div className="flex gap-4 max-md:w-[390px]">
         <button
-          className="w-[475px] h-[72px] text-[14px] text-[var(--primary-b60)] font-semibold rounded-[12px] border border-[1.5px] border-[var(--primary-b60)] hover:bg-gray-100"
+          className="w-[475px] h-[72px] text-[14px] text-[var(--primary-b60)] font-semibold rounded-[12px] border border-[1.5px] border-[var(--primary-b60)] hover:bg-gray-100 max-md:hidden"
           onClick={() => router.push('/edit')}
         >
           돌아가기
