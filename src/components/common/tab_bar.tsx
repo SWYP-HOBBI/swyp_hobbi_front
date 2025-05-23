@@ -91,7 +91,7 @@ export default function TabBar() {
           <div className="relative">
             <div
               className={`w-[150px] flex items-center h-[52px] pt-[20px] ${
-                isSearchOpen
+                isSearchOpen || isNotificationOpen
                   ? 'opacity-30 pointer-events-none'
                   : 'cursor-pointer'
               }`}
@@ -103,11 +103,15 @@ export default function TabBar() {
                 <SvgIcon
                   name="home"
                   size={36}
-                  color={isSearchOpen ? '#999999' : iconColor(isHome)}
+                  color={
+                    isSearchOpen || isNotificationOpen
+                      ? '#999999'
+                      : iconColor(isHome)
+                  }
                 />
                 <span
                   className={`ml-[24px] text-[16px] ${
-                    isSearchOpen
+                    isSearchOpen || isNotificationOpen
                       ? 'text-[var(--grayscale-40)]'
                       : textColor(isHome)
                   }`}
@@ -121,7 +125,7 @@ export default function TabBar() {
                   setShowFeedMenu(!showFeedMenu);
                 }}
                 className={`ml-2 transform transition-transform duration-200 -rotate-90
-                ${isSearchOpen ? 'opacity-30' : ''}`}
+                ${isSearchOpen || isNotificationOpen ? 'opacity-30' : ''}`}
               >
                 <SvgIcon name="arrow_down" size={24} />
               </button>
@@ -174,19 +178,23 @@ export default function TabBar() {
 
           {/* 검색 */}
           <div
-            className={`w-[150px] flex items-center h-[52px] cursor-pointer`}
+            className={`w-[150px] flex items-center h-[52px] cursor-pointer ${
+              isNotificationOpen ? 'opacity-30 pointer-events-none' : ''
+            }`}
             onClick={toggleSearch}
           >
             <SvgIcon
               name="search"
               size={36}
-              color={isSearchOpen ? 'var(--primary)' : '#999999'}
+              color={isNotificationOpen ? '#999999' : iconColor(isSearchOpen)}
             />
             <span
               className={`ml-[24px] text-[16px] ${
-                isSearchOpen
-                  ? 'text-[var(--primary-b60)] font-semibold'
-                  : 'text-[var(--grayscale-40)]'
+                isNotificationOpen
+                  ? 'text-[var(--grayscale-40)]'
+                  : isSearchOpen
+                    ? 'text-[var(--primary-b60)] font-semibold'
+                    : 'text-[var(--grayscale-40)]'
               }`}
             >
               검색
@@ -233,7 +241,9 @@ export default function TabBar() {
           {/* 게시글 작성 (로그인 필요) */}
           <div
             className={`w-[150px] flex items-center h-[52px] ${
-              isSearchOpen ? 'opacity-30 pointer-events-none' : 'cursor-pointer'
+              isSearchOpen || isNotificationOpen
+                ? 'opacity-30 pointer-events-none'
+                : 'cursor-pointer'
             }`}
             onClick={() =>
               handleProtectedRoute(() => router.push('/posts/write'))
@@ -242,10 +252,18 @@ export default function TabBar() {
             <SvgIcon
               name="write"
               size={36}
-              color={isSearchOpen ? '#999999' : iconColor(isWrite)}
+              color={
+                isSearchOpen || isNotificationOpen
+                  ? '#999999'
+                  : iconColor(isWrite)
+              }
             />
             <span
-              className={`ml-[24px] text-[16px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isWrite)}`}
+              className={`ml-[24px] text-[16px] ${
+                isSearchOpen || isNotificationOpen
+                  ? 'text-[var(--grayscale-40)]'
+                  : textColor(isWrite)
+              }`}
             >
               게시글 작성
             </span>
@@ -254,17 +272,27 @@ export default function TabBar() {
           {/* 마이페이지 (로그인 필요) */}
           <div
             className={`w-[150px] flex items-center h-[52px] pb-[20px] ${
-              isSearchOpen ? 'opacity-30 pointer-events-none' : 'cursor-pointer'
+              isSearchOpen || isNotificationOpen
+                ? 'opacity-30 pointer-events-none'
+                : 'cursor-pointer'
             }`}
             onClick={() => handleProtectedRoute(() => router.push('/my_page'))}
           >
             <SvgIcon
               name="my_page"
               size={36}
-              color={isSearchOpen ? '#999999' : iconColor(isMyPage)}
+              color={
+                isSearchOpen || isNotificationOpen
+                  ? '#999999'
+                  : iconColor(isMyPage)
+              }
             />
             <span
-              className={`ml-[24px] text-[16px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isMyPage)}`}
+              className={`ml-[24px] text-[16px] ${
+                isSearchOpen || isNotificationOpen
+                  ? 'text-[var(--grayscale-40)]'
+                  : textColor(isMyPage)
+              }`}
             >
               마이페이지
             </span>
