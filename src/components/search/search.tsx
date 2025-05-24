@@ -94,7 +94,7 @@ export default function Search() {
         >
           {/* 어두운 배경 */}
           <motion.div
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-grayscale-100/30"
             onClick={closeSearch}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -134,7 +134,7 @@ export default function Search() {
                   </button>
 
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-8 bg-white rounded-md shadow-md border border-gray-200 z-10">
+                    <div className="absolute right-0 top-8 bg-grayscale-0 rounded-md shadow-md border border-gray-200 z-10">
                       <div className="flex flex-col w-[100px]">
                         {['제목+내용', '작성자'].map((option) => (
                           <button
@@ -183,7 +183,7 @@ export default function Search() {
             </div>
 
             <button
-              className={`mt-6 w-[380px] max-md:w-[calc(100%-32px)] h-[60px] rounded-[12px] text-[14px] font-semibold ${
+              className={`mt-6 w-[380px] max-md:w-[calc(100%-32px)] h-[60px] rounded-[12px] text-sm font-semibold ${
                 searchQuery.trim().length === 0 &&
                 selectedMbti.length === 0 &&
                 searchHobbyTags.length === 0

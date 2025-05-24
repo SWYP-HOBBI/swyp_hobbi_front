@@ -50,7 +50,7 @@ export default function EditPassword({
 
   return (
     <div className="w-[452px] max-md:w-full h-[65px]">
-      <span className="text-[20px] font-semibold">비밀번호</span>
+      <span className="text-xl font-semibold">비밀번호</span>
       {/* 현재 비밀번호 입력 */}
       <div className="w-[452px] max-md:w-full h-[58px] flex justify-between items-center border-b border-[#D9D9D9]">
         <Input
@@ -67,7 +67,7 @@ export default function EditPassword({
 
         {/* 비밀번호 변경하기 버튼 활성화 */}
         <button
-          className={`w-[59px] h-[24px] rounded-[24px] bg-[var(--primary-w80)] border border-[var(--primary-b20)] hover:bg-[var(--primary-w40)] text-[12px] mt-[10px] ${isCurrentPasswordValid ? '' : 'opacity-50 cursor-not-allowed'}`}
+          className={`w-[59px] h-[24px] rounded-[24px] bg-[var(--primary-w80)] border border-[var(--primary-b20)] hover:bg-[var(--primary-w40)] text-xs mt-[10px] ${isCurrentPasswordValid ? '' : 'opacity-50 cursor-not-allowed'}`}
           onClick={handleCheckCurrentPassword}
           disabled={!isCurrentPasswordValid}
         >

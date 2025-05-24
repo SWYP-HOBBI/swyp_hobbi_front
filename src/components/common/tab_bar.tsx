@@ -74,7 +74,7 @@ export default function TabBar() {
 
   // PC 버전 탭바
   const DesktopTabBar = () => (
-    <div className="w-[198px] h-screen bg-white sticky top-0 hidden md:flex flex-col z-[9999]">
+    <div className="w-[198px] h-screen bg-grayscale-0 sticky top-0 hidden md:flex flex-col z-[9999]">
       <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
         <div
           className="flex justify-center items-center cursor-pointer"
@@ -84,7 +84,7 @@ export default function TabBar() {
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-between">
-        <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-[24px]">
+        <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-6">
           {/* 홈 */}
           <div className="relative">
             <div
@@ -136,7 +136,7 @@ export default function TabBar() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -20, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="absolute left-[180px] top-[20px] bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[92px] text-sm"
+                className="absolute left-[180px] top-[20px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[92px] text-sm"
               >
                 <motion.button
                   initial={{ x: -10, opacity: 0 }}
@@ -311,7 +311,7 @@ export default function TabBar() {
 
   // 모바일 버전 탭바
   const MobileTabBar = () => (
-    <div className="fixed bottom-0 left-0 w-full h-[72px] bg-white border-t border-[var(--grayscale-10)] md:hidden z-[9999]">
+    <div className="fixed bottom-0 left-0 w-full h-[72px] bg-grayscale-0 border-t border-[var(--grayscale-10)] md:hidden z-[9999]">
       <div className="flex justify-around items-center h-full px-4">
         {/* 홈 */}
         <button

@@ -39,7 +39,7 @@ export default function MyPageEdit() {
   };
 
   return (
-    <main className="w-full max-md:w-full min-h-screen bg-white flex flex-col justify-center items-center">
+    <main className="w-full max-md:w-full min-h-screen bg-grayscale-0 flex flex-col justify-center items-center">
       {/* 모바일 전용 헤더 */}
       <div className="relative flex items-center justify-center mb-8 w-full md:hidden">
         <div className="absolute left-4" onClick={() => router.back()}>
@@ -49,13 +49,13 @@ export default function MyPageEdit() {
             color="var(--grayscale-60)"
           />
         </div>
-        <h1 className="text-[20px] font-bold">회원 탈퇴 안내</h1>
+        <h1 className="text-xl font-bold">회원 탈퇴 안내</h1>
       </div>
 
       <h1 className="text-[32px] max-md:hidden font-bold mb-6">
         회원 탈퇴 안내
       </h1>
-      <p className="flex flex-col text-[20px] max-md:text-sm text-center mb-3">
+      <p className="flex flex-col text-xl max-md:text-sm text-center mb-3">
         {/* 데스크탑 전용 */}
         <span className="max-md:hidden">
           정말 떠나시겠어요? 탈퇴 시 계정과 관련된 모든 정보가 삭제되며, 복구가
@@ -118,11 +118,11 @@ export default function MyPageEdit() {
                 className={`w-5 h-5 mr-3 rounded-full border border-[#C4C4C4] flex items-center justify-center ${
                   selectedReason === reason
                     ? 'bg-[var(--primary)] border-none'
-                    : 'bg-white'
+                    : 'bg-grayscale-0'
                 }`}
               >
                 {selectedReason === reason && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-grayscale-0"></div>
                 )}
               </div>
               {reason}
@@ -142,13 +142,13 @@ export default function MyPageEdit() {
 
       <div className="flex gap-4 max-md:w-[390px]">
         <button
-          className="w-[475px] h-[72px] text-[14px] text-[var(--primary-b60)] font-semibold rounded-[12px] border border-[1.5px] border-[var(--primary-b60)] hover:bg-gray-100 max-md:hidden"
+          className="w-[475px] h-[72px] text-sm text-[var(--primary-b60)] font-semibold rounded-[12px] border border-[1.5px] border-[var(--primary-b60)] hover:bg-gray-100 max-md:hidden"
           onClick={() => router.push('/edit')}
         >
           돌아가기
         </button>
         <button
-          className={`w-[475px] h-[72px] text-[14px] font-semibold rounded-[12px] ${
+          className={`w-[475px] h-[72px] text-sm font-semibold rounded-[12px] ${
             isSubmitEnabled
               ? 'bg-[var(--primary)] hover:bg-[var(--primary-b80)]'
               : 'bg-[var(--grayscale-10)] text-[var(--grayscale-50)] cursor-not-allowed'

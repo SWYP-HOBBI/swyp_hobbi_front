@@ -77,11 +77,11 @@ export default function EditNickname({
 
   return (
     <div className="w-[452px] max-md:w-full">
-      <span className="text-[20px] font-semibold">닉네임</span>
-      <div className="flex justify-between items-center mt-[24px] border-b border-[var(--grayscale-40)]">
+      <span className="text-xl font-semibold">닉네임</span>
+      <div className="flex justify-between items-center mt-6 border-b border-[var(--grayscale-40)]">
         <span className="text-[18px]">{currentNickname}</span>
         <button
-          className="w-[59px] h-[24px] rounded-[24px] bg-[var(--primary-w80)] border border-[var(--primary-b20)] hover:bg-[var(--primary-w40)] text-[12px] mb-[9.5px]"
+          className="w-[59px] h-[24px] rounded-[24px] bg-[var(--primary-w80)] border border-[var(--primary-b20)] hover:bg-[var(--primary-w40)] text-xs mb-[9.5px]"
           onClick={() => setShowNicknameEdit(true)}
         >
           변경하기
@@ -105,21 +105,21 @@ export default function EditNickname({
               type="text"
               value={newNickname}
               onChange={(e) => setNewNickname(e.target.value)}
-              className="w-[480px] h-[60px] max-md:w-full bg-white text-[14px] p-2 border border-[#D9D9D9] rounded-[8px]"
+              className="w-[480px] h-[60px] max-md:w-full bg-grayscale-0 text-sm p-2 border border-[#D9D9D9] rounded-[8px]"
               placeholder="새로운 닉네임을 입력하세요.."
               disabled={isLoading || isNicknameVerified}
             />
             {isError && (
-              <p className="text-[12px] text-[#eb165d] mt-2">{errorMessage}</p>
+              <p className="text-xs text-[#eb165d] mt-2">{errorMessage}</p>
             )}
             {isNicknameVerified && (
-              <p className="text-[12px] mt-2">*사용 가능한 닉네임입니다.</p>
+              <p className="text-xs mt-2">*사용 가능한 닉네임입니다.</p>
             )}
           </div>
 
           <div className="flex gap-2 mt-7 items-center max-md:mb-2">
             <button
-              className="w-[180px] h-[60px] bg-white border border-[var(--primary-b60)] text-[var(--primary-b60)] text-[14px] max-md:text-[12px] font-semibold rounded-[12px]"
+              className="w-[180px] h-[60px] bg-grayscale-0 border border-[var(--primary-b60)] text-[var(--primary-b60)] text-sm max-md:text-xs font-semibold rounded-[12px]"
               onClick={handleNicknameCheck}
               disabled={!newNickname || isNicknameVerified || isLoading}
             >
@@ -131,7 +131,7 @@ export default function EditNickname({
             </button>
 
             <button
-              className={`w-[180px] h-[60px] text-[14px] max-md:text-[12px] px-4 py-2 rounded-[12px] bg-[var(--primary)] font-semibold cursor-pointer ${
+              className={`w-[180px] h-[60px] text-sm max-md:text-xs px-4 py-2 rounded-[12px] bg-[var(--primary)] font-semibold cursor-pointer ${
                 !isNicknameVerified ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               onClick={handleSave}

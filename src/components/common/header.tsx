@@ -30,7 +30,7 @@ export default function Header() {
   if (!shouldShowHeader) return null;
 
   return (
-    <header className="hidden max-md:block w-full h-[64px] bg-white fixed top-0 left-0 z-50 border-b border-[var(--grayscale-10)]">
+    <header className="hidden max-md:block w-full h-[64px] bg-grayscale-0 fixed top-0 left-0 z-50 border-b border-[var(--grayscale-10)]">
       <div
         className={`flex items-center h-full ${isPostWritePage || isMyPage ? 'justify-center' : 'justify-between px-4'}`}
       >
@@ -81,7 +81,7 @@ export default function Header() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -10, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    className="absolute left-0 top-[48px] bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[120px]"
+                    className="absolute left-0 top-[48px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[120px]"
                   >
                     <motion.button
                       initial={{ y: -5, opacity: 0 }}

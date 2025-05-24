@@ -12,7 +12,7 @@ export default function MbtiButton({
   return (
     <button
       onClick={onClick}
-      className={`w-[80px] h-[32px] rounded-[24px] text-[20px] font-semibold flex items-center justify-center
+      className={`w-[80px] h-[32px] rounded-[24px] text-xl font-semibold flex items-center justify-center
         ${isSelected ? 'bg-primary' : 'bg-grayscale-20'}`}
     >
       {label}

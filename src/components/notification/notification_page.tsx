@@ -85,7 +85,7 @@ export default function NotificationPage() {
         >
           {/* 어두운 배경 */}
           <motion.div
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-grayscale-100/30"
             onClick={closeNotification}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -102,10 +102,10 @@ export default function NotificationPage() {
             className="relative top-0 w-[490px] max-md:w-full bg-[var(--grayscale-1)] shadow-lg h-screen overflow-y-auto z-50"
           >
             <div className="flex justify-between p-4">
-              <span className="text-[20px] font-semibold">알림</span>
+              <span className="text-xl font-semibold">알림</span>
               {isDeleteVisible ? (
                 <span
-                  className="text-[14px] text-[var(--grayscale-80)] cursor-pointer mt-2"
+                  className="text-sm text-[var(--grayscale-80)] cursor-pointer mt-2"
                   onClick={handleDeleteClick}
                 >
                   알림삭제
@@ -113,7 +113,7 @@ export default function NotificationPage() {
               ) : (
                 <div className="flex space-x-2 items-center mt-2">
                   <button
-                    className={`px-2 py-1 rounded-[24px] text-[14px] border ${
+                    className={`px-2 py-1 rounded-[24px] text-sm border ${
                       selectedButton === '전체 읽음'
                         ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
                         : 'border-[var(--grayscale-20)]'
@@ -143,7 +143,7 @@ export default function NotificationPage() {
                     전체 읽음
                   </button>
                   <button
-                    className={`px-2 py-1 rounded-[24px] text-[14px] border ${
+                    className={`px-2 py-1 rounded-[24px] text-sm border ${
                       selectedButton === '읽음'
                         ? 'border-[var(--primary-b20)] bg-[var(--primary-w80)]'
                         : 'border-[var(--grayscale-20)]'
