@@ -97,7 +97,7 @@ button {
 }
 
 .tag_container {
-  @apply flex items-center gap-2;
+  @apply flex items-center gap-2 max-md:flex-wrap;
 }
 
 .button_transition {

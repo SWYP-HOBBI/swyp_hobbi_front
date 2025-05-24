@@ -28,7 +28,7 @@ export default function Tag({
     <span
       className={`
         px-2 py-1 rounded-full text-xs cursor-pointer font-medium
-        flex items-center gap-1 border button_transition
+        flex items-center gap-1 border button_transition whitespace-nowrap
         ${variantStyles[variant]}
         ${className}
       `}
