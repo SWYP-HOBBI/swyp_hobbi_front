@@ -19,7 +19,6 @@ export default function TabBar() {
   const { toggleNotification, isNotificationOpen } = useNotificationStore();
   const [unreadCount, setUnreadCount] = useState(0); //알림 개수
   const { feedType, setFeedType } = useFeedStore();
-  const [showNotification, setShowNotification] = useState(false);
   const [showFeedMenu, setShowFeedMenu] = useState(false);
 
   useEffect(() => {
@@ -49,7 +48,6 @@ export default function TabBar() {
   const isHome = pathname === '/posts';
   const isWrite = pathname === '/posts/write';
   const isMyPage = pathname === '/my_page';
-  const isSearch = pathname === '/search';
 
   const iconColor = (active: boolean) =>
     active ? 'var(--primary)' : 'var(--grayscale-40)';
@@ -203,10 +201,10 @@ export default function TabBar() {
 
           {/* 알림 (로그인 필요) */}
           <div
+            onClick={handleNotificationClick}
             className={`w-[150px] flex items-center h-[52px] ${
               isSearchOpen ? 'opacity-30 pointer-events-none' : 'cursor-pointer'
             }`}
-            onClick={handleNotificationClick}
           >
             <SvgIcon
               name="alarm"
@@ -359,7 +357,7 @@ export default function TabBar() {
 
         {/* 알림 */}
         <button
-          onClick={() => handleProtectedRoute(toggleNotification)}
+          onClick={handleNotificationClick}
           className={`flex flex-col items-center space-y-1 ${
             isSearchOpen ? 'opacity-30 pointer-events-none' : ''
           }`}
