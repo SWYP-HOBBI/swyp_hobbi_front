@@ -4,7 +4,7 @@ import TabBar from '@/components/common/tab_bar';
 import Search from '@/components/search/search';
 import Providers from '@/services/providers';
 import NotificationPage from '@/components/notification/notification_page';
-import { useNotificationStore } from '@/store/notification';
+
 import Header from '@/components/common/header';
 
 export default function PostLayout({
@@ -12,7 +12,6 @@ export default function PostLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isNotificationOpen } = useNotificationStore();
   return (
     <Providers>
       <div className="flex relative">

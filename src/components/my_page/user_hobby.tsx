@@ -26,7 +26,7 @@ export default function UserHobby() {
 
   return (
     <div>
-      <div className="text-[20px] font-semibold leading-[100%] mb-[23px]">
+      <div className="text-xl font-semibold leading-[100%] mb-[23px]">
         나의 취미
       </div>
 

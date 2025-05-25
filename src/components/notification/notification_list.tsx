@@ -106,7 +106,7 @@ export default function NotificationList({
 
   if (!data || data.pages[0].length === 0) {
     return (
-      <div className="text-center py-4 text-[14px] text-[var(--grayscale-60)]">
+      <div className="text-center py-4 text-sm text-[var(--grayscale-60)]">
         알림이 없습니다.
       </div>
     );
@@ -118,10 +118,10 @@ export default function NotificationList({
         page.map((notification, index) => (
           <div
             key={notification.notificationId}
-            className="w-[480px] h-[101px] flex flex-col cursor-pointer max-md:w-full"
+            className="w-full h-[101px] flex flex-col cursor-pointer"
             onClick={() => handleClick(notification)}
           >
-            <div className="w-[470px] h-[64px] mt-[12px] ml-[7px] flex items-center space-x-4 max-md:w-full">
+            <div className="w-full h-[64px] mt-[12px] ml-[7px] flex items-center space-x-4">
               {showCheckbox && (
                 <button
                   onClick={(e) => {
@@ -151,7 +151,7 @@ export default function NotificationList({
                 className="w-[64px] h-[64px] ml-[2px] rounded-full border border-[var(--grayscale-20)] flex items-center justify-center"
               />
               <div className="flex flex-col ml-[5px]">
-                <div className="text-[14px]">
+                <div className="text-sm">
                   {notification.senderNickname}님이 회원님의 게시글에{' '}
                   {notification.notificationType === 'COMMENT'
                     ? '댓글을 남겼습니다.'
@@ -159,13 +159,13 @@ export default function NotificationList({
                 </div>
 
                 {notification.notificationType === 'COMMENT' && (
-                  <div className="text-[14px] max-w-[320px] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <div className="text-sm max-w-[320px] overflow-hidden text-ellipsis whitespace-nowrap">
                     {notification.message}
                   </div>
                 )}
               </div>
             </div>
-            <span className="flex justify-end text-[12px] mr-[20px] text-[var(--grayscale-40)]">
+            <span className="flex justify-end text-xs mr-[20px] text-[var(--grayscale-40)]">
               {formatDate(notification.createdAt)}
             </span>
           </div>
