@@ -58,7 +58,7 @@ export default function Profile({
         className={`
         ${
           isHorizontalSmall
-            ? 'text-[14px] leading-[140%] tracking-[-0.1px] font-normal'
+            ? 'text-sm leading-[140%] tracking-[-0.1px] font-normal'
             : 'text-[18px] leading-[150%] tracking-[-0.1px] font-medium'
         } text-grayscale-100 ${isVertical ? 'mt-[12px]' : 'ml-[12px]'}`}
       >

@@ -15,6 +15,7 @@
     "framer-motion": "^12.11.4",
     "next": "15.3.1",
     "react": "^19.0.0",
+    "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.0.0",
     "zustand": "^5.0.3"
   },

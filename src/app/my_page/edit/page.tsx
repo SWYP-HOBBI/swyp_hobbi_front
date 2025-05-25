@@ -241,14 +241,14 @@ export default function EditMyPage() {
           <div className="max-md:mt-5">
             <MyProfile imageUrl={userInfo.userImageUrl} editable={true} />
           </div>
-          <div className="text-[20px] font-semibold">{userInfo.nickname}</div>
+          <div className="text-xl font-semibold">{userInfo.nickname}</div>
           <div className="text-[16px] text-grayscale-60 pt-3 pb-12">
             {userInfo.email}
           </div>
 
           <div className="flex flex-col gap-12 w-full">
             <div className="border-b border-grayscale-40 pb-1">
-              <span className="text-[20px] font-semibold block mb-4">이름</span>
+              <span className="text-xl font-semibold block mb-4">이름</span>
               <input
                 type="text"
                 className="w-[300px]"
@@ -278,14 +278,14 @@ export default function EditMyPage() {
                 <div className="flex flex-col max-md:w-[330px] max-md:mt-2">
                   <label
                     htmlFor="new-password"
-                    className="text-[14px] font-medium mb-1"
+                    className="text-sm font-medium mb-1"
                   >
                     새 비밀번호
                   </label>
                   <Input
                     id="new-password"
                     type="password"
-                    className="!w-[350px] !h-[60px] border border-grayscale-80 rounded-[8px] px-3 text-[14px]"
+                    className="!w-[350px] !h-[60px] border border-grayscale-80 rounded-[8px] px-3 text-sm"
                     placeholder="새 비밀번호를 입력하세요."
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -294,7 +294,7 @@ export default function EditMyPage() {
                   />
                   {/* 새 비밀번호 오류 메시지 */}
                   {getPasswordError(newPassword) && (
-                    <div className="text-like text-[14px] mt-2">
+                    <div className="text-like text-sm mt-2">
                       {getPasswordError(newPassword)}
                     </div>
                   )}
@@ -304,14 +304,14 @@ export default function EditMyPage() {
                 <div className="flex flex-col max-md:w-[330px] max-md:mt-2">
                   <label
                     htmlFor="confirm-password"
-                    className="text-[14px] font-medium mb-1"
+                    className="text-sm font-medium mb-1"
                   >
                     새 비밀번호 확인
                   </label>
                   <Input
                     id="confirm-password"
                     type="password"
-                    className="!w-[350px] !h-[60px] border border-grayscale-80 rounded-[8px] px-3 text-[14px]"
+                    className="!w-[350px] !h-[60px] border border-grayscale-80 rounded-[8px] px-3 text-sm"
                     placeholder="새 비밀번호를 입력하세요."
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -320,7 +320,7 @@ export default function EditMyPage() {
                   />
                   {/* 비밀번호 확인 오류 메시지 */}
                   {getPasswordConfirmError(newPassword, confirmPassword) && (
-                    <div className="text-like text-[14px] mt-2">
+                    <div className="text-like text-sm mt-2">
                       {getPasswordConfirmError(newPassword, confirmPassword)}
                     </div>
                   )}
@@ -330,7 +330,7 @@ export default function EditMyPage() {
                 <div className="flex max-md:w-full h-[60px] mt-[25px] gap-3  max-md:mb-2">
                   <button
                     type="button"
-                    className="w-[180px] max-md:w-full h-[60px] text-[14px] px-4 py-2 rounded-[8px] bg-primary"
+                    className="w-[180px] max-md:w-full h-[60px] text-sm px-4 py-2 rounded-[8px] bg-primary"
                     onClick={handlePasswordSave}
                     disabled={isLoading}
                   >
@@ -343,7 +343,7 @@ export default function EditMyPage() {
             <div className="flex max-md:flex-col w-full gap-5">
               {/* 생년월일 */}
               <div className="flex max-md:w-full flex-col gap-2 w-full">
-                <span className="text-[20px] font-semibold pb-2">생년월일</span>
+                <span className="text-xl font-semibold pb-2">생년월일</span>
                 <div className="flex gap-2">
                   {/* 년 */}
                   <div className="w-[184px]">
@@ -420,7 +420,7 @@ export default function EditMyPage() {
 
               {/* MBTI */}
               <div className="flex flex-col gap-2 w-full">
-                <span className="text-[20px] font-semibold pb-2">MBTI</span>
+                <span className="text-xl font-semibold pb-2">MBTI</span>
                 <div className="w-full">
                   <CustomDropdownButton
                     value={mbti}
@@ -459,7 +459,7 @@ export default function EditMyPage() {
         </div>
         <div className="w-full max-md:w-[390px] flex justify-end gap-[11px] pt-3">
           <button
-            className="w-[234px] h-[60px] max-md:hidden rounded-[12px] bg-grayscale-0 border border-primary-b60 text-[14px] text-primary-b60"
+            className="w-[234px] h-[60px] max-md:hidden rounded-[12px] bg-grayscale-0 border border-primary-b60 text-sm text-primary-b60"
             onClick={() => router.push('/my_page')}
           >
             수정취소

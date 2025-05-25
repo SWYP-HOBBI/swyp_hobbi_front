@@ -27,6 +27,17 @@
   --grayscale-90: #1a1a1a;
   --grayscale-100: #000000;
 
+  --rank-1: #f8bcbc;
+  --rank-2: #f5ce90;
+  --rank-3: #f8e87c;
+  --rank-4: #b8e58d;
+  --rank-5: #a7cfe6;
+  --rank-6: #6f97c6;
+  --rank-7: #b7b5e6;
+  --rank-8: #ffffff;
+  --rank-9: #474747;
+  --rank-10: #000000;
+
   --shadow-sm: 4px 4px 2px 0 rgba(0, 0, 0, 0.08);
   --shadow-md: 4px 4px 4px 0 rgba(0, 0, 0, 0.12);
   --shadow-lg: 4px 4px 8px 2 rgba(0, 0, 0, 0.16);
@@ -66,6 +77,17 @@
 
   --color-like: var(--like);
 
+  --color-rank-1: var(--rank-1);
+  --color-rank-2: var(--rank-2);
+  --color-rank-3: var(--rank-3);
+  --color-rank-4: var(--rank-4);
+  --color-rank-5: var(--rank-5);
+  --color-rank-6: var(--rank-6);
+  --color-rank-7: var(--rank-7);
+  --color-rank-8: var(--rank-8);
+  --color-rank-9: var(--rank-9);
+  --color-rank-10: var(--rank-10);
+
   --color-shadow-sm: var(--shadow-sm);
   --color-shadow-md: var(--shadow-md);
   --color-shadow-lg: var(--shadow-lg);
@@ -97,7 +119,7 @@ button {
 }
 
 .tag_container {
-  @apply flex items-center gap-2;
+  @apply flex items-center gap-2 max-md:flex-wrap;
 }
 
 .button_transition {

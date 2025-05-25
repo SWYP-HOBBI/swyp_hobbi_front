@@ -47,7 +47,7 @@ export default function UserPostCard({
         </div>
 
         {isMenuOpen && (
-          <div className="absolute right-0 top-full mt-2 bg-white rounded-md shadow-md border border-gray-200 z-20 w-[92px]">
+          <div className="absolute right-0 top-full mt-2 bg-grayscale-0 rounded-md shadow-md border border-gray-200 z-20 w-[92px]">
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -90,8 +90,8 @@ export default function UserPostCard({
           <div className="flex-1">
             {/* 제목과 날짜 */}
             <div className="w-full flex justify-between items-start">
-              <h3 className="text-[20px] font-semibold">{postTitle}</h3>
-              <span className="text-[12px] text-grayscale-60 mr-10">
+              <h3 className="text-xl font-semibold">{postTitle}</h3>
+              <span className="text-xs text-grayscale-60 mr-10">
                 {formatDate(createdAt)}
               </span>
             </div>

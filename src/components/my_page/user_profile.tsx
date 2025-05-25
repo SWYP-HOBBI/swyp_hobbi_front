@@ -24,8 +24,8 @@ export default function UserProfile() {
   if (!userInfo) return null;
 
   return (
-    <div className="w-[244px] h-[353px] max-md:w-[390px] bg-white rounded-[24px] p-[20px] flex flex-col items-center justify-center text-center gap-[12px]">
-      <div className="text-[20px] font-semibold">{userInfo.nickname}</div>
+    <div className="w-[244px] h-[353px] max-md:w-[390px] bg-grayscale-0 rounded-[24px] p-[20px] flex flex-col items-center justify-center text-center gap-[12px]">
+      <div className="text-xl font-semibold">{userInfo.nickname}</div>
       <MyProfile imageUrl={userInfo.userImageUrl} editable={false} />
       <div className="flex flex-col gap-[4px]">
         <div className="text-[18px]">{userInfo.username}</div>

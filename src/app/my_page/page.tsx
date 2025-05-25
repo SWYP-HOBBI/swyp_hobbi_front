@@ -44,26 +44,26 @@ export default function MyPage() {
   return (
     <main className="w-full min-h-screen flex justify-center bg-grayscale-1">
       <div className="w-[960px] max-md:w-[390px] max-md:mb-8 pt-12">
-        <div className="flex flex-col md:flex-row gap-[20px]">
+        <div className="flex flex-col md:flex-row gap-5">
           <div className="max-md:mt-6">
             <UserProfile />
           </div>
-          <div className="flex-1 h-[353px]  bg-white  rounded-[24px] p-[20px]">
+          <div className="flex-1 h-[353px]  bg-grayscale-0  rounded-[24px] p-[20px]">
             <UserHobby />
-            <div className="mt-[24px]">
+            <div className="mt-6">
               <UserRank />
             </div>
           </div>
         </div>
 
         <div className="flex justify-end mt-[10px] max-md:mt-1 mb-[40px] mr-[18px] gap-3">
-          <span className="text-[14px] text-[var(--grayscale-60)] cursor-pointer">
+          <span className="text-sm text-[var(--grayscale-60)] cursor-pointer">
             SNS 계정 연동
           </span>
-          <span className="text-[14px] text-[var(--grayscale-60)]">•</span>
+          <span className="text-sm text-[var(--grayscale-60)]">•</span>
           <button
             onClick={handleEditProfile}
-            className="text-[14px] text-[var(--grayscale-60)] cursor-pointer"
+            className="text-sm text-[var(--grayscale-60)] cursor-pointer"
           >
             프로필 수정
           </button>
