@@ -16,6 +16,7 @@ export interface PostResponse {
   userId: string;
   title: string;
   content: string;
+  userLevel?: number;
   postImageUrls: string[];
   postHobbyTags: string[];
   createdAt: string;
@@ -25,6 +26,7 @@ export interface PostResponse {
 export interface PostCardProps {
   postId: string;
   nickname: string;
+  userLevel?: number;
   title: string;
   content: string;
   userImageUrl: string;
@@ -62,6 +64,7 @@ export interface Comment {
   parentCommentId: number | null;
   postId: number;
   userId: number;
+  userLevel: number;
   deleted: boolean;
   createdAt: string;
   updatedAt: string;

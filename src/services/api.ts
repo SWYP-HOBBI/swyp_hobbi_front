@@ -276,7 +276,8 @@ export const authService = {
 
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
     // const REDIRECT_URI = `http://localhost:3000/api/v1/user/login/oauth2/code/${provider}`;
-    const REDIRECT_URI = `http://localhost:3000/login/oauth2/code/${provider}`;
+    const REDIRECT_URI = `http://localhost:8080/login/oauth2/code/${provider}`;
+    // const REDIRECT_URI = `/`;
 
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,

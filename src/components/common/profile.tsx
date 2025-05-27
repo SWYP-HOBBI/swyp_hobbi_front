@@ -1,9 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { getLevelIcon } from '../rank/level_badge';
-import { userService } from '@/services/api';
 
 type ProfileVariant =
   | 'vertical'
@@ -15,13 +14,14 @@ interface ProfileProps {
   imageUrl?: string;
   nickname?: string;
   variant?: ProfileVariant;
-  level?: number;
+  userLevel?: number;
 }
 
 export default function Profile({
   imageUrl,
   nickname = 'nickname',
   variant = 'vertical',
+  userLevel,
 }: ProfileProps) {
   const isVerticalLarge = variant === 'vertical-large';
   const isVertical = variant === 'vertical' || isVerticalLarge;
@@ -32,24 +32,9 @@ export default function Profile({
 
   // 등급 시스템 뱃지
   const badgeSize = imageSize === 36 ? 15 : imageSize === 72 ? 25 : 20;
-  const [level, setLevel] = useState<number>(1);
 
   // imageUrl이 없는 경우 기본 프로필 표시
   const showDefaultProfile = !imageUrl;
-
-  useEffect(() => {
-    async function fetchLevel() {
-      try {
-        const res = await userService.getUserRank();
-        const currentLevel =
-          res.currentExp >= res.requiredExp ? res.level + 1 : res.level;
-        setLevel(currentLevel);
-      } catch (err) {
-        console.error('레벨 정보 불러오는 데 실패:', err);
-      }
-    }
-    fetchLevel();
-  }, []);
 
   return (
     <div
@@ -78,9 +63,11 @@ export default function Profile({
             <DefaultProfile size={svgSize} />
           )}
         </div>
-        <div className="absolute top-0 right-0">
-          {getLevelIcon(level, badgeSize)}
-        </div>
+        {typeof userLevel !== 'undefined' && (
+          <div className="absolute top-0 right-0">
+            {getLevelIcon(userLevel, badgeSize)}
+          </div>
+        )}
       </div>
 
       <div
