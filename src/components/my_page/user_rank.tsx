@@ -4,17 +4,13 @@ import Tag from '../common/tag';
 import ChallengeItem from '../rank/challenge_item';
 import LevelProgressBar from '../rank/level_progress_bar';
 import { useChallengeStore } from '@/store/challenge';
-
-import { formatRemainingTime } from '@/utils/date';
-
-export default function UserRank() {
-
 import { Rank } from '@/types/rank';
 import { userService } from '@/services/api';
 import { Tooltip } from '../rank/tooltip';
+import { formatRemainingTime } from '@/utils/date';
 
 export default function UserRank() {
-  const { challenges, remainingTime, updateRemainingTime } =
+  const { challenges, remainingTime, updateRemainingTime, fetchChallenges } =
     useChallengeStore();
   const [userRank, setUserRank] = useState<Rank | null>(null);
 
