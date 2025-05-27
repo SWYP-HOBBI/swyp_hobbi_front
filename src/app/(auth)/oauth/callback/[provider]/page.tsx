@@ -10,9 +10,9 @@ import { authService } from '@/services/api';
 type Provider = 'kakao' | 'google';
 
 type Props = {
-  params: {
+  params: Promise<{
     provider: Provider;
-  };
+  }>;
 };
 
 export default function SocialLoginCallback({ params }: Props) {
@@ -24,8 +24,9 @@ export default function SocialLoginCallback({ params }: Props) {
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        const resolvedParams = await params;
         console.log('소셜 로그인 콜백 시작');
-        console.log('Provider:', params.provider);
+        console.log('Provider:', resolvedParams.provider);
 
         // URL 파라미터 상세 로깅
         const urlParams = new URLSearchParams(window.location.search);
@@ -47,12 +48,15 @@ export default function SocialLoginCallback({ params }: Props) {
 
         // provider에 따른 소셜 로그인 API 호출
         const loginMethod =
-          params.provider === 'kakao'
+          resolvedParams.provider === 'kakao'
             ? authService.kakaoLogin
             : authService.googleLogin;
 
         console.log('소셜 로그인 API 호출 시작');
-        console.log('요청 데이터:', { code, provider: params.provider });
+        console.log('요청 데이터:', {
+          code,
+          provider: resolvedParams.provider,
+        });
         const response = await loginMethod(code);
         console.log('소셜 로그인 응답:', response);
 
@@ -111,7 +115,7 @@ export default function SocialLoginCallback({ params }: Props) {
     };
 
     handleCallback();
-  }, [params.provider, searchParams, router, openModal, setAuth]);
+  }, [params, searchParams, router, openModal, setAuth]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
