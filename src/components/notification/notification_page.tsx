@@ -99,7 +99,7 @@ export default function NotificationPage() {
             animate={{ x: 0 }}
             exit={{ x: -490 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative top-0 w-[490px] max-md:w-full bg-[var(--grayscale-1)] shadow-lg h-screen overflow-y-auto z-50"
+            className="relative top-0 w-[490px] max-md:w-full bg-[var(--grayscale-1)] shadow-lg h-screen  z-50"
           >
             <div className="flex justify-between p-4">
               <span className="text-xl font-semibold">알림</span>
