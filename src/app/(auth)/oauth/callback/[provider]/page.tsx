@@ -7,14 +7,15 @@ import { useModalStore } from '@/store/modal';
 import Loader from '@/components/common/loader';
 import { authService } from '@/services/api';
 
-interface PageProps {
-  params: {
-    provider: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+type Provider = 'kakao' | 'google';
 
-export default function SocialLoginCallback({ params }: PageProps) {
+type Props = {
+  params: {
+    provider: Provider;
+  };
+};
+
+export default function SocialLoginCallback({ params }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { openModal } = useModalStore();
