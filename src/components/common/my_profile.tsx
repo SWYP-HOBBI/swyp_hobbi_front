@@ -1,18 +1,21 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SvgIcon from '@/components/common/svg_icon';
 import { userService } from '@/services/api';
+import { getLevelIcon } from '../rank/level_badge';
 
 interface MyProfileProps {
   imageUrl?: string;
   editable?: boolean;
+  level?: number;
 }
 
 export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(imageUrl);
   const [isLoading, setIsLoading] = useState(false);
+  const [level, setLevel] = useState<number>(1);
 
   const handleClick = () => {
     if (editable) {
@@ -46,6 +49,23 @@ export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
   };
 
   const showDefaultProfile = !imageUrl;
+
+  useEffect(() => {
+    const fetchLevel = async () => {
+      try {
+        const res = await userService.getUserRank();
+        const currentLevel =
+          res.currentExp >= res.requiredExp ? res.level + 1 : res.level;
+        setLevel(currentLevel);
+      } catch (err) {
+        console.error('레벨 정보 불러오는 데 실패:', err);
+      }
+    };
+
+    if (!editable) {
+      fetchLevel();
+    }
+  }, [editable]);
 
   return (
     <div
@@ -83,6 +103,10 @@ export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
           alt="Profile"
           className="w-full h-full object-cover rounded-full"
         />
+      )}
+
+      {!editable && (
+        <div className="absolute top-0 right-0">{getLevelIcon(level, 40)}</div>
       )}
 
       {editable && (
