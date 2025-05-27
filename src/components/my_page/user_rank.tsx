@@ -1,17 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SvgIcon from '../common/svg_icon';
 import Tag from '../common/tag';
 import ChallengeItem from '../rank/challenge_item';
 import LevelProgressBar from '../rank/level_progress_bar';
 import { useChallengeStore } from '@/store/challenge';
+
 import { formatRemainingTime } from '@/utils/date';
 
 export default function UserRank() {
-  const level = 1;
-  const exp = 75;
-  const label = '레드 호비';
-  const { challenges, remainingTime, updateRemainingTime, fetchChallenges } =
+
+import { Rank } from '@/types/rank';
+import { userService } from '@/services/api';
+import { Tooltip } from '../rank/tooltip';
+
+export default function UserRank() {
+  const { challenges, remainingTime, updateRemainingTime } =
     useChallengeStore();
+  const [userRank, setUserRank] = useState<Rank | null>(null);
 
   // 타이머 업데이트
   useEffect(() => {
@@ -24,17 +29,50 @@ export default function UserRank() {
     fetchChallenges();
   }, [fetchChallenges]);
 
+  useEffect(() => {
+    const fetchRank = async () => {
+      try {
+        const data = await userService.getUserRank();
+        setUserRank(data);
+      } catch (err) {
+        console.error('등급 정보 조회 실패:', err);
+      }
+    };
+
+    fetchRank();
+  }, []);
+
+  if (!userRank) return null;
+
+  const currentLevel =
+    userRank.currentExp >= userRank.requiredExp
+      ? userRank.level + 1
+      : userRank.level;
+
   return (
     <div className="flex gap-6">
+      {/* 등급 */}
       <div>
-        <div className="text-[20px] max-md:w-[390px] flex items-center space-x-2 font-semibold leading-[100%]">
+        <div className="text-xl max-md:w-[390px] flex items-center space-x-2 font-semibold leading-[100%]">
           <span>나의 등급</span>
-          <SvgIcon name="tooltip" size={12}></SvgIcon>
+          <Tooltip
+            content={
+              <>
+                <div>현재 : {userRank.currentExp} EXP</div>
+                <div>목표 : {userRank.requiredExp} EXP</div>
+              </>
+            }
+          >
+            <SvgIcon name="tooltip" size={13} />
+          </Tooltip>
         </div>
-        <div className="mt-6 mx-3 flex flex-col items-center justify-center space-y-2">
-          <LevelProgressBar level={level} value={exp} />
-          <span>Lv {level}</span>
-          <Tag variant="white" label={label} />
+        <div className="mt-6 mx-3 flex flex-col items-center justify-center text-sm space-y-1">
+          <LevelProgressBar
+            level={currentLevel}
+            value={userRank.progressPercent}
+          />
+          <span>Lv {currentLevel}</span>
+          <Tag variant="white" label={userRank.rankName} />
         </div>
       </div>
       {/* 세로 구분선 */}

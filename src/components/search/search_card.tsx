@@ -113,7 +113,7 @@ export default function SearchCard({
       </div>
 
       {/* 모바일 */}
-      <div className="md:hidden w-full block flex flex-col gap-3 bg-grayscale-0 rounded-xl shadow-md p-4">
+      <div className="md:hidden w-full flex flex-col gap-3 bg-grayscale-0 rounded-xl shadow-md p-4">
         <Link href={`/posts/${postId}`} className="block">
           <div>
             <div className="flex gap-3 items-center">

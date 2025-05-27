@@ -31,6 +31,7 @@ import {
 import { ChallengeApiResponse } from '@/types/challenge';
 
 import { SearchParams } from '@/types/search';
+import { Rank } from '@/types/rank';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
@@ -609,6 +610,13 @@ export const userService = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ reason }),
+    });
+  },
+
+  // 등급 조회
+  getUserRank: async (): Promise<Rank> => {
+    return fetchApi<Rank>('/user-rank/me', {
+      method: 'GET',
     });
   },
 };

@@ -21,11 +21,15 @@ export default function MyPage() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const userProfileData = userService.getMyPageInfo();
-        const userPostData = userService.getMyPosts();
-        await Promise.all([userProfileData, userPostData]);
-        setIsLoading(false);
+        const [userProfileData, userPostData, userRankData] = await Promise.all(
+          [
+            userService.getMyPageInfo(),
+            userService.getMyPosts(),
+            userService.getUserRank(),
+          ],
+        );
       } catch (error) {
+      } finally {
         setIsLoading(false);
       }
     };
