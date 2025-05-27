@@ -3,6 +3,7 @@
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useChallengeStore } from '@/store/challenge';
+import { challengeService } from '@/services/api';
 
 interface ChallengeItemProps {
   id: string;
@@ -20,8 +21,13 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
   const percentage = (current / total) * 100;
   const ProgressBar = CircularProgressbar as any;
 
-  const handleStart = () => {
-    startChallenge(id);
+  const handleStart = async () => {
+    try {
+      await challengeService.startChallenge(Number(id));
+      startChallenge(id);
+    } catch (error) {
+      console.error('챌린지 시작 실패:', error);
+    }
   };
 
   const handleComplete = () => {
@@ -53,11 +59,6 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
         {/* 중앙 텍스트 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-medium text-xs">{title}</span>
-          {status === 'IN_PROGRESS' && (
-            <span className="text-xs text-grayscale-60 mt-1">
-              {current}/{total}
-            </span>
-          )}
         </div>
       </div>
 

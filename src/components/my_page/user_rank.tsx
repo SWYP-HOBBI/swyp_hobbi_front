@@ -4,6 +4,11 @@ import Tag from '../common/tag';
 import ChallengeItem from '../rank/challenge_item';
 import LevelProgressBar from '../rank/level_progress_bar';
 import { useChallengeStore } from '@/store/challenge';
+
+import { formatRemainingTime } from '@/utils/date';
+
+export default function UserRank() {
+
 import { Rank } from '@/types/rank';
 import { userService } from '@/services/api';
 import { Tooltip } from '../rank/tooltip';
@@ -19,13 +24,10 @@ export default function UserRank() {
     return () => clearInterval(timer);
   }, [updateRemainingTime]);
 
-  // 남은 시간을 시, 분, 초로 변환
-  const formatRemainingTime = (seconds: number) => {
-    const days = Math.floor(seconds / (24 * 60 * 60));
-    const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
-    const minutes = Math.floor((seconds % (60 * 60)) / 60);
-    return `${days}일 ${hours}시간 ${minutes}분 남음`;
-  };
+  // 챌린지 데이터 로드
+  useEffect(() => {
+    fetchChallenges();
+  }, [fetchChallenges]);
 
   useEffect(() => {
     const fetchRank = async () => {

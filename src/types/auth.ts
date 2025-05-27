@@ -64,10 +64,9 @@ export interface UserInfoFormData {
 }
 
 // 소셜 로그인 응답 타입
-export interface SocialLoginResponse extends LoginResponse {
-  email: string;
-  socialId: string;
-  socialProvider: 'kakao' | 'google';
+export interface SocialLoginResponse {
+  message: string;
+  accessToken: string | null;
 }
 
 // 회원가입 요청 타입

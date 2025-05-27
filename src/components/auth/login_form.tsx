@@ -100,14 +100,24 @@ export default function LoginForm() {
 
   /**
    * 소셜 로그인 핸들러
-   * - 소셜 로그인 페이지로 리다이렉트
+   * - 소셜 로그인 URL로 리다이렉트
+   * - 콜백에서 연동 여부에 따른 팝업 표시
    */
-  const handleSocialLogin = (provider: 'kakao' | 'google') => {
-    openModal({
-      title: '준비 중인 기능입니다',
-      message: `${provider === 'kakao' ? '카카오' : '구글'} 로그인은 현재 개발 중입니다. 잠시만 기다려 주세요.`,
-      confirmText: '확인',
-    });
+  const handleSocialLogin = async (provider: 'kakao' | 'google') => {
+    try {
+      // 소셜 로그인 URL 가져오기
+      const loginUrl = authService.getSocialLoginUrl(provider);
+
+      // 소셜 로그인 페이지로 리다이렉트
+      window.location.href = loginUrl;
+    } catch (error: any) {
+      console.error('소셜 로그인 에러:', error);
+      openModal({
+        title: '오류',
+        message: '소셜 로그인 중 오류가 발생했습니다.',
+        confirmText: '확인',
+      });
+    }
   };
 
   return (
