@@ -72,16 +72,16 @@ export default function UserPost() {
               openModal({
                 message: '피드를 정말로\n삭제하시겠습니까?',
                 confirmText: '삭제',
+                cancelText: '취소',
                 showCancelButton: true,
                 onConfirm: async () => {
                   try {
                     await postService.deletePost(postId);
-                  } catch (err) {
-                    openModal({
-                      title: '오류',
-                      message: '게시글 삭제 중 오류가 발생했습니다.',
-                      confirmText: '확인',
+                    await queryClient.invalidateQueries({
+                      queryKey: ['userPosts', userId],
                     });
+                  } catch (err) {
+                    console.error('게시글 삭제 중 오류:', err);
                   }
                 },
               });
