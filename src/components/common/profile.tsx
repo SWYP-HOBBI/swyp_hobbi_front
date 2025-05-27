@@ -30,6 +30,7 @@ export default function Profile({
   const imageSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
   const svgSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
 
+
   // 등급 시스템 뱃지
   const badgeSize = imageSize === 36 ? 15 : imageSize === 72 ? 25 : 20;
 
@@ -63,11 +64,13 @@ export default function Profile({
             <DefaultProfile size={svgSize} />
           )}
         </div>
+
         {typeof userLevel !== 'undefined' && (
           <div className="absolute top-0 right-0">
             {getLevelIcon(userLevel, badgeSize)}
           </div>
         )}
+
       </div>
 
       <div
