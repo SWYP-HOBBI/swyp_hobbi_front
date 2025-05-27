@@ -619,6 +619,13 @@ export const userService = {
       method: 'GET',
     });
   },
+
+  // 유저 레벨 조회
+  getUserLevel: async (): Promise<number> => {
+    return fetchApi<number>('/user-rank/level', {
+      method: 'GET',
+    });
+  },
 };
 
 // 알림 관련 API 서비스
