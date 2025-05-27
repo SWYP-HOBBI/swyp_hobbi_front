@@ -1,6 +1,8 @@
 'use client';
 
 import Image from 'next/image';
+import React from 'react';
+import { getLevelIcon } from '../rank/level_badge';
 
 type ProfileVariant =
   | 'vertical'
@@ -12,12 +14,14 @@ interface ProfileProps {
   imageUrl?: string;
   nickname?: string;
   variant?: ProfileVariant;
+  userLevel?: number;
 }
 
 export default function Profile({
   imageUrl,
   nickname = 'nickname',
   variant = 'vertical',
+  userLevel,
 }: ProfileProps) {
   const isVerticalLarge = variant === 'vertical-large';
   const isVertical = variant === 'vertical' || isVerticalLarge;
@@ -25,6 +29,10 @@ export default function Profile({
 
   const imageSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
   const svgSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
+
+
+  // 등급 시스템 뱃지
+  const badgeSize = imageSize === 36 ? 15 : imageSize === 72 ? 25 : 20;
 
   // imageUrl이 없는 경우 기본 프로필 표시
   const showDefaultProfile = !imageUrl;
@@ -56,6 +64,13 @@ export default function Profile({
             <DefaultProfile size={svgSize} />
           )}
         </div>
+
+        {typeof userLevel !== 'undefined' && (
+          <div className="absolute top-0 right-0">
+            {getLevelIcon(userLevel, badgeSize)}
+          </div>
+        )}
+
       </div>
 
       <div

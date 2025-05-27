@@ -31,6 +31,7 @@ export default function PostCard({
   userImageUrl,
   postImageUrls,
   postHobbyTags,
+  userLevel,
   likeCount,
   commentCount,
   createdAt,
@@ -100,6 +101,7 @@ export default function PostCard({
           <Profile
             imageUrl={userImageUrl}
             nickname={nickname}
+            userLevel={userLevel}
             variant={isMobile ? 'horizontal-small' : 'horizontal-large'}
           />
           <span className="text-grayscale-60 text-xs ml-3">

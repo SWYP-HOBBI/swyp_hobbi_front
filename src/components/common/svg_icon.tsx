@@ -26,6 +26,10 @@ type IconName =
   | 'kakao'
   | 'google'
   | 'tooltip';
+// | 'hobbi_h'
+// | 'hobbi_o'
+// | 'hobbi_b'
+// | 'hobbi_i';
 
 interface SvgIconProps {
   name: IconName;
@@ -477,6 +481,8 @@ const SvgIcon: React.FC<SvgIconProps> = ({
         />
       </svg>
     ),
+    // hobbi_h: (
+    // ),
   };
 
   return <span className={className}>{icons[name]}</span>;

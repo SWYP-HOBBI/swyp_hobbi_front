@@ -334,6 +334,7 @@ export default function PostComment({
                   imageUrl={comment.userImageUrl}
                   nickname={comment.nickname}
                   variant="horizontal-small"
+                  userLevel={comment.userLevel}
                 />
               </div>
               <div className="ml-12">
@@ -417,6 +418,7 @@ export default function PostComment({
                       imageUrl={reply.userImageUrl}
                       nickname={reply.nickname}
                       variant="horizontal-small"
+                      userLevel={reply.userLevel}
                     />
                     <div className="ml-12">
                       {editingCommentId === reply.commentId ? (
