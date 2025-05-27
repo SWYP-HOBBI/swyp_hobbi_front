@@ -65,8 +65,9 @@ export interface UserInfoFormData {
 
 // 소셜 로그인 응답 타입
 export interface SocialLoginResponse {
-  message: string;
-  accessToken: string | null;
+  accessToken: string;
+  refreshToken: string;
+  userId: number;
 }
 
 // 회원가입 요청 타입

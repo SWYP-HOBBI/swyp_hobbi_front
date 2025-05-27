@@ -248,15 +248,15 @@ export const authService = {
   },
 
   // 카카오 로그인
-  kakaoLogin: async (): Promise<SocialLoginResponse> => {
-    return fetchApi('/user/login/kakao', {
+  kakaoLogin: async (code: string): Promise<SocialLoginResponse> => {
+    return fetchApi(`/oauth/login/kakao?code=${code}`, {
       method: 'GET',
     });
   },
 
   // 구글 로그인
-  googleLogin: async (): Promise<SocialLoginResponse> => {
-    return fetchApi('/user/login/google', {
+  googleLogin: async (code: string): Promise<SocialLoginResponse> => {
+    return fetchApi(`/oauth/login/google?code=${code}`, {
       method: 'GET',
     });
   },
@@ -270,14 +270,13 @@ export const authService = {
 
   // 소셜 로그인 URL 가져오기
   getSocialLoginUrl: (provider: 'kakao' | 'google') => {
-    const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
+    const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
     const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
-    // const REDIRECT_URI = `http://localhost:3000/api/v1/user/login/oauth2/code/${provider}`;
-    const REDIRECT_URI = `http://localhost:8080/login/oauth2/code/${provider}`;
-    // const REDIRECT_URI = `/`;
+
+    const REDIRECT_URI = `https://swyp-hobbi-front.vercel.app/oauth/callback/${provider}`;
 
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,
