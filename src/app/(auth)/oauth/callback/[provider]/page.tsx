@@ -7,11 +7,14 @@ import { useModalStore } from '@/store/modal';
 import Loader from '@/components/common/loader';
 import { authService } from '@/services/api';
 
-export default function SocialLoginCallback({
-  params,
-}: {
-  params: { provider: string };
-}) {
+interface PageProps {
+  params: {
+    provider: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default function SocialLoginCallback({ params }: PageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { openModal } = useModalStore();
@@ -107,7 +110,7 @@ export default function SocialLoginCallback({
     };
 
     handleCallback();
-  }, [searchParams]);
+  }, [params.provider, searchParams, router, openModal, setAuth]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
