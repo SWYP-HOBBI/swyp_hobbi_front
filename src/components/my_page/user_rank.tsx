@@ -46,10 +46,10 @@ export default function UserRank() {
       : userRank.level;
 
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-6 max-md:flex-col max-md:gap-8">
       {/* 등급 */}
       <div>
-        <div className="text-xl max-md:w-[390px] flex items-center space-x-2 font-semibold leading-[100%]">
+        <div className="text-xl flex items-center space-x-2 font-semibold leading-[100%]">
           <span>나의 등급</span>
           <Tooltip
             content={
@@ -72,13 +72,12 @@ export default function UserRank() {
         </div>
       </div>
       {/* 세로 구분선 */}
-      <div className="w-[1px] bg-grayscale-20" />
+      <div className="w-[1px] bg-grayscale-20 max-md:hidden" />
       {/* 챌린지 섹션 */}
-      <div className="flex-1">
+      <div className="flex-1 max-md:mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-semibold">챌린지</h2>
-
             <Tooltip
               content={
                 <>
@@ -115,10 +114,16 @@ export default function UserRank() {
           </span>
         </div>
 
-        <div className="flex gap-4">
-          {challenges.map((challenge) => (
-            <ChallengeItem key={challenge.id} id={challenge.id} />
-          ))}
+        <div className="w-full">
+          <div className="flex gap-4 max-md:grid max-md:grid-cols-3 max-md:gap-2">
+            {challenges.map((challenge) => (
+              <ChallengeItem
+                key={challenge.id}
+                id={challenge.id}
+                className="max-md:w-full"
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

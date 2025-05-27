@@ -52,9 +52,9 @@ export default function MyPage() {
           <div className="max-md:mt-6">
             <UserProfile />
           </div>
-          <div className="flex-1 h-[353px]  bg-grayscale-0  rounded-[24px] p-[20px]">
+          <div className="flex-1 h-[353px] max-md:h-auto bg-grayscale-0 rounded-[24px] p-[20px]">
             <UserHobby />
-            <div className="mt-6">
+            <div className="mt-6 max-md:mt-8">
               <UserRank />
             </div>
           </div>

@@ -26,11 +26,11 @@ export default function UserHobby() {
 
   return (
     <div>
-      <div className="text-xl font-semibold leading-[100%] mb-[23px]">
+      <div className="text-xl font-semibold leading-[100%] mb-[23px] max-md:mb-4">
         나의 취미
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 max-md:justify-center">
         {hobbyTags.length > 0 ? (
           hobbyTags.map((tag, index) => (
             <Tag key={index} label={tag} variant="white" />
