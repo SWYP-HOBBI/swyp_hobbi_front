@@ -36,12 +36,12 @@ export default function PostImageSlider({ images }: PostImageSliderProps) {
           >
             {images.map((imageUrl, index) => (
               <div key={index} className="flex-none w-[calc(60%-16px)]">
-                <div className="aspect-[4/3] relative rounded-xl">
+                <div className="aspect-[4/3] relative rounded-xl bg-grayscale-5 flex items-center justify-center">
                   <Image
                     src={imageUrl}
                     alt={`게시글 이미지 ${index + 1}`}
                     fill
-                    className="object-cover rounded-xl"
+                    className="object-contain rounded-xl"
                     unoptimized
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;

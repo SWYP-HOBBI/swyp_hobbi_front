@@ -76,12 +76,12 @@ export default function UserPostCard({
       <Link href={`/posts/${postId}`}>
         <div className="flex gap-[23px] bg-grayscale-0 border-b border-b-[var(--grayscale-20)] p-5 space-y-4 flex-shrink-0 hover:bg-gray-50 transition">
           {representativeImageUrl && representativeImageUrl.length > 0 && (
-            <div className="w-[140px] h-[140px] relative">
+            <div className="w-[140px] h-[140px] relative bg-grayscale-5 flex items-center justify-center rounded-lg">
               <Image
                 src={representativeImageUrl}
                 fill
                 alt={representativeImageUrl}
-                className="object-cover rounded-lg"
+                className="object-contain rounded-lg"
                 unoptimized
               />
             </div>
