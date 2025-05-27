@@ -28,6 +28,7 @@ import {
   MarkSelectedReadRequest,
   UnreadCountResponse,
 } from '@/types/notification';
+import { ChallengeApiResponse } from '@/types/challenge';
 
 import { SearchParams } from '@/types/search';
 
@@ -246,24 +247,23 @@ export const authService = {
   },
 
   // 카카오 로그인
-  kakaoLogin: async (code: string): Promise<SocialLoginResponse> => {
+  kakaoLogin: async (): Promise<SocialLoginResponse> => {
     return fetchApi('/user/login/kakao', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code }),
+      method: 'GET',
     });
   },
 
   // 구글 로그인
-  googleLogin: async (code: string): Promise<SocialLoginResponse> => {
+  googleLogin: async (): Promise<SocialLoginResponse> => {
     return fetchApi('/user/login/google', {
+      method: 'GET',
+    });
+  },
+
+  // 소셜 계정 연동
+  linkSocialAccount: async () => {
+    return fetchApi(`/oauth/link`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code }),
     });
   },
 
@@ -274,7 +274,8 @@ export const authService = {
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
-    const REDIRECT_URI = `${API_URL}/api/v1/user/login/oauth2/code/${provider}`;
+    // const REDIRECT_URI = `http://localhost:3000/api/v1/user/login/oauth2/code/${provider}`;
+    const REDIRECT_URI = `http://localhost:3000/login/oauth2/code/${provider}`;
 
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,
@@ -666,6 +667,23 @@ export const notificationService = {
   // 읽지 않은 알림 개수 조회
   getUnreadCount: async (): Promise<UnreadCountResponse> => {
     return fetchApi<UnreadCountResponse>(`/notifications/unread-count`, {
+      method: 'GET',
+    });
+  },
+};
+
+// 챌린지 관련 API 서비스
+export const challengeService = {
+  // 챌린지 시작
+  startChallenge: async (challengeNumber: number): Promise<void> => {
+    return fetchApi(`/challenge/start/${challengeNumber}`, {
+      method: 'POST',
+    });
+  },
+
+  // 챌린지 조회
+  getChallenges: async (): Promise<ChallengeApiResponse> => {
+    return fetchApi('/challenge', {
       method: 'GET',
     });
   },

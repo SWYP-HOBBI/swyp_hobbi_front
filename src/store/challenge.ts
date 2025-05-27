@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Challenge } from '@/types/challenge';
+import { challengeService } from '@/services/api';
 
 // 다음 월요일 자정까지의 시간을 계산하는 함수
 function getTimeUntilNextMonday(): number {
@@ -23,6 +24,7 @@ interface ChallengeStore {
   updateProgress: (id: string, current: number) => void;
   completeChallenge: (id: string) => void;
   updateRemainingTime: () => void;
+  fetchChallenges: () => Promise<void>;
 }
 
 const initialChallenges: Challenge[] = [
@@ -30,8 +32,8 @@ const initialChallenges: Challenge[] = [
     id: '1',
     title: '취미 자랑',
     current: 0,
-    total: 3,
-    description: '같은 취미 게시글 작성: 3개',
+    total: 50,
+    description: '좋아요 50개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
   },
@@ -39,7 +41,9 @@ const initialChallenges: Challenge[] = [
     id: '2',
     title: '루티너',
     current: 0,
-    total: 5,
+    total: 3,
+    description: '같은 취미 게시글 작성: 3개',
+    reward: '보상 10EXP',
     status: 'NOT_STARTED',
   },
   {
@@ -47,6 +51,8 @@ const initialChallenges: Challenge[] = [
     title: '취미 부자 되기',
     current: 0,
     total: 3,
+    description: '다른 취미 게시글 작성: 3개',
+    reward: '보상 10EXP',
     status: 'NOT_STARTED',
   },
 ];
@@ -54,6 +60,32 @@ const initialChallenges: Challenge[] = [
 export const useChallengeStore = create<ChallengeStore>((set) => ({
   challenges: initialChallenges,
   remainingTime: getTimeUntilNextMonday(),
+
+  fetchChallenges: async () => {
+    try {
+      const response = await challengeService.getChallenges();
+
+      set((state) => ({
+        challenges: state.challenges.map((challenge) => {
+          const apiChallenge =
+            response[`challenge${challenge.id}` as keyof typeof response];
+          if (!apiChallenge) return challenge;
+
+          return {
+            ...challenge,
+            current: apiChallenge.point,
+            status: apiChallenge.achieved
+              ? 'COMPLETED'
+              : apiChallenge.started
+                ? 'IN_PROGRESS'
+                : 'NOT_STARTED',
+          };
+        }),
+      }));
+    } catch (error) {
+      console.error('챌린지 조회 실패:', error);
+    }
+  },
 
   startChallenge: (id) =>
     set((state) => ({
