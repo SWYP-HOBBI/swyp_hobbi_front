@@ -58,13 +58,16 @@ export default function PostImageUploader({
       <div className="flex gap-4 flex-wrap">
         {/* 업로드된 이미지 미리보기 */}
         {images.map((image, index) => (
-          <div key={index} className="relative w-40 h-30">
+          <div
+            key={index}
+            className="relative w-40 h-30 bg-grayscale-5 flex items-center justify-center rounded-lg"
+          >
             <Image
               src={image.preview}
               alt={`업로드 이미지 ${index + 1}`}
               width={170}
               height={127}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-contain rounded-lg"
             />
             {/* 이미지 삭제 버튼 */}
             <button

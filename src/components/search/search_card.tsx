@@ -48,13 +48,13 @@ export default function SearchCard({
           <div className="flex items-center">
             {/* 게시글 이미지가 있을 때만 표시 */}
             {postImageUrls.length > 0 ? (
-              <div className="w-[195px] h-[146px] flex-shrink-0 relative mr-6">
+              <div className="w-[195px] h-[146px] flex-shrink-0 relative mr-6 bg-grayscale-5 flex items-center justify-center rounded-lg">
                 <Image
                   src={postImageUrls[0]}
                   width={195}
                   height={146}
                   alt={title}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-contain rounded-lg"
                   unoptimized
                 />
                 {postImageUrls.length > 1 && (

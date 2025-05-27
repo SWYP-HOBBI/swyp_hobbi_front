@@ -78,9 +78,37 @@ export default function UserRank() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-semibold">챌린지</h2>
-            <span className="text-[8px] bg-grayscale-10 px-[9px] py-[5px] rounded-full text-grayscale-60">
-              목표
-            </span>
+
+            <Tooltip
+              content={
+                <>
+                  <pre>
+                    취미 자랑
+                    <br />한 게시글 내에 좋아요 : 50개
+                    <br />
+                    *보상 10EXP
+                    <br />
+                    <br />
+                    루티너
+                    <br />
+                    같은 취미 게시글 : 3개
+                    <br />
+                    *보상 10EXP
+                    <br />
+                    <br />
+                    취미 부자 되기
+                    <br />
+                    다른 취미 게시글 : 3개
+                    <br />
+                    *보상 10EXP
+                  </pre>
+                </>
+              }
+            >
+              <span className="text-[8px] bg-grayscale-10 px-[9px] py-[5px] rounded-full text-grayscale-60">
+                목표
+              </span>
+            </Tooltip>
           </div>
           <span className="text-grayscale-60 text-xs">
             {formatRemainingTime(remainingTime)}

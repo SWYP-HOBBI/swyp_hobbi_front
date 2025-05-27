@@ -63,7 +63,7 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
       </div>
 
       {/* 설명 텍스트 */}
-      {status !== 'NOT_STARTED' && description && (
+      {status === 'IN_PROGRESS' && description && (
         <div className="text-xs text-grayscale-60 text-center mt-[14px]">
           <div className="mb-1">{description}</div>
           {reward && <div className="mb-2 text-primary-b80">*{reward}</div>}
