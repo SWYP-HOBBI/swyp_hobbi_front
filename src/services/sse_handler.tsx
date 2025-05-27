@@ -9,7 +9,8 @@ export default function SSEHandler() {
   const { isAuthenticated } = useAuthStore();
   const pathname = usePathname();
 
-  const isAuthPage = pathname === '/' || pathname === '/signup';
+  const isAuthPage =
+    pathname === '/' || pathname === '/signup' || pathname === '/login/social';
 
   useEffect(() => {
     if (isAuthPage || !isAuthenticated) return;

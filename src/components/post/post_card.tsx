@@ -31,6 +31,7 @@ export default function PostCard({
   userImageUrl,
   postImageUrls,
   postHobbyTags,
+  userLevel,
   likeCount,
   commentCount,
   createdAt,
@@ -100,6 +101,7 @@ export default function PostCard({
           <Profile
             imageUrl={userImageUrl}
             nickname={nickname}
+            userLevel={userLevel}
             variant={isMobile ? 'horizontal-small' : 'horizontal-large'}
           />
           <span className="text-grayscale-60 text-xs ml-3">
@@ -110,13 +112,13 @@ export default function PostCard({
         <div className="flex flex-col md:flex-row gap-4 max-md:gap-0">
           {/* 게시글 이미지 있는 경우에만 표시 */}
           {!!postImageUrls.length && (
-            <div className="w-full md:w-[400px] h-[262.5px] md:h-[300px] flex-shrink-0 relative">
+            <div className="w-full md:w-[400px] h-[262.5px] md:h-[300px] flex-shrink-0 relative bg-grayscale-5 flex items-center justify-center rounded-lg">
               <Image
                 src={postImageUrls[0]}
                 width={400}
                 height={300}
                 alt={title}
-                className="w-full h-full object-cover rounded-lg"
+                className="w-full h-full object-contain rounded-lg"
                 unoptimized
               />
               {postImageUrls.length > 1 && (

@@ -3,12 +3,17 @@
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useChallengeStore } from '@/store/challenge';
+import { challengeService } from '@/services/api';
 
 interface ChallengeItemProps {
   id: string;
+  className?: string;
 }
 
-export default function ChallengeItem({ id }: ChallengeItemProps) {
+export default function ChallengeItem({
+  id,
+  className = '',
+}: ChallengeItemProps) {
   const { challenges, startChallenge, completeChallenge } = useChallengeStore();
   const challenge = challenges.find((c) => c.id === id);
 
@@ -20,8 +25,13 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
   const percentage = (current / total) * 100;
   const ProgressBar = CircularProgressbar as any;
 
-  const handleStart = () => {
-    startChallenge(id);
+  const handleStart = async () => {
+    try {
+      await challengeService.startChallenge(Number(id));
+      startChallenge(id);
+    } catch (error) {
+      console.error('챌린지 시작 실패:', error);
+    }
   };
 
   const handleComplete = () => {
@@ -29,8 +39,8 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center">
-      <div className="w-[100px] h-[100px] relative">
+    <div className={`flex-1 flex flex-col items-center ${className}`}>
+      <div className="w-[100px] h-[100px] max-md:w-[70px] max-md:h-[70px] relative">
         <ProgressBar
           value={percentage}
           strokeWidth={5}
@@ -38,6 +48,7 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
             root: {
               width: '100%',
               height: '100%',
+              pointerEvents: 'none',
             },
             path: {
               stroke: 'var(--primary)',
@@ -51,21 +62,22 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
           }}
         />
         {/* 중앙 텍스트 */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-medium text-xs">{title}</span>
-          {status === 'IN_PROGRESS' && (
-            <span className="text-xs text-grayscale-60 mt-1">
-              {current}/{total}
-            </span>
-          )}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="font-medium text-xs max-md:text-[10px] whitespace-nowrap">
+            {title}
+          </span>
         </div>
       </div>
 
       {/* 설명 텍스트 */}
-      {status !== 'NOT_STARTED' && description && (
-        <div className="text-xs text-grayscale-60 text-center mt-[14px]">
-          <div className="mb-1">{description}</div>
-          {reward && <div className="mb-2 text-primary-b80">*{reward}</div>}
+      {status === 'IN_PROGRESS' && description && (
+        <div className="text-xs text-grayscale-60 text-center mt-[14px] max-md:mt-2">
+          <div className="mb-1 max-md:text-[10px]">{description}</div>
+          {reward && (
+            <div className="mb-2 text-primary-b80 max-md:text-[10px]">
+              *{reward}
+            </div>
+          )}
         </div>
       )}
 
@@ -73,7 +85,7 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
       {status === 'NOT_STARTED' && (
         <button
           onClick={handleStart}
-          className="py-[3.5px] px-[30px] bg-primary-w80 text-primary-b80 rounded-full text-xs border border-primary-b20 mt-6"
+          className="py-[3.5px] px-[30px] max-md:px-4 bg-primary-w80 text-primary-b80 rounded-full text-xs max-md:text-[10px] border border-primary-b20 mt-6 max-md:mt-2"
         >
           시작
         </button>
@@ -81,7 +93,7 @@ export default function ChallengeItem({ id }: ChallengeItemProps) {
       {status === 'COMPLETED' && (
         <button
           onClick={handleComplete}
-          className="py-[3.5px] px-[30px] bg-primary text-white rounded-full text-xs mt-6"
+          className="py-[3.5px] px-[30px] max-md:px-4 bg-primary text-white rounded-full text-xs max-md:text-[10px] mt-6 max-md:mt-2"
         >
           완료
         </button>

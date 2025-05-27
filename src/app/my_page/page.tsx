@@ -21,11 +21,15 @@ export default function MyPage() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const userProfileData = userService.getMyPageInfo();
-        const userPostData = userService.getMyPosts();
-        await Promise.all([userProfileData, userPostData]);
-        setIsLoading(false);
+        const [userProfileData, userPostData, userRankData] = await Promise.all(
+          [
+            userService.getMyPageInfo(),
+            userService.getMyPosts(),
+            userService.getUserRank(),
+          ],
+        );
       } catch (error) {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -48,9 +52,9 @@ export default function MyPage() {
           <div className="max-md:mt-6">
             <UserProfile />
           </div>
-          <div className="flex-1 h-[353px]  bg-grayscale-0  rounded-[24px] p-[20px]">
+          <div className="flex-1 h-[353px] max-md:h-auto bg-grayscale-0 rounded-[24px] p-[20px]">
             <UserHobby />
-            <div className="mt-6">
+            <div className="mt-6 max-md:mt-8">
               <UserRank />
             </div>
           </div>

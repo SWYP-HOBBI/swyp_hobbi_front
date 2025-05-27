@@ -28,8 +28,10 @@ import {
   MarkSelectedReadRequest,
   UnreadCountResponse,
 } from '@/types/notification';
+import { ChallengeApiResponse } from '@/types/challenge';
 
 import { SearchParams } from '@/types/search';
+import { Rank } from '@/types/rank';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_URL_PUBLIC = process.env.NEXT_PUBLIC_API_URL_PUBLIC;
@@ -247,34 +249,34 @@ export const authService = {
 
   // 카카오 로그인
   kakaoLogin: async (code: string): Promise<SocialLoginResponse> => {
-    return fetchApi('/user/login/kakao', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code }),
+    return fetchApi(`/oauth/login/kakao?code=${code}`, {
+      method: 'GET',
     });
   },
 
   // 구글 로그인
   googleLogin: async (code: string): Promise<SocialLoginResponse> => {
-    return fetchApi('/user/login/google', {
+    return fetchApi(`/oauth/login/google?code=${code}`, {
+      method: 'GET',
+    });
+  },
+
+  // 소셜 계정 연동
+  linkSocialAccount: async () => {
+    return fetchApi(`/oauth/link`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code }),
     });
   },
 
   // 소셜 로그인 URL 가져오기
   getSocialLoginUrl: (provider: 'kakao' | 'google') => {
-    const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
+    const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
     const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
-    const REDIRECT_URI = `${API_URL}/api/v1/user/login/oauth2/code/${provider}`;
+
+    const REDIRECT_URI = `https://swyp-hobbi-front.vercel.app/oauth/callback/${provider}`;
 
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,
@@ -610,6 +612,20 @@ export const userService = {
       body: JSON.stringify({ reason }),
     });
   },
+
+  // 등급 조회
+  getUserRank: async (): Promise<Rank> => {
+    return fetchApi<Rank>('/user-rank/me', {
+      method: 'GET',
+    });
+  },
+
+  // 유저 레벨 조회
+  getUserLevel: async (): Promise<number> => {
+    return fetchApi<number>('/user-rank/level', {
+      method: 'GET',
+    });
+  },
 };
 
 // 알림 관련 API 서비스
@@ -666,6 +682,23 @@ export const notificationService = {
   // 읽지 않은 알림 개수 조회
   getUnreadCount: async (): Promise<UnreadCountResponse> => {
     return fetchApi<UnreadCountResponse>(`/notifications/unread-count`, {
+      method: 'GET',
+    });
+  },
+};
+
+// 챌린지 관련 API 서비스
+export const challengeService = {
+  // 챌린지 시작
+  startChallenge: async (challengeNumber: number): Promise<void> => {
+    return fetchApi(`/challenge/start/${challengeNumber}`, {
+      method: 'POST',
+    });
+  },
+
+  // 챌린지 조회
+  getChallenges: async (): Promise<ChallengeApiResponse> => {
+    return fetchApi('/challenge', {
       method: 'GET',
     });
   },

@@ -26,26 +26,28 @@ export const levelColors = [
 ];
 
 export const getLevelIcon = (level: number, size: number | string) => {
-  switch (level) {
-    case 1:
+  const levelRange = Math.floor(level / 10);
+  switch (levelRange) {
+    case 0:
       return <Level1Icon size={size} />;
-    case 2:
+    case 1:
       return <Level2Icon size={size} />;
-    case 3:
+    case 2:
       return <Level3Icon size={size} />;
-    case 4:
+    case 3:
       return <Level4Icon size={size} />;
-    case 5:
+    case 4:
       return <Level5Icon size={size} />;
-    case 6:
+    case 5:
       return <Level6Icon size={size} />;
-    case 7:
+    case 6:
       return <Level7Icon size={size} />;
-    case 8:
+    case 7:
       return <Level8Icon size={size} />;
-    case 9:
+    case 8:
       return <Level9Icon size={size} />;
-    case 10:
+    case 9:
+    default:
       return <Level10Icon size={size} />;
   }
 };

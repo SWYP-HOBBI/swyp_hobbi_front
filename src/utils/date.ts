@@ -25,3 +25,11 @@ export const formatDate = (date: Date | string): string => {
 export const getCurrentDate = (): string => {
   return formatDate(new Date());
 };
+
+// 남은 시간을 시, 분, 초로 변환
+export const formatRemainingTime = (seconds: number) => {
+  const days = Math.floor(seconds / (24 * 60 * 60));
+  const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((seconds % (60 * 60)) / 60);
+  return `${days}일 ${hours}시간 ${minutes}분 남음`;
+};

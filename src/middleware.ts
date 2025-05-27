@@ -11,10 +11,12 @@ const PUBLIC_PATH_PATTERNS = [
   /^\/posts$/, // 게시글 목록
   /^\/posts\/search/, // 게시글 검색
   /^\/posts\/\d+$/, // 게시글 상세보기 (/posts/1, /posts/123 등)
+  /^\/login\/social$/, // 소셜 로그인
+  // /^\/login\/oauth2\/authorization\/.*$/, // OAuth 콜백 URL 추가
 ];
 
 // 로그인한 사용자가 접근하면 리다이렉트할 경로
-const AUTH_REDIRECT_PATHS = ['/', '/signup'];
+const AUTH_REDIRECT_PATHS = ['/', '/signup', '/login/social'];
 
 export function middleware(request: NextRequest) {
   // 현재 경로
