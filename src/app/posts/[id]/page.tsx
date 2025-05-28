@@ -229,6 +229,7 @@ export default function PostDetailPage() {
           <PostHeader
             nickname={post.nickname}
             userImageUrl={post.userImageUrl}
+            userLevel={post.userLevel}
             isOwner={isOwner}
             onEdit={handleEdit}
             onDelete={handleDelete}

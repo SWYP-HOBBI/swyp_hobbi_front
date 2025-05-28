@@ -53,6 +53,7 @@ export interface PostDetail {
   likeCount: number;
   liked: boolean;
   commentCount: number;
+  userLevel: number;
   userId: number;
 }
 
