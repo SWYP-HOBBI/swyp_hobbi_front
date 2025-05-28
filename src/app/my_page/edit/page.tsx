@@ -204,16 +204,22 @@ export default function EditMyPage() {
 
   const [isModified, setIsModified] = useState(false);
 
+  const initialHobbyTags = userInfo?.hobbyTags?.sort().join(',');
+  const currentHobbyTags = selectedHobbyTags
+    .map((tag) => tag.subCategory)
+    .sort()
+    .join(',');
+
   useEffect(() => {
+    const isHobbyTagsChanged = initialHobbyTags !== currentHobbyTags;
+
     if (
       username !== userInfo?.username ||
       birthYear !== userInfo?.birthYear.toString() ||
       birthMonth !== String(userInfo?.birthMonth).padStart(2, '0') ||
       birthDay !== String(userInfo?.birthDay).padStart(2, '0') ||
       mbti !== userInfo?.mbti ||
-      selectedHobbyTags.some(
-        (tag) => !userInfo?.hobbyTags.includes(tag.subCategory),
-      )
+      isHobbyTagsChanged
     ) {
       setIsModified(true);
     } else {
