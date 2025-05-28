@@ -13,6 +13,7 @@ import Profile from '../common/profile';
 interface PostHeaderProps {
   nickname: string;
   userImageUrl: string;
+  userLevel: number;
   isOwner: boolean;
   onEdit: () => void;
   onDelete: () => void;
@@ -29,6 +30,7 @@ export default function PostHeader({
   nickname,
   userImageUrl,
   isOwner,
+  userLevel,
   onEdit,
   onDelete,
 }: PostHeaderProps) {
@@ -76,6 +78,7 @@ export default function PostHeader({
           <Profile
             imageUrl={userImageUrl}
             nickname={nickname}
+            userLevel={userLevel}
             variant={isMobile ? 'horizontal-small' : 'horizontal-large'}
           />
         </div>
