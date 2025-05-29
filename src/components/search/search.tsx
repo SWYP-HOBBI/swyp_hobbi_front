@@ -87,7 +87,7 @@ export default function Search() {
       {isSearchOpen && (
         <motion.div
           key="search-panel-wrapper"
-          className="fixed top-0 max-md:left-0 left-[198px] z-50 w-full h-full"
+          className="fixed top-0 max-md:left-0 left-[240px] z-50 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
