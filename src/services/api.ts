@@ -276,7 +276,7 @@ export const authService = {
 
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
 
-    const REDIRECT_URI = `https://swyp-hobbi-front.vercel.app/oauth/callback/${provider}`;
+    const REDIRECT_URI = `http://localhost:3000/oauth/callback/${provider}`;
 
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,
@@ -623,6 +623,13 @@ export const userService = {
   // 유저 레벨 조회
   getUserLevel: async (): Promise<number> => {
     return fetchApi<number>('/user-rank/level', {
+      method: 'GET',
+    });
+  },
+
+  //소셜 로그인 연동 정보
+  getLoginStatus: async (): Promise<{ kakao: boolean; google: boolean }> => {
+    return fetchApi('/oauth/status', {
       method: 'GET',
     });
   },
