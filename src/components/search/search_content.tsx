@@ -8,6 +8,7 @@ import Loader from '@/components/common/loader';
 import Tag from '@/components/common/tag';
 import { SearchPostResponse } from '@/types/search';
 import SearchCard from '@/components/search/search_card';
+import SearchCardSkeleton from './search_card_skeleton';
 
 type PageParam =
   | {
@@ -92,8 +93,19 @@ export default function SearchContent() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen mx-auto">
-        <Loader />
+      <div className="w-full min-h-screen p-6 pb-20">
+        <div className="max-w-[960px] mx-auto">
+          <h1 className="text-2xl font-bold mb-3">검색</h1>
+          <div className="flex gap-2 mb-12 flex-wrap">
+            <div className="h-7 bg-grayscale-10 rounded-full w-10" />
+            <div className="h-7 bg-grayscale-10 rounded-full w-10" />
+          </div>
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <SearchCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
