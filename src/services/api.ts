@@ -272,11 +272,11 @@ export const authService = {
   getSocialLoginUrl: (provider: 'kakao' | 'google') => {
     const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
     const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    const BASE_URL = process.env.NEXT_PUBLIC_URL;
 
     // 서버의 OAuth2 콜백 URL 형식에 맞게 설정
 
-    const REDIRECT_URI = `http://localhost:3000/oauth/callback/${provider}`;
+    const REDIRECT_URI = `${BASE_URL}/oauth/callback/${provider}`;
 
     const urls = {
       kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`,
