@@ -12,6 +12,7 @@ import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import { useFeedStore } from '@/store/feed';
 import PostCard from '@/components/post/post_card';
+import PostCardSkeleton from '@/components/post/post_card_skeleton';
 import { PostCardProps, InfinitePostsResponse } from '@/types/post';
 import Loader from '@/components/common/loader';
 import SvgIcon from '@/components/common/svg_icon';
@@ -170,8 +171,12 @@ export default function PostsPage() {
   // 로딩 상태 처리
   if (status === 'pending')
     return (
-      <div className="flex justify-center items-center h-screen mx-auto">
-        <Loader />
+      <div className="flex justify-center my-12 max-md:my-6 mx-auto">
+        <div className="w-[960px] max-md:w-[390px] space-y-6">
+          {[...Array(3)].map((_, i) => (
+            <PostCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
 
@@ -217,8 +222,10 @@ export default function PostsPage() {
             </div>
             <div ref={observerRef} className="h-4" />
             {isFetchingNextPage && (
-              <div className="flex justify-center mt-8">
-                <Loader />
+              <div className="space-y-6 mt-6">
+                {[...Array(2)].map((_, i) => (
+                  <PostCardSkeleton key={i} />
+                ))}
               </div>
             )}
           </>
