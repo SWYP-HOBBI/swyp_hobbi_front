@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
@@ -30,6 +30,7 @@ export default function PostsPage() {
   const { userId, isAuthenticated } = useAuthStore();
   const { feedType } = useFeedStore();
   const observerRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
@@ -148,6 +149,24 @@ export default function PostsPage() {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  // 스크롤 위치에 따라 버튼 표시 여부 결정
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 1000);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 맨 위로 스크롤하는 함수
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   // 로딩 상태 처리
   if (status === 'pending')
     return (
@@ -182,51 +201,48 @@ export default function PostsPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-12">
-            {/* 게시글 목록 렌더링 */}
-            <motion.div
-              variants={container}
-              initial="hidden"
-              animate="show"
-              className="space-y-6"
-            >
-              {data?.pages.flatMap(
-                (group: PostCardProps[]) =>
-                  group.map((post) => (
-                    <div key={post.postId}>
-                      <PostCard
-                        {...post}
-                        onLikeClick={() => handleLike(post.postId, post.liked)}
-                      />
-                    </div>
-                  )) ?? [],
-              )}
-            </motion.div>
-
-            {/* 무한 스크롤 옵저버 */}
-            <div
-              ref={observerRef}
-              className="h-4 flex items-center justify-center"
-            >
-              {isFetchingNextPage && (
-                <div className="flex justify-center items-center h-screen mx-auto">
-                  <Loader />
+          <>
+            <div className="grid grid-cols-1 gap-6">
+              {data?.pages.map((group, i) => (
+                <div key={i} className="space-y-6">
+                  {group.map((post: PostCardProps) => (
+                    <PostCard
+                      key={post.postId}
+                      {...post}
+                      onLikeClick={() => handleLike(post.postId, post.liked)}
+                    />
+                  ))}
                 </div>
-              )}
+              ))}
             </div>
-          </div>
+            <div ref={observerRef} className="h-4" />
+            {isFetchingNextPage && (
+              <div className="flex justify-center mt-8">
+                <Loader />
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      {/* 맨 위로 이동 버튼 */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showScrollTop ? 1 : 0 }}
+        onClick={scrollToTop}
+        className={`fixed bottom-8 right-8 max-md:bottom-20 max-md:right-4 z-50 p-3 rounded-full bg-primary shadow-lg hover:bg-primary transition-colors duration-200  ${
+          showScrollTop ? 'visible rotate-180' : 'invisible'
+        }`}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <SvgIcon
+          name="arrow_down"
+          size={24}
+          color="white"
+          className="transform"
+        />
+      </motion.button>
     </div>
   );
 }
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
