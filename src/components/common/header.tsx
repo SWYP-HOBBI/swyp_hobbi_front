@@ -5,10 +5,12 @@ import SvgIcon from './svg_icon';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useFeedStore } from '@/store/feed';
+import { useAuthStore } from '@/store/auth';
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuthStore();
   const isPostsPage = pathname === '/posts';
   const isPostWritePage = pathname === '/posts/write';
   const isPostDetailPage =
@@ -24,7 +26,14 @@ export default function Header() {
     isEditMyPage;
 
   const [showFeedMenu, setShowFeedMenu] = useState(false);
+  const [showMeatballMenu, setShowMeatballMenu] = useState(false);
   const { feedType, setFeedType } = useFeedStore();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+    setShowMeatballMenu(false);
+  };
 
   // 게시글 관련 페이지가 아닐 경우 헤더를 렌더링하지 않음
   if (!shouldShowHeader) return null;
@@ -81,7 +90,7 @@ export default function Header() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -10, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    className="absolute left-0 top-[48px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[120px]"
+                    className="absolute left-0 top-[48px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100  z-50 min-w-[80px] text-center text-sm"
                   >
                     <motion.button
                       initial={{ y: -5, opacity: 0 }}
@@ -91,10 +100,10 @@ export default function Header() {
                         setFeedType('all');
                         setShowFeedMenu(false);
                       }}
-                      className={`w-full px-4 py-2 text-left hover:bg-[var(--primary-w80)] ${
+                      className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-t-lg  ${
                         feedType === 'all'
-                          ? 'text-[var(--primary)] font-medium'
-                          : 'text-[var(--grayscale-60)]'
+                          ? 'text-[var(--primary)] font-medium '
+                          : 'text-[var(--grayscale-40)]'
                       }`}
                     >
                       전체 피드
@@ -107,10 +116,10 @@ export default function Header() {
                         setFeedType('hobby');
                         setShowFeedMenu(false);
                       }}
-                      className={`w-full px-4 py-2 text-left hover:bg-[var(--primary-w80)] ${
+                      className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-b-lg  ${
                         feedType === 'hobby'
-                          ? 'text-[var(--primary)] font-medium'
-                          : 'text-[var(--grayscale-60)]'
+                          ? 'text-[var(--primary)] font-medium '
+                          : 'text-[var(--grayscale-40)]'
                       }`}
                     >
                       취미 피드
@@ -135,9 +144,36 @@ export default function Header() {
           !isPostWritePage &&
           !isMyPage &&
           !isEditMyPage && (
-            <button className="flex items-center justify-center w-[24px] h-[24px]">
-              <SvgIcon name="meatball" width={24} height={24} />
-            </button>
+            <div className="relative">
+              <button
+                className="flex items-center justify-center w-[24px] h-[24px]"
+                onClick={() => setShowMeatballMenu(!showMeatballMenu)}
+              >
+                <SvgIcon name="meatball" width={24} height={24} />
+              </button>
+
+              <AnimatePresence>
+                {showMeatballMenu && (
+                  <motion.div
+                    initial={{ y: -10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -10, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    className="absolute right-0 top-[48px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[120px]"
+                  >
+                    <motion.button
+                      initial={{ y: -5, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      onClick={handleLogout}
+                      className="w-full px-4 py-2 text-left text-[var(--grayscale-60)] hover:bg-[var(--primary-w80)]"
+                    >
+                      로그아웃
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           )}
       </div>
     </header>
