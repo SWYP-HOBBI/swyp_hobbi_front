@@ -128,13 +128,12 @@ export default function SearchCard({
             </div>
 
             {postImageUrls.length > 0 && (
-              <div className="relative w-full h-[260px] rounded-lg overflow-hidden">
+              <div className="relative w-full h-[260px]  flex-shrink-0 relative mr-6 bg-grayscale-5 flex items-center justify-center rounded-lg ">
                 <Image
                   src={postImageUrls[0]}
                   alt={title}
                   layout="fill"
-                  objectFit="cover"
-                  className="rounded-lg mt-2"
+                  className="w-full h-full object-contain rounded-lg"
                   unoptimized
                 />
                 {postImageUrls.length > 1 && (
