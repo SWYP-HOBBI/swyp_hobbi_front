@@ -26,23 +26,62 @@ export default function TabBar() {
     setFeedType('all');
   }, [pathname, setFeedType]);
 
-  const handleProtectedRoute = (callback: () => void) => {
+  // 라우터 이동 시 검색/알림 닫기 함수
+  const closeSearchAndNotification = () => {
+    if (isSearchOpen) {
+      toggleSearch();
+    }
+    if (isNotificationOpen) {
+      toggleNotification();
+    }
+  };
+
+  // 페이지 이동 함수
+  const navigateToPage = (path: string) => {
+    closeSearchAndNotification();
+    router.push(path);
+  };
+
+  const handleProtectedRoute = (path: string) => {
     if (!isAuthenticated) {
       openModal({
         title: '로그인이 필요합니다',
         message: '로그인 후 이용해 주세요',
         confirmText: '로그인 하기',
-        onConfirm: () => router.push('/'),
+        onConfirm: () => navigateToPage('/'),
       });
     } else {
-      callback();
+      navigateToPage(path);
     }
   };
 
   const handleNotificationClick = () => {
-    handleProtectedRoute(() => {
+    if (!isAuthenticated) {
+      openModal({
+        title: '로그인이 필요합니다',
+        message: '로그인 후 이용해 주세요',
+        confirmText: '로그인 하기',
+        onConfirm: () => navigateToPage('/'),
+      });
+    } else {
+      if (isSearchOpen) {
+        toggleSearch();
+      }
       toggleNotification();
-    });
+    }
+  };
+
+  const handleSearchClick = () => {
+    if (isNotificationOpen) {
+      toggleNotification();
+    }
+    toggleSearch();
+  };
+
+  const handleLogout = () => {
+    closeSearchAndNotification();
+    logout();
+    router.push('/');
   };
 
   const isHome = pathname === '/posts';
@@ -87,33 +126,13 @@ export default function TabBar() {
         <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-6">
           {/* 홈 */}
           <div className="relative">
-            <div
-              className={`w-[150px] flex items-center h-[52px] pt-[20px] ${
-                isSearchOpen || isNotificationOpen
-                  ? 'opacity-30 pointer-events-none'
-                  : 'cursor-pointer'
-              }`}
-            >
+            <div className="w-[150px] flex items-center h-[52px] pt-[20px] cursor-pointer">
               <div
                 className="flex items-center flex-1"
-                onClick={() => router.push('/posts')}
+                onClick={() => navigateToPage('/posts')}
               >
-                <SvgIcon
-                  name="home"
-                  size={36}
-                  color={
-                    isSearchOpen || isNotificationOpen
-                      ? '#999999'
-                      : iconColor(isHome)
-                  }
-                />
-                <span
-                  className={`ml-[24px] text-[16px] ${
-                    isSearchOpen || isNotificationOpen
-                      ? 'text-[var(--grayscale-40)]'
-                      : textColor(isHome)
-                  }`}
-                >
+                <SvgIcon name="home" size={36} color={iconColor(isHome)} />
+                <span className={`ml-[24px] text-[16px] ${textColor(isHome)}`}>
                   홈
                 </span>
               </div>
@@ -122,8 +141,7 @@ export default function TabBar() {
                   e.stopPropagation();
                   setShowFeedMenu(!showFeedMenu);
                 }}
-                className={`ml-2 transform transition-transform duration-200 -rotate-90
-                ${isSearchOpen || isNotificationOpen ? 'opacity-30' : ''}`}
+                className="ml-2 transform transition-transform duration-200 -rotate-90"
               >
                 <SvgIcon name="arrow_down" size={24} />
               </button>
@@ -176,23 +194,15 @@ export default function TabBar() {
 
           {/* 검색 */}
           <div
-            className={`w-[150px] flex items-center h-[52px] cursor-pointer ${
-              isNotificationOpen ? 'opacity-30 pointer-events-none' : ''
-            }`}
-            onClick={toggleSearch}
+            className="w-[150px] flex items-center h-[52px] cursor-pointer"
+            onClick={handleSearchClick}
           >
-            <SvgIcon
-              name="search"
-              size={36}
-              color={isNotificationOpen ? '#999999' : iconColor(isSearchOpen)}
-            />
+            <SvgIcon name="search" size={36} color={iconColor(isSearchOpen)} />
             <span
               className={`ml-[24px] text-[16px] ${
-                isNotificationOpen
-                  ? 'text-[var(--grayscale-40)]'
-                  : isSearchOpen
-                    ? 'text-[var(--primary-b60)] font-semibold'
-                    : 'text-[var(--grayscale-40)]'
+                isSearchOpen
+                  ? 'text-[var(--primary-b60)] font-semibold'
+                  : 'text-[var(--grayscale-40)]'
               }`}
             >
               검색
@@ -202,34 +212,23 @@ export default function TabBar() {
           {/* 알림 (로그인 필요) */}
           <div
             onClick={handleNotificationClick}
-            className={`w-[150px] flex items-center h-[52px] ${
-              isSearchOpen ? 'opacity-30 pointer-events-none' : 'cursor-pointer'
-            }`}
+            className="w-[150px] flex items-center h-[52px] cursor-pointer"
           >
             <SvgIcon
               name="alarm"
               size={36}
-              color={
-                isSearchOpen
-                  ? '#999999'
-                  : isNotificationOpen
-                    ? 'var(--primary)'
-                    : '#999999'
-              }
+              color={isNotificationOpen ? 'var(--primary)' : '#999999'}
             />
             <div className="flex items-center justify-between">
               <span
                 className={`ml-[24px] text-[16px] ${
-                  isSearchOpen
-                    ? 'text-[var(--grayscale-40)]'
-                    : isNotificationOpen
-                      ? 'text-[var(--primary-b60)] font-semibold'
-                      : 'text-[var(--grayscale-40)]'
+                  isNotificationOpen
+                    ? 'text-[var(--primary-b60)] font-semibold'
+                    : 'text-[var(--grayscale-40)]'
                 }`}
               >
                 알림
               </span>
-              {/* 알림 표시 */}
               {unreadCount > 0 && (
                 <div className="ml-13 w-[8px] h-[8px] bg-red-500 rounded-full" />
               )}
@@ -238,60 +237,22 @@ export default function TabBar() {
 
           {/* 게시글 작성 (로그인 필요) */}
           <div
-            className={`w-[150px] flex items-center h-[52px] ${
-              isSearchOpen || isNotificationOpen
-                ? 'opacity-30 pointer-events-none'
-                : 'cursor-pointer'
-            }`}
-            onClick={() =>
-              handleProtectedRoute(() => router.push('/posts/write'))
-            }
+            className="w-[150px] flex items-center h-[52px] cursor-pointer"
+            onClick={() => handleProtectedRoute('/posts/write')}
           >
-            <SvgIcon
-              name="write"
-              size={36}
-              color={
-                isSearchOpen || isNotificationOpen
-                  ? '#999999'
-                  : iconColor(isWrite)
-              }
-            />
-            <span
-              className={`ml-[24px] text-[16px] ${
-                isSearchOpen || isNotificationOpen
-                  ? 'text-[var(--grayscale-40)]'
-                  : textColor(isWrite)
-              }`}
-            >
+            <SvgIcon name="write" size={36} color={iconColor(isWrite)} />
+            <span className={`ml-[24px] text-[16px] ${textColor(isWrite)}`}>
               게시글 작성
             </span>
           </div>
 
           {/* 마이페이지 (로그인 필요) */}
           <div
-            className={`w-[150px] flex items-center h-[52px] pb-[20px] ${
-              isSearchOpen || isNotificationOpen
-                ? 'opacity-30 pointer-events-none'
-                : 'cursor-pointer'
-            }`}
-            onClick={() => handleProtectedRoute(() => router.push('/my_page'))}
+            className="w-[150px] flex items-center h-[52px] pb-[20px] cursor-pointer"
+            onClick={() => handleProtectedRoute('/my_page')}
           >
-            <SvgIcon
-              name="my_page"
-              size={36}
-              color={
-                isSearchOpen || isNotificationOpen
-                  ? '#999999'
-                  : iconColor(isMyPage)
-              }
-            />
-            <span
-              className={`ml-[24px] text-[16px] ${
-                isSearchOpen || isNotificationOpen
-                  ? 'text-[var(--grayscale-40)]'
-                  : textColor(isMyPage)
-              }`}
-            >
+            <SvgIcon name="my_page" size={36} color={iconColor(isMyPage)} />
+            <span className={`ml-[24px] text-[16px] ${textColor(isMyPage)}`}>
               마이페이지
             </span>
           </div>
@@ -300,7 +261,9 @@ export default function TabBar() {
         <div className="w-[198px] h-[64px] flex items-center justify-end text-[16px] text-right pr-6">
           <button
             className="text-[var(--grayscale-60)] cursor-pointer"
-            onClick={() => (isAuthenticated ? logout() : router.push('/'))}
+            onClick={() =>
+              isAuthenticated ? handleLogout() : navigateToPage('/')
+            }
           >
             {isAuthenticated ? '로그아웃' : '로그인'}
           </button>
@@ -315,120 +278,58 @@ export default function TabBar() {
       <div className="flex justify-around items-center h-full px-4">
         {/* 홈 */}
         <button
-          onClick={() => router.push('/posts')}
-          className={`flex flex-col items-center space-y-1 ${
-            isSearchOpen || isNotificationOpen
-              ? 'opacity-30 pointer-events-none'
-              : ''
-          }`}
+          onClick={() => navigateToPage('/posts')}
+          className="flex flex-col items-center space-y-1"
         >
-          <SvgIcon
-            name="home"
-            size={24}
-            color={
-              isSearchOpen || isNotificationOpen ? '#999999' : iconColor(isHome)
-            }
-          />
-          <span
-            className={`text-[10px] ${isSearchOpen || isNotificationOpen ? 'text-[var(--grayscale-40)]' : textColor(isHome)}`}
-          >
-            홈
-          </span>
+          <SvgIcon name="home" size={24} color={iconColor(isHome)} />
+          <span className={`text-[10px] ${textColor(isHome)}`}>홈</span>
         </button>
 
         {/* 검색 */}
         <button
-          onClick={toggleSearch}
-          className={`flex flex-col items-center space-y-1 ${
-            isNotificationOpen ? 'opacity-30 pointer-events-none' : ''
-          }`}
+          onClick={handleSearchClick}
+          className="flex flex-col items-center space-y-1"
         >
-          <SvgIcon
-            name="search"
-            size={24}
-            color={isNotificationOpen ? '#999999' : iconColor(isSearchOpen)}
-          />
-          <span
-            className={`text-[10px] ${isNotificationOpen ? 'text-[var(--grayscale-40)]' : textColor(isSearchOpen)}`}
-          >
-            검색
-          </span>
+          <SvgIcon name="search" size={24} color={iconColor(isSearchOpen)} />
+          <span className={`text-[10px] ${textColor(isSearchOpen)}`}>검색</span>
         </button>
 
         {/* 알림 */}
         <button
           onClick={handleNotificationClick}
-          className={`flex flex-col items-center space-y-1 ${
-            isSearchOpen ? 'opacity-30 pointer-events-none' : ''
-          }`}
+          className="flex flex-col items-center space-y-1"
         >
           <div className="flex flex-row items-center relative">
             <SvgIcon
               name="alarm"
               size={24}
-              color={isSearchOpen ? '#999999' : iconColor(isNotificationOpen)}
+              color={iconColor(isNotificationOpen)}
             />
             {unreadCount > 0 && (
               <div className="ml-1 w-[8px] h-[8px] bg-red-500 rounded-full absolute top-0 right-0" />
             )}
           </div>
-          <span
-            className={`text-[10px] ${isSearchOpen ? 'text-[var(--grayscale-40)]' : textColor(isNotificationOpen)}`}
-          >
+          <span className={`text-[10px] ${textColor(isNotificationOpen)}`}>
             알림
           </span>
         </button>
 
         {/* 게시글 작성 */}
         <button
-          onClick={() =>
-            handleProtectedRoute(() => router.push('/posts/write'))
-          }
-          className={`flex flex-col items-center space-y-1 ${
-            isSearchOpen || isNotificationOpen
-              ? 'opacity-30 pointer-events-none'
-              : ''
-          }`}
+          onClick={() => handleProtectedRoute('/posts/write')}
+          className="flex flex-col items-center space-y-1"
         >
-          <SvgIcon
-            name="write"
-            size={24}
-            color={
-              isSearchOpen || isNotificationOpen
-                ? '#999999'
-                : iconColor(isWrite)
-            }
-          />
-          <span
-            className={`text-[10px] ${isSearchOpen || isNotificationOpen ? 'text-[var(--grayscale-40)]' : textColor(isWrite)}`}
-          >
-            글쓰기
-          </span>
+          <SvgIcon name="write" size={24} color={iconColor(isWrite)} />
+          <span className={`text-[10px] ${textColor(isWrite)}`}>글쓰기</span>
         </button>
 
         {/* 마이페이지 */}
         <button
-          onClick={() => handleProtectedRoute(() => router.push('/my_page'))}
-          className={`flex flex-col items-center space-y-1 ${
-            isSearchOpen || isNotificationOpen
-              ? 'opacity-30 pointer-events-none'
-              : ''
-          }`}
+          onClick={() => handleProtectedRoute('/my_page')}
+          className="flex flex-col items-center space-y-1"
         >
-          <SvgIcon
-            name="my_page"
-            size={24}
-            color={
-              isSearchOpen || isNotificationOpen
-                ? '#999999'
-                : iconColor(isMyPage)
-            }
-          />
-          <span
-            className={`text-[10px] ${isSearchOpen || isNotificationOpen ? 'text-[var(--grayscale-40)]' : textColor(isMyPage)}`}
-          >
-            마이
-          </span>
+          <SvgIcon name="my_page" size={24} color={iconColor(isMyPage)} />
+          <span className={`text-[10px] ${textColor(isMyPage)}`}>마이</span>
         </button>
       </div>
     </div>
