@@ -1,20 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import UserProfile from '@/components/my_page/user_profile';
 import UserHobby from '@/components/my_page/user_hobby';
 import UserRank from '@/components/my_page/user_rank';
 import UserPost from '@/components/my_page/user_post';
 import Loader from '@/components/common/loader';
-import { userService } from '@/services/api';
+import { userService, authService } from '@/services/api';
+import SvgIcon from '@/components/common/svg_icon';
 
 export default function MyPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [showSnsMenu, setShowSnsMenu] = useState(false);
+  const [socialStatus, setSocialStatus] = useState<{
+    kakao: boolean;
+    google: boolean;
+  }>({
+    kakao: false,
+    google: false,
+  });
+  const snsMenuRef = useRef<HTMLDivElement>(null);
 
   const handleEditProfile = () => {
     router.push('/my_page/edit');
+  };
+
+  const handleSnsMenuClick = async () => {
+    try {
+      const status = await userService.getLoginStatus();
+      setSocialStatus(status);
+      setShowSnsMenu(!showSnsMenu);
+    } catch (error) {
+      console.error('소셜 연동 상태 조회 실패:', error);
+      setShowSnsMenu(!showSnsMenu);
+    }
   };
 
   useEffect(() => {
@@ -35,6 +56,23 @@ export default function MyPage() {
     };
 
     loadData();
+  }, []);
+
+  // 외부 클릭 시 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        snsMenuRef.current &&
+        !snsMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowSnsMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   if (isLoading) {
@@ -61,9 +99,82 @@ export default function MyPage() {
         </div>
 
         <div className="flex justify-end mt-[10px] max-md:mt-1 mb-[40px] mr-[18px] gap-3">
-          <span className="text-sm text-[var(--grayscale-60)] cursor-pointer">
-            SNS 계정 연동
-          </span>
+          <div className="relative" ref={snsMenuRef}>
+            <span
+              className="text-sm text-[var(--grayscale-60)] cursor-pointer hover:text-grayscale-80"
+              onClick={handleSnsMenuClick}
+            >
+              SNS 계정 연동
+            </span>
+
+            {/* SNS 연동 드롭다운 메뉴 */}
+            {showSnsMenu && (
+              <div className="absolute top-8 right-0 bg-grayscale-0 rounded-md shadow-lg w-[180px] border border-grayscale-20 z-10 p-4">
+                <div className="flex flex-col items-center">
+                  <h3 className="text-grayscale-100 text-xs mb-4">
+                    SNS 계정을 연동해보세요.
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 w-full">
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`w-[40px] h-[40px] rounded-md flex items-center justify-center mb-1 ${
+                          socialStatus.kakao
+                            ? 'bg-grayscale-10 cursor-not-allowed'
+                            : 'bg-[#FEE500] hover:bg-[#FEE500]/80 cursor-pointer'
+                        }`}
+                      >
+                        <button
+                          onClick={() => {
+                            if (!socialStatus.kakao) {
+                              const kakaoUrl =
+                                authService.getSocialLoginUrl('kakao');
+                              const urlWithState = `${kakaoUrl}&state=mypage`;
+                              window.location.href = urlWithState;
+                            }
+                          }}
+                          disabled={socialStatus.kakao}
+                          className="w-full h-full flex items-center justify-center"
+                        >
+                          <SvgIcon name="kakao" size={24} color="#000000" />
+                        </button>
+                      </div>
+                      <span className="text-[10px] text-grayscale-100 text-center">
+                        {socialStatus.kakao ? '연결완료' : '연결하기'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`w-[40px] h-[40px] rounded-md flex items-center justify-center mb-1 ${
+                          socialStatus.google
+                            ? 'bg-grayscale-10 cursor-not-allowed'
+                            : 'bg-grayscale-0 hover:bg-grayscale-5 cursor-pointer'
+                        } border border-grayscale-20`}
+                      >
+                        <button
+                          onClick={() => {
+                            if (!socialStatus.google) {
+                              const googleUrl =
+                                authService.getSocialLoginUrl('google');
+                              const urlWithState = `${googleUrl}&state=mypage`;
+                              window.location.href = urlWithState;
+                            }
+                          }}
+                          disabled={socialStatus.google}
+                          className="w-full h-full flex items-center justify-center"
+                        >
+                          <SvgIcon name="google" size={24} />
+                        </button>
+                      </div>
+                      <span className="text-[10px] text-grayscale-100 text-center">
+                        {socialStatus.google ? '연결완료' : '연결하기'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           <span className="text-sm text-[var(--grayscale-60)]">•</span>
           <button
             onClick={handleEditProfile}

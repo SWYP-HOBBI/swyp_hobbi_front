@@ -10,7 +10,7 @@ export const HOBBY_MAIN_CATEGORIES = {
   ANIMALS_PLANTS: '동물/식물',
   COOKING_GOURMET: '요리/미식',
   DANCE: '댄스/무용',
-  SERVICE_SELF_DEVELOPMENT: '봉사/자기개발',
+  SERVICE_SELF_DEVELOPMENT: '봉사/자기계발',
 } as const;
 
 export type HobbyMainCategory =

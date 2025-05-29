@@ -159,14 +159,14 @@ export default function Header() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -10, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    className="absolute right-0 top-[48px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[120px]"
+                    className="absolute right-0 top-[48px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 z-50 min-w-[100px]"
                   >
                     <motion.button
                       initial={{ y: -5, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.1 }}
                       onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-[var(--grayscale-60)] hover:bg-[var(--primary-w80)]"
+                      className="w-full px-5 py-[10px] text-sm text-center text-[var(--grayscale-60)] hover:bg-[var(--primary-w80)] rounded-lg"
                     >
                       로그아웃
                     </motion.button>
