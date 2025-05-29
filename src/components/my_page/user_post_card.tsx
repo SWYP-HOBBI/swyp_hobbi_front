@@ -35,7 +35,11 @@ export default function UserPostCard({
     <div className="relative">
       {/* 수정 & 삭제 */}
       <div
-        className="absolute right-5 top-4 z-10"
+        className={`
+        absolute right-0 z-10
+        top-0 
+        ${representativeImageUrl ? 'max-md:top-[170px]' : 'max-md:top-1'}
+      `}
         ref={menuRef}
         onClick={(e) => e.stopPropagation()}
       >
@@ -43,7 +47,7 @@ export default function UserPostCard({
           className="cursor-pointer"
           onClick={() => setIsMenuOpen((prev) => !prev)}
         >
-          <SvgIcon name="meatball" color="var(--grayscale-100)" />
+          <SvgIcon name="meatball" />
         </div>
 
         {isMenuOpen && (
@@ -72,11 +76,10 @@ export default function UserPostCard({
           </div>
         )}
       </div>
-
       <Link href={`/posts/${postId}`}>
-        <div className="flex gap-[23px] bg-grayscale-0 border-b border-b-[var(--grayscale-20)] p-5 space-y-4 flex-shrink-0 hover:bg-gray-50 transition">
+        <div className="flex md:flex-row flex-col gap-[23px] pb-5 bg-grayscale-0 border-b border-b-[var(--grayscale-20)] hover:bg-gray-50 transition max-md:w-[350px]">
           {representativeImageUrl && representativeImageUrl.length > 0 && (
-            <div className="w-[140px] h-[140px] relative bg-grayscale-5 flex items-center justify-center rounded-lg">
+            <div className="w-full md:w-[140px] h-[140px] relative bg-grayscale-5 flex items-center justify-center rounded-lg">
               <Image
                 src={representativeImageUrl}
                 fill
@@ -87,36 +90,40 @@ export default function UserPostCard({
             </div>
           )}
 
-          <div className="flex-1">
+          {/* 콘텐츠 영역 */}
+          <div className="flex-1 flex flex-col gap-2 max-md:mt-2 ">
             {/* 제목과 날짜 */}
-            <div className="w-full flex justify-between items-start">
-              <h3 className="text-xl font-semibold">{postTitle}</h3>
-              <span className="text-xs text-grayscale-60 mr-10">
-                {formatDate(createdAt)}
-              </span>
+            <div className="flex justify-between">
+              <h3 className="text-sm md:text-xl font-semibold">{postTitle}</h3>
+              <div className="flex items-center justify-center">
+                <span className="text-xs text-grayscale-60 mr-9">
+                  {formatDate(createdAt)}
+                </span>
+              </div>
             </div>
 
             {/* 본문 */}
-            <p className="text-grayscale-100 h-[80px] text-sm line-clamp-3 break-all overflow-hidden">
+            <p className="min-h-[50px] text-sm line-clamp-3 break-all overflow-hidden">
               {postContents}
             </p>
 
-            {/* 태그 + 좋아요/댓글 */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mt-3">
+              {/* 태그 */}
               <div className="flex gap-2 flex-wrap">
                 {postHobbyTags.map((tag, index) => (
                   <Tag key={index} label={tag} variant="white" />
                 ))}
               </div>
 
-              <div className="flex items-center space-x-4 text-grayscale-60">
+              {/* 좋아요 + 댓글 */}
+              <div className="flex items-center space-x-4 text-grayscale-60 mt-1 md:mt-0 self-end ">
                 <div className="flex items-center space-x-1">
                   <span>좋아요:</span>
-                  <span>{likeCount}</span>
+                  <span>{likeCount}개</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span>댓글:</span>
-                  <span>{commentCount}</span>
+                  <span>{commentCount}개</span>
                 </div>
               </div>
             </div>
