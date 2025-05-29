@@ -40,8 +40,8 @@ export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   userId: number;
-  hobbyTags: string[];
-  nickname: string;
+  hobbyTags?: string[];
+  nickname?: string;
 }
 
 // 회원가입 폼 데이터 타입

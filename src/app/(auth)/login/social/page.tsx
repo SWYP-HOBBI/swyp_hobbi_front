@@ -59,8 +59,7 @@ export default function SocialLoginPage() {
 
       // 로그인 성공 후 계정 연동 팝업
       openModal({
-        title: '계정 연동',
-        message: '기존 계정과 연동하시겠습니까?',
+        message: '기존 계정과\n연동하시겠습니까?',
         confirmText: '연동하기',
         cancelText: '다음에 하기',
         showCancelButton: true,
@@ -73,11 +72,15 @@ export default function SocialLoginPage() {
               title: '오류',
               message: '계정 연동 중 오류가 발생했습니다.',
               confirmText: '확인',
+              cancelText: '닫기',
+              showCancelButton: true,
+              onConfirm: () => {
+                router.push('/login/social');
+              },
             });
           }
         },
         onCancel: () => {
-          // 연동하지 않고 그대로 로그인 상태 유지
           router.push('/posts');
         },
       });
