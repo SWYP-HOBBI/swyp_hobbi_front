@@ -136,7 +136,7 @@ export default function TabBar() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -20, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="absolute left-[180px] top-[20px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 py-2 z-50 min-w-[92px] text-sm"
+                className="absolute left-[180px] top-[20px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100  z-50 min-w-[120px] text-center text-sm"
               >
                 <motion.button
                   initial={{ x: -10, opacity: 0 }}
@@ -146,10 +146,10 @@ export default function TabBar() {
                     setFeedType('all');
                     setShowFeedMenu(false);
                   }}
-                  className={`w-full px-4 py-2 text-left hover:bg-[var(--primary-w80)] ${
+                  className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-t-lg  ${
                     feedType === 'all'
-                      ? 'text-[var(--primary)] font-medium'
-                      : 'text-[var(--grayscale-60)]'
+                      ? 'text-[var(--primary)] font-medium '
+                      : 'text-[var(--grayscale-40)]'
                   }`}
                 >
                   전체 피드
@@ -162,10 +162,10 @@ export default function TabBar() {
                     setFeedType('hobby');
                     setShowFeedMenu(false);
                   }}
-                  className={`w-full px-4 py-2 text-left hover:bg-[var(--primary-w80)] ${
+                  className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-b-lg  ${
                     feedType === 'hobby'
-                      ? 'text-[var(--primary)] font-medium'
-                      : 'text-[var(--grayscale-60)]'
+                      ? 'text-[var(--primary)] font-medium '
+                      : 'text-[var(--grayscale-40)]'
                   }`}
                 >
                   취미 피드
