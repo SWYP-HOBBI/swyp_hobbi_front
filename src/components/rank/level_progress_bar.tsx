@@ -24,7 +24,7 @@ export default function LevelProgressBar({
     >
       {/* 등급 아이콘 */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-        {getLevelIcon(levelRange, 70)}
+        {getLevelIcon(level, 70)}
       </div>
 
       {/* 프로그레스 바 */}
