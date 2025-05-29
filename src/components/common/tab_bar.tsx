@@ -113,8 +113,8 @@ export default function TabBar() {
 
   // PC 버전 탭바
   const DesktopTabBar = () => (
-    <div className="w-[198px] h-screen bg-grayscale-0 sticky top-0 hidden md:flex flex-col z-[9999]">
-      <div className="w-[198px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
+    <div className="w-[240px] h-screen bg-grayscale-0 sticky top-0 hidden md:flex flex-col z-[9999]">
+      <div className="w-[240px] h-[112px] pt-[12px] pb-[5px] flex justify-center items-center">
         <div
           className="flex justify-center items-center cursor-pointer"
           onClick={() => router.push('/posts')}
@@ -123,10 +123,10 @@ export default function TabBar() {
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-between">
-        <div className="w-[198px] h-[412px] flex flex-col justify-between px-6 mt-6">
+        <div className="w-[240px] h-[412px] flex flex-col justify-between px-6 mt-6">
           {/* 홈 */}
           <div className="relative">
-            <div className="w-[150px] flex items-center h-[52px] pt-[20px] cursor-pointer">
+            <div className="w-full flex items-center h-[52px] cursor-pointer">
               <div
                 className="flex items-center flex-1"
                 onClick={() => navigateToPage('/posts')}
@@ -154,7 +154,7 @@ export default function TabBar() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -20, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="absolute left-[180px] top-[20px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100  z-50 min-w-[120px] text-center text-sm"
+                className="absolute left-[222px] top-[20px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100  z-50 min-w-[120px] text-center text-sm"
               >
                 <motion.button
                   initial={{ x: -10, opacity: 0 }}
@@ -194,7 +194,7 @@ export default function TabBar() {
 
           {/* 검색 */}
           <div
-            className="w-[150px] flex items-center h-[52px] cursor-pointer"
+            className="w-full flex items-center h-[52px] cursor-pointer"
             onClick={handleSearchClick}
           >
             <SvgIcon name="search" size={36} color={iconColor(isSearchOpen)} />
@@ -212,7 +212,7 @@ export default function TabBar() {
           {/* 알림 (로그인 필요) */}
           <div
             onClick={handleNotificationClick}
-            className="w-[150px] flex items-center h-[52px] cursor-pointer"
+            className="w-full flex items-center h-[52px] cursor-pointer"
           >
             <SvgIcon
               name="alarm"
@@ -230,14 +230,14 @@ export default function TabBar() {
                 알림
               </span>
               {unreadCount > 0 && (
-                <div className="ml-13 w-[8px] h-[8px] bg-red-500 rounded-full" />
+                <div className="w-[8px] h-[8px] ml-22 bg-red-500 rounded-full" />
               )}
             </div>
           </div>
 
           {/* 게시글 작성 (로그인 필요) */}
           <div
-            className="w-[150px] flex items-center h-[52px] cursor-pointer"
+            className="w-full flex items-center h-[52px] cursor-pointer"
             onClick={() => handleProtectedRoute('/posts/write')}
           >
             <SvgIcon name="write" size={36} color={iconColor(isWrite)} />
@@ -248,7 +248,7 @@ export default function TabBar() {
 
           {/* 마이페이지 (로그인 필요) */}
           <div
-            className="w-[150px] flex items-center h-[52px] pb-[20px] cursor-pointer"
+            className="w-full flex items-center h-[52px] cursor-pointer"
             onClick={() => handleProtectedRoute('/my_page')}
           >
             <SvgIcon name="my_page" size={36} color={iconColor(isMyPage)} />
@@ -258,7 +258,7 @@ export default function TabBar() {
           </div>
         </div>
 
-        <div className="w-[198px] h-[64px] flex items-center justify-end text-[16px] text-right pr-6">
+        <div className="w-full h-[64px] flex items-center justify-end text-[16px] text-right pr-6">
           <button
             className="text-[var(--grayscale-60)] cursor-pointer"
             onClick={() =>
