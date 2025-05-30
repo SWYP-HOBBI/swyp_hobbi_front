@@ -2,17 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import UserProfile from '@/components/my_page/user_profile';
 import UserHobby from '@/components/my_page/user_hobby';
 import UserRank from '@/components/my_page/user_rank';
 import UserPost from '@/components/my_page/user_post';
-import Loader from '@/components/common/loader';
-import { userService, authService } from '@/services/api';
+import GlobalError from '@/app/global-error';
 import SvgIcon from '@/components/common/svg_icon';
+import { userService, authService } from '@/services/api';
+import Loader from '@/components/common/loader';
 
 export default function MyPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
   const [showSnsMenu, setShowSnsMenu] = useState(false);
   const [socialStatus, setSocialStatus] = useState<{
     kakao: boolean;
@@ -22,6 +23,19 @@ export default function MyPage() {
     google: false,
   });
   const snsMenuRef = useRef<HTMLDivElement>(null);
+
+  // React Query를 사용하여 데이터 페칭
+  const { data, status, error, refetch } = useQuery({
+    queryKey: ['myPageData'],
+    queryFn: async () => {
+      const [userProfileData, userPostData, userRankData] = await Promise.all([
+        userService.getMyPageInfo(),
+        userService.getMyPosts(),
+        userService.getUserRank(),
+      ]);
+      return { userProfileData, userPostData, userRankData };
+    },
+  });
 
   const handleEditProfile = () => {
     router.push('/my_page/edit');
@@ -37,26 +51,6 @@ export default function MyPage() {
       setShowSnsMenu(!showSnsMenu);
     }
   };
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const [userProfileData, userPostData, userRankData] = await Promise.all(
-          [
-            userService.getMyPageInfo(),
-            userService.getMyPosts(),
-            userService.getUserRank(),
-          ],
-        );
-      } catch (error) {
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
 
   // 외부 클릭 시 메뉴 닫기
   useEffect(() => {
@@ -75,12 +69,18 @@ export default function MyPage() {
     };
   }, []);
 
-  if (isLoading) {
+  // 로딩 상태 처리
+  if (status === 'pending') {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader />
       </div>
     );
+  }
+
+  // 에러 상태 처리
+  if (status === 'error') {
+    return <GlobalError error={error} reset={refetch} />;
   }
 
   return (

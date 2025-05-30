@@ -14,8 +14,8 @@ import { useFeedStore } from '@/store/feed';
 import PostCard from '@/components/post/post_card';
 import PostCardSkeleton from '@/components/post/post_card_skeleton';
 import { PostCardProps, InfinitePostsResponse } from '@/types/post';
-import Loader from '@/components/common/loader';
 import SvgIcon from '@/components/common/svg_icon';
+import GlobalError from '@/app/global-error';
 
 /**
  * 게시글 목록 페이지
@@ -33,31 +33,38 @@ export default function PostsPage() {
   const observerRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfiniteQuery({
-      queryKey: ['posts', userId, feedType],
-      queryFn: async ({ pageParam }) => {
-        if (!isAuthenticated) {
-          // 비로그인 사용자는 항상 전체 피드만 볼 수 있음
-          return await postService.getPublicPosts({
-            cursor_id: pageParam ? Number(pageParam) : undefined,
-            limit: 15,
-          });
-        }
-
-        // 로그인 사용자의 피드 타입에 따른 조회
-        return await postService.getInfiniteScrollPosts({
-          tagExist: feedType === 'hobby', // 취미 피드일 때만 true
-          lastPostId: pageParam ? Number(pageParam) : undefined,
-          pageSize: 15,
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    error,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['posts', userId, feedType],
+    queryFn: async ({ pageParam }) => {
+      if (!isAuthenticated) {
+        // 비로그인 사용자는 항상 전체 피드만 볼 수 있음
+        return await postService.getPublicPosts({
+          cursor_id: pageParam ? Number(pageParam) : undefined,
+          limit: 15,
         });
-      },
-      getNextPageParam: (lastPage) => {
-        if (!lastPage || lastPage.length < 15) return undefined;
-        return lastPage[lastPage.length - 1].postId;
-      },
-      initialPageParam: undefined as string | undefined,
-    });
+      }
+
+      // 로그인 사용자의 피드 타입에 따른 조회
+      return await postService.getInfiniteScrollPosts({
+        tagExist: feedType === 'hobby', // 취미 피드일 때만 true
+        lastPostId: pageParam ? Number(pageParam) : undefined,
+        pageSize: 15,
+      });
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < 15) return undefined;
+      return lastPage[lastPage.length - 1].postId;
+    },
+    initialPageParam: undefined as string | undefined,
+  });
 
   // 좋아요 mutation
   const likeMutation = useMutation({
@@ -181,7 +188,7 @@ export default function PostsPage() {
     );
 
   // 에러 상태 처리
-  if (status === 'error') return <div>에러가 발생했습니다.</div>;
+  if (status === 'error') return <GlobalError error={error} reset={refetch} />;
 
   return (
     <div className="flex justify-center my-12 max-md:my-6 mx-auto">

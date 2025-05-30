@@ -8,6 +8,8 @@ import { useModalStore } from '@/store/modal';
 import { userService, postService } from '@/services/api';
 import UserPostCard from '@/components/my_page/user_post_card';
 import { MyPostsResponse } from '@/types/my_page';
+import GlobalError from '@/app/global-error';
+import Loader from '../common/loader';
 
 export default function UserPost() {
   const { userId } = useAuthStore();
@@ -16,7 +18,7 @@ export default function UserPost() {
   const { openModal } = useModalStore();
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ['userPosts', userId],
       queryFn: async ({ pageParam }) =>
@@ -46,8 +48,6 @@ export default function UserPost() {
     if (observerRef.current) observer.observe(observerRef.current);
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  if (status === 'error') return <div>에러 발생</div>;
 
   return (
     <div className="w-[960px] max-md:w-[390px] bg-grayscale-0 rounded-[24px] p-5 space-y-8 mb-[40px]">
