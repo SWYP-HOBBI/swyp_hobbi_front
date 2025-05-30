@@ -4,9 +4,11 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/store/auth';
 import { connectNotificationSSE } from '@/services/sse';
 import { usePathname } from 'next/navigation';
+import { useNotificationStore } from '@/store/notification';
 
 export default function SSEHandler() {
   const { isAuthenticated } = useAuthStore();
+  const { setUnreadCount } = useNotificationStore();
   const pathname = usePathname();
 
   const isAuthPage =
@@ -25,6 +27,12 @@ export default function SSEHandler() {
         eventSource = connectNotificationSSE((data: string) => {
           try {
             retryCount = 0;
+            const parsed = JSON.parse(data);
+            const count = Number(parsed.unreadCount ?? parsed);
+
+            if (!isNaN(count)) {
+              setUnreadCount(count);
+            }
           } catch (error) {
             console.error('SSE 메시지 파싱 에러:', error);
           }

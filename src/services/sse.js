@@ -1,8 +1,10 @@
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useAuthStore } from '@/store/auth';
+import { useNotificationStore } from '@/store/notification';
 
 export const connectNotificationSSE = (onMessage) => {
   const { accessToken } = useAuthStore.getState();
+  const { setUnreadCount } = useNotificationStore.getState();
 
   if (!accessToken) {
     console.warn(' Access token is missing. SSE connection aborted.');
@@ -20,8 +22,19 @@ export const connectNotificationSSE = (onMessage) => {
   eventSource.onopen = () => {};
 
   eventSource.onmessage = (event) => {
-    onMessage(event.data);
+    console.log('[SSE] onmessage:', event.data);
   };
+
+  eventSource.addEventListener('notification', (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (typeof data.unreadCount === 'number') {
+        setUnreadCount(data.unreadCount);
+      }
+    } catch (err) {
+      console.error('Failed to parse SSE data:', err);
+    }
+  });
 
   eventSource.onerror = (error) => {
     console.error('EventSource failed:', error);
