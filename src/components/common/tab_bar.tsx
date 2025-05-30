@@ -1,23 +1,26 @@
 'use client';
+
 import { motion } from 'framer-motion';
 import SvgIcon from './svg_icon';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import { useSearchStore } from '@/store/search';
-import { useState, useEffect } from 'react';
-import { notificationService } from '@/services/api';
+import { useEffect, useState } from 'react';
 import { useNotificationStore } from '@/store/notification';
 import { useFeedStore } from '@/store/feed';
+import { notificationService } from '@/services/api';
 
 export default function TabBar() {
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+
   const router = useRouter();
   const pathname = usePathname();
   const { logout, isAuthenticated } = useAuthStore();
   const { openModal } = useModalStore();
   const { toggleSearch, isSearchOpen } = useSearchStore();
-  const { toggleNotification, isNotificationOpen } = useNotificationStore();
-  const [unreadCount, setUnreadCount] = useState(0); //알림 개수
+  const { toggleNotification, isNotificationOpen, setUnreadCount } =
+    useNotificationStore();
   const { feedType, setFeedType } = useFeedStore();
   const [showFeedMenu, setShowFeedMenu] = useState(false);
 
@@ -28,12 +31,8 @@ export default function TabBar() {
 
   // 라우터 이동 시 검색/알림 닫기 함수
   const closeSearchAndNotification = () => {
-    if (isSearchOpen) {
-      toggleSearch();
-    }
-    if (isNotificationOpen) {
-      toggleNotification();
-    }
+    if (isSearchOpen) toggleSearch();
+    if (isNotificationOpen) toggleNotification();
   };
 
   // 페이지 이동 함수
@@ -64,17 +63,13 @@ export default function TabBar() {
         onConfirm: () => navigateToPage('/'),
       });
     } else {
-      if (isSearchOpen) {
-        toggleSearch();
-      }
+      if (isSearchOpen) toggleSearch();
       toggleNotification();
     }
   };
 
   const handleSearchClick = () => {
-    if (isNotificationOpen) {
-      toggleNotification();
-    }
+    if (isNotificationOpen) toggleNotification();
     toggleSearch();
   };
 
@@ -97,6 +92,7 @@ export default function TabBar() {
 
   //알림 개수 조회
   useEffect(() => {
+    if (!isAuthenticated) return;
     const fetchUnreadCount = async () => {
       try {
         const response = await notificationService.getUnreadCount();
@@ -105,11 +101,8 @@ export default function TabBar() {
         console.error('알림 수 조회 실패:', error);
       }
     };
-
-    if (isAuthenticated) {
-      fetchUnreadCount();
-    }
-  }, [isAuthenticated]);
+    fetchUnreadCount();
+  }, [isAuthenticated, setUnreadCount]);
 
   // PC 버전 탭바
   const DesktopTabBar = () => (
