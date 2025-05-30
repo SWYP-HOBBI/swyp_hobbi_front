@@ -8,6 +8,7 @@ import { notificationService } from '@/services/api';
 import { Notification, NotificationListProps } from '@/types/notification';
 import { formatDate } from '@/utils/date';
 import { useNotificationStore } from '@/store/notification';
+import GlobalError from '@/app/global-error';
 
 export default function NotificationList({
   showCheckbox,
@@ -21,26 +22,30 @@ export default function NotificationList({
   const { decrementUnreadCount } = useNotificationStore();
 
   // 알림 데이터 가져오기
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfiniteQuery<Notification[], Error>({
-      queryKey: ['notifications'],
-      queryFn: async ({ pageParam }) => {
-        const lastNotificationId = pageParam ? Number(pageParam) : undefined;
-        return await notificationService.getNotifications(
-          lastNotificationId,
-          15,
-        );
-      },
-      getNextPageParam: (lastPage) => {
-        if (!lastPage || lastPage.length < 15) return undefined;
-        return lastPage[lastPage.length - 1].notificationId;
-      },
-      initialPageParam: undefined,
-      // 실시간 업데이트를 위한 설정 추가
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
-      staleTime: 0,
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    error,
+    refetch,
+  } = useInfiniteQuery<Notification[], Error>({
+    queryKey: ['notifications'],
+    queryFn: async ({ pageParam }) => {
+      const lastNotificationId = pageParam ? Number(pageParam) : undefined;
+      return await notificationService.getNotifications(lastNotificationId, 15);
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < 15) return undefined;
+      return lastPage[lastPage.length - 1].notificationId;
+    },
+    initialPageParam: undefined,
+    // 실시간 업데이트를 위한 설정 추가
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
 
   // 무한 스크롤 설정
   useEffect(() => {
@@ -100,9 +105,7 @@ export default function NotificationList({
     }
   };
 
-  if (status === 'error') {
-    return <div>에러가 발생했습니다.</div>;
-  }
+  if (status === 'error') return <GlobalError error={error} reset={refetch} />;
 
   if (!data || data.pages[0].length === 0) {
     return (

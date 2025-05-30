@@ -6,6 +6,7 @@ import { PostDetail } from '@/types/post';
 import { postService } from '@/services/api';
 import { useModalStore } from '@/store/modal';
 import PostForm from '@/components/post/post_form';
+import Loader from '@/components/common/loader';
 
 /**
  * 게시글 수정 페이지
@@ -75,7 +76,11 @@ export default function EditPostPage() {
   };
 
   if (isLoading) {
-    return <div className="min-w-[960px] mx-auto my-12 p-9">로딩 중...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
   if (!post) {

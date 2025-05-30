@@ -14,6 +14,7 @@ import Loader from '../common/loader';
 import Button from '../common/button';
 import { DefaultProfile } from '../common/profile';
 import { formatDate } from '@/utils/date';
+import GlobalError from '@/app/global-error';
 
 /**
  * 댓글 데이터 인터페이스
@@ -97,22 +98,29 @@ export default function PostComment({
   const userId = useAuthStore((state) => state.userId);
   const observerRef = useRef<HTMLDivElement>(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfiniteQuery<Comment[], Error, InfiniteData<Comment[]>>({
-      queryKey: ['comments', postId],
-      queryFn: ({ pageParam }) => {
-        return commentService.getComments({
-          postId,
-          lastCommentId: pageParam as number,
-          pageSize: 15,
-        });
-      },
-      getNextPageParam: (lastPage) => {
-        if (!lastPage || lastPage.length < 15) return undefined;
-        return lastPage[lastPage.length - 1].commentId;
-      },
-      initialPageParam: undefined,
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    error,
+    refetch,
+  } = useInfiniteQuery<Comment[], Error, InfiniteData<Comment[]>>({
+    queryKey: ['comments', postId],
+    queryFn: ({ pageParam }) => {
+      return commentService.getComments({
+        postId,
+        lastCommentId: pageParam as number,
+        pageSize: 15,
+      });
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < 15) return undefined;
+      return lastPage[lastPage.length - 1].commentId;
+    },
+    initialPageParam: undefined,
+  });
 
   // 무한 스크롤 구현
   useEffect(() => {
@@ -291,7 +299,7 @@ export default function PostComment({
         <Loader />
       </div>
     );
-  if (status === 'error') return <div>에러가 발생했습니다.</div>;
+  if (status === 'error') return <GlobalError error={error} reset={refetch} />;
 
   const handleReplyTo = (comment: Comment) => {
     setReplyTo({
