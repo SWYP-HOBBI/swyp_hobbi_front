@@ -38,6 +38,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <div id="modal-portal" />
+          <div id="splash-screen" />
           <SSEHandler />
         </Providers>
       </body>
