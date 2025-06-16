@@ -1,6 +1,7 @@
 'use client';
 
 import SvgIcon from './svg_icon';
+import clsx from 'clsx';
 
 export type TagVariant = 'primary' | 'white' | 'gray';
 
@@ -26,12 +27,11 @@ export default function Tag({
 }: TagProps) {
   return (
     <span
-      className={`
-        px-2 py-1 rounded-full text-xs cursor-pointer font-medium
-        flex items-center gap-1 border button_transition whitespace-nowrap
-        ${variantStyles[variant]}
-        ${className}
-      `}
+      className={clsx(
+        'px-2 py-1 rounded-full text-xs cursor-pointer font-medium flex items-center gap-1 border button_transition whitespace-nowrap',
+        variantStyles[variant],
+        className,
+      )}
     >
       {label}
       {onDelete && (
