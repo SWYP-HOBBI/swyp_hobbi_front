@@ -1,6 +1,6 @@
 <div align="center">
   
-[HOBBi 바로가기](https://swyp-hobbi-front.vercel.app/)
+[![Storybook](https://img.shields.io/badge/Storybook%20-FF4785?style=flat-square&logo=storybook&logoColor=white)](https://685004915b4c4c7b97cd81df-xyulgjxvab.chromatic.com)
 
 </div>
 
