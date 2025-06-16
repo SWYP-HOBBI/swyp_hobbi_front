@@ -4,14 +4,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import SvgIcon from '@/components/common/svg_icon';
 import { userService } from '@/services/api';
 import { getLevelIcon } from '../rank/level_badge';
+import clsx from 'clsx';
 
+/**
+ * 내 프로필(아바타) 컴포넌트
+ * - imageUrl: 프로필 이미지 URL
+ * - editable: 편집 가능 여부(이미지 업로드)
+ * - level: 레벨(뱃지)
+ * - className: 추가 클래스(확장성)
+ */
 interface MyProfileProps {
   imageUrl?: string;
   editable?: boolean;
   level?: number;
+  className?: string;
 }
 
-export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
+export default function MyProfile({
+  imageUrl,
+  editable,
+  className,
+}: MyProfileProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(imageUrl);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +82,11 @@ export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
 
   return (
     <div
-      className="relative w-[124px] h-[124px] rounded-full bg-grayscale-10 flex items-center justify-center cursor-pointer"
+      className={clsx(
+        'relative w-[124px] h-[124px] rounded-full bg-grayscale-10 flex items-center justify-center',
+        editable && 'cursor-pointer',
+        className,
+      )}
       onClick={handleClick}
     >
       {showDefaultProfile ? (
@@ -112,7 +129,9 @@ export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
       {editable && (
         <button
           type="button"
-          className="absolute bottom-0 right-0 w-[36px] h-[36px] rounded-full bg-grayscale-40 flex items-center justify-center"
+          className={clsx(
+            'absolute bottom-0 right-0 w-[36px] h-[36px] rounded-full bg-grayscale-40 flex items-center justify-center',
+          )}
         >
           <SvgIcon name="camera" size={24} color="var(--grayscale-60)" />
         </button>
@@ -129,7 +148,11 @@ export default function MyProfile({ imageUrl, editable }: MyProfileProps) {
       )}
 
       {isLoading && (
-        <div className="absolute top-0 left-0 w-full h-full bg-gray-500 opacity-50 flex items-center justify-center">
+        <div
+          className={clsx(
+            'absolute top-0 left-0 w-full h-full bg-gray-500 opacity-50 flex items-center justify-center',
+          )}
+        >
           <span className="text-white">업로드 중...</span>
         </div>
       )}
