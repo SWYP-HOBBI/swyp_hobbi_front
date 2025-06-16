@@ -39,10 +39,11 @@
 ![React](https://img.shields.io/badge/React-v19-61DAFB?style=flat-square&logo=React&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-v5-007ACC?style=flat-square&logo=TypeScript&logoColor=white)
 ![TanStack](https://img.shields.io/badge/TanStack-v5.74.4-34B700?style=flat-square&logo=ReactQuery&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand-v5.0.3-FF4785?style=flat-square&logo=zustand&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-v5.0.3-FF4710?style=flat-square&logo=zustand&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-EE6B1B?style=flat-square&logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer%20Motion-v12.11.4-00BFFF?style=flat-square&logo=framer&logoColor=white)
 ![Husky](https://img.shields.io/badge/Husky-v9.1.7-6B32A8?style=flat-square&logo=husky&logoColor=white)
+![StoryBook](https://img.shields.io/badge/StoryBook-v9.0.9-FF4785?style=flat-square&logo=StoryBook&logoColor=white)
 
 
 ## 🏘️ TEAM
@@ -191,6 +192,20 @@
  ┃ ┣ 📜signup.ts
  ┃ ┣ 📜toast.ts
  ┃ ┗ 📜user_profile.ts
+ ┣ 📂stories
+ ┃ ┣ 📂assets
+ ┃ ┣ 📜Button.stories.tsx
+ ┃ ┣ 📜FloatingToast.stories.tsx
+ ┃ ┣ 📜HobbySelector.stories.tsx
+ ┃ ┣ 📜Input.stories.tsx
+ ┃ ┣ 📜Loader.stories.tsx
+ ┃ ┣ 📜MbtiButton.stories.tsx
+ ┃ ┣ 📜MyProfile.stories.tsx
+ ┃ ┣ 📜Profile.stories.tsx
+ ┃ ┣ 📜SearchBar.stories.tsx
+ ┃ ┣ 📜SocialButton.stories.tsx
+ ┃ ┣ 📜SvgIcon.stories.tsx
+ ┃ ┗ 📜Tag.stories.tsx
  ┣ 📂types
  ┃ ┣ 📜auth.ts
  ┃ ┣ 📜challenge.ts
