@@ -9,6 +9,7 @@ import { useHobbyStore } from '@/store/hobby';
 import Tag, { TagVariant } from './tag';
 import Button from './button';
 import SvgIcon from './svg_icon';
+import clsx from 'clsx';
 
 interface HobbySelectorProps {
   className?: string;
@@ -51,13 +52,13 @@ export const CustomDropdownButton = ({
         type="button"
         onClick={onToggle}
         disabled={disabled}
-        className={`flex items-center text-sm max-md:text-xs font-medium w-full p-5 rounded-lg h-[60px] max-md:h-[48px] whitespace-normal break-keep ${
+        className={clsx(
+          'flex items-center text-sm max-md:text-xs font-medium w-full p-5 rounded-lg h-[60px] max-md:h-[48px] whitespace-normal break-keep border border-grayscale-20',
           disabled
             ? 'bg-grayscale-10 text-grayscale-40'
-            : 'bg-grayscale-0 text-grayscale-60'
-        } border border-grayscale-20 ${
-          isSearchMode ? 'justify-center' : 'justify-between'
-        }`}
+            : 'bg-grayscale-0 text-grayscale-60',
+          isSearchMode ? 'justify-center' : 'justify-between',
+        )}
       >
         {isSearchMode ? (
           <div className="flex items-center gap-1 w-full justify-center">
@@ -67,7 +68,11 @@ export const CustomDropdownButton = ({
             <SvgIcon
               name="arrow_down"
               size={24}
-              className={`transform ${isOpen ? 'rotate-180' : 'rotate-0'} flex-shrink-0`}
+              className={clsx(
+                'transform',
+                isOpen ? 'rotate-180' : 'rotate-0',
+                'flex-shrink-0',
+              )}
             />
           </div>
         ) : (
@@ -78,7 +83,12 @@ export const CustomDropdownButton = ({
             <SvgIcon
               name="arrow_down"
               size={24}
-              className={`transform ${isOpen ? 'rotate-180' : 'rotate-0'} flex-shrink-0 ml-2`}
+              className={clsx(
+                'transform',
+                isOpen ? 'rotate-180' : 'rotate-0',
+                'flex-shrink-0',
+                'ml-2',
+              )}
             />
           </>
         )}
@@ -111,9 +121,10 @@ export const CustomDropdownItem = ({
   return (
     <div
       onClick={onClick}
-      className={`flex items-center p-3 cursor-pointer hover:bg-grayscale-5 ${
-        isSelected ? 'bg-grayscale-5' : ''
-      }`}
+      className={clsx(
+        'flex items-center p-3 cursor-pointer hover:bg-grayscale-5',
+        isSelected && 'bg-grayscale-5',
+      )}
     >
       {showCheckbox && (
         <div className="mr-3">
@@ -218,10 +229,12 @@ export default function HobbySelector({
     : '';
 
   return (
-    <div className={`${className}`}>
+    <div className={clsx(className)}>
       <div className="flex items-center gap-3 max-md:gap-1">
         <div
-          className={`${isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3'}`}
+          className={clsx(
+            isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3',
+          )}
         >
           <CustomDropdownButton
             value={selectedMainCategoryLabel}
@@ -248,7 +261,9 @@ export default function HobbySelector({
         </div>
 
         <div
-          className={`${isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3'}`}
+          className={clsx(
+            isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3',
+          )}
         >
           <CustomDropdownButton
             value={selectedSubCategories}
@@ -276,7 +291,10 @@ export default function HobbySelector({
 
         <Button
           variant="primary"
-          className={`${isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3'} max-md:text-xs`}
+          className={clsx(
+            isSearchMode ? 'w-[122px] max-md:w-1/3' : 'flex-1 max-md:w-1/3',
+            'max-md:text-xs',
+          )}
           onClick={handleAddTags}
           disabled={
             !selectedMainCategory ||

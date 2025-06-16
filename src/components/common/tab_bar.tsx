@@ -10,7 +10,14 @@ import { useEffect, useState } from 'react';
 import { useNotificationStore } from '@/store/notification';
 import { useFeedStore } from '@/store/feed';
 import { notificationService } from '@/services/api';
+import clsx from 'clsx';
 
+/**
+ * 하단/사이드 TabBar(네비게이션) 컴포넌트
+ * - PC/모바일 반응형 지원
+ * - 알림, 검색, 피드, 마이페이지 등 주요 경로 이동
+ * - 상태/스토어 연동
+ */
 export default function TabBar() {
   const unreadCount = useNotificationStore((state) => state.unreadCount);
 
@@ -86,9 +93,12 @@ export default function TabBar() {
   const iconColor = (active: boolean) =>
     active ? 'var(--primary)' : 'var(--grayscale-40)';
   const textColor = (active: boolean) =>
-    active
-      ? 'text-[var(--primary-b60)] font-semibold'
-      : 'text-[var(--grayscale-40)]';
+    clsx(
+      'text-[16px]',
+      active
+        ? 'text-[var(--primary-b60)] font-semibold'
+        : 'text-[var(--grayscale-40)]',
+    );
 
   //알림 개수 조회
   useEffect(() => {
@@ -125,9 +135,7 @@ export default function TabBar() {
                 onClick={() => navigateToPage('/posts')}
               >
                 <SvgIcon name="home" size={36} color={iconColor(isHome)} />
-                <span className={`ml-[24px] text-[16px] ${textColor(isHome)}`}>
-                  홈
-                </span>
+                <span className={clsx('ml-[24px]', textColor(isHome))}>홈</span>
               </div>
               <button
                 onClick={(e) => {
@@ -135,6 +143,7 @@ export default function TabBar() {
                   setShowFeedMenu(!showFeedMenu);
                 }}
                 className="ml-2 transform transition-transform duration-200 -rotate-90"
+                aria-label="피드 메뉴 열기"
               >
                 <SvgIcon name="arrow_down" size={24} />
               </button>
@@ -157,11 +166,12 @@ export default function TabBar() {
                     setFeedType('all');
                     setShowFeedMenu(false);
                   }}
-                  className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-t-lg  ${
+                  className={clsx(
+                    'w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-t-lg',
                     feedType === 'all'
-                      ? 'text-[var(--primary)] font-medium '
-                      : 'text-[var(--grayscale-40)]'
-                  }`}
+                      ? 'text-[var(--primary)] font-medium'
+                      : 'text-[var(--grayscale-40)]',
+                  )}
                 >
                   전체 피드
                 </motion.button>
@@ -173,11 +183,12 @@ export default function TabBar() {
                     setFeedType('hobby');
                     setShowFeedMenu(false);
                   }}
-                  className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-b-lg  ${
+                  className={clsx(
+                    'w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-b-lg',
                     feedType === 'hobby'
-                      ? 'text-[var(--primary)] font-medium '
-                      : 'text-[var(--grayscale-40)]'
-                  }`}
+                      ? 'text-[var(--primary)] font-medium'
+                      : 'text-[var(--grayscale-40)]',
+                  )}
                 >
                   취미 피드
                 </motion.button>
@@ -191,13 +202,7 @@ export default function TabBar() {
             onClick={handleSearchClick}
           >
             <SvgIcon name="search" size={36} color={iconColor(isSearchOpen)} />
-            <span
-              className={`ml-[24px] text-[16px] ${
-                isSearchOpen
-                  ? 'text-[var(--primary-b60)] font-semibold'
-                  : 'text-[var(--grayscale-40)]'
-              }`}
-            >
+            <span className={clsx('ml-[24px]', textColor(isSearchOpen))}>
               검색
             </span>
           </div>
@@ -210,15 +215,11 @@ export default function TabBar() {
             <SvgIcon
               name="alarm"
               size={36}
-              color={isNotificationOpen ? 'var(--primary)' : '#999999'}
+              color={iconColor(isNotificationOpen)}
             />
             <div className="flex items-center justify-between">
               <span
-                className={`ml-[24px] text-[16px] ${
-                  isNotificationOpen
-                    ? 'text-[var(--primary-b60)] font-semibold'
-                    : 'text-[var(--grayscale-40)]'
-                }`}
+                className={clsx('ml-[24px]', textColor(isNotificationOpen))}
               >
                 알림
               </span>
@@ -234,7 +235,7 @@ export default function TabBar() {
             onClick={() => handleProtectedRoute('/posts/write')}
           >
             <SvgIcon name="write" size={36} color={iconColor(isWrite)} />
-            <span className={`ml-[24px] text-[16px] ${textColor(isWrite)}`}>
+            <span className={clsx('ml-[24px]', textColor(isWrite))}>
               게시글 작성
             </span>
           </div>
@@ -245,7 +246,7 @@ export default function TabBar() {
             onClick={() => handleProtectedRoute('/my_page')}
           >
             <SvgIcon name="my_page" size={36} color={iconColor(isMyPage)} />
-            <span className={`ml-[24px] text-[16px] ${textColor(isMyPage)}`}>
+            <span className={clsx('ml-[24px]', textColor(isMyPage))}>
               마이페이지
             </span>
           </div>
@@ -275,7 +276,7 @@ export default function TabBar() {
           className="flex flex-col items-center space-y-1"
         >
           <SvgIcon name="home" size={24} color={iconColor(isHome)} />
-          <span className={`text-[10px] ${textColor(isHome)}`}>홈</span>
+          <span className={clsx('text-[10px]', textColor(isHome))}>홈</span>
         </button>
 
         {/* 검색 */}
@@ -284,7 +285,9 @@ export default function TabBar() {
           className="flex flex-col items-center space-y-1"
         >
           <SvgIcon name="search" size={24} color={iconColor(isSearchOpen)} />
-          <span className={`text-[10px] ${textColor(isSearchOpen)}`}>검색</span>
+          <span className={clsx('text-[10px]', textColor(isSearchOpen))}>
+            검색
+          </span>
         </button>
 
         {/* 알림 */}
@@ -302,7 +305,7 @@ export default function TabBar() {
               <div className="ml-1 w-[8px] h-[8px] bg-red-500 rounded-full absolute top-0 right-0" />
             )}
           </div>
-          <span className={`text-[10px] ${textColor(isNotificationOpen)}`}>
+          <span className={clsx('text-[10px]', textColor(isNotificationOpen))}>
             알림
           </span>
         </button>
@@ -313,7 +316,9 @@ export default function TabBar() {
           className="flex flex-col items-center space-y-1"
         >
           <SvgIcon name="write" size={24} color={iconColor(isWrite)} />
-          <span className={`text-[10px] ${textColor(isWrite)}`}>글쓰기</span>
+          <span className={clsx('text-[10px]', textColor(isWrite))}>
+            글쓰기
+          </span>
         </button>
 
         {/* 마이페이지 */}
@@ -322,7 +327,7 @@ export default function TabBar() {
           className="flex flex-col items-center space-y-1"
         >
           <SvgIcon name="my_page" size={24} color={iconColor(isMyPage)} />
-          <span className={`text-[10px] ${textColor(isMyPage)}`}>마이</span>
+          <span className={clsx('text-[10px]', textColor(isMyPage))}>마이</span>
         </button>
       </div>
     </div>
