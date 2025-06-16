@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useFeedStore } from '@/store/feed';
 import { useAuthStore } from '@/store/auth';
+import clsx from 'clsx';
 
 export default function Header() {
   const pathname = usePathname();
@@ -39,12 +40,24 @@ export default function Header() {
   if (!shouldShowHeader) return null;
 
   return (
-    <header className="hidden max-md:block w-full h-[64px] bg-grayscale-0 fixed top-0 left-0 z-50 border-b border-[var(--grayscale-10)]">
+    <header
+      className={clsx(
+        'hidden max-md:block w-full h-[64px] bg-grayscale-0 fixed top-0 left-0 z-50 border-b border-[var(--grayscale-10)]',
+      )}
+    >
       <div
-        className={`flex items-center h-full ${isPostWritePage || isMyPage ? 'justify-center' : 'justify-between px-4'}`}
+        className={clsx(
+          'flex items-center h-full',
+          isPostWritePage || isMyPage
+            ? 'justify-center'
+            : 'justify-between px-4',
+        )}
       >
         <div
-          className={`flex items-center relative ${isPostWritePage || isMyPage ? '' : 'justify-between'}`}
+          className={clsx(
+            'flex items-center relative',
+            !(isPostWritePage || isMyPage) && 'justify-between',
+          )}
         >
           {isEditMyPage ? (
             <div className="flex">
@@ -77,9 +90,10 @@ export default function Header() {
                   name="arrow_down"
                   width={24}
                   height={24}
-                  className={`transform transition-transform duration-200 ${
-                    showFeedMenu ? 'rotate-180' : ''
-                  }`}
+                  className={clsx(
+                    'transform transition-transform duration-200',
+                    showFeedMenu && 'rotate-180',
+                  )}
                 />
               </button>
 
@@ -100,11 +114,12 @@ export default function Header() {
                         setFeedType('all');
                         setShowFeedMenu(false);
                       }}
-                      className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-t-lg  ${
+                      className={clsx(
+                        'w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-t-lg',
                         feedType === 'all'
-                          ? 'text-[var(--primary)] font-medium '
-                          : 'text-[var(--grayscale-40)]'
-                      }`}
+                          ? 'text-[var(--primary)] font-medium'
+                          : 'text-[var(--grayscale-40)]',
+                      )}
                     >
                       전체 피드
                     </motion.button>
@@ -116,11 +131,12 @@ export default function Header() {
                         setFeedType('hobby');
                         setShowFeedMenu(false);
                       }}
-                      className={`w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-b-lg  ${
+                      className={clsx(
+                        'w-full px-5 py-[10px] hover:bg-primary-w80 hover:text-primary-b80 rounded-b-lg',
                         feedType === 'hobby'
-                          ? 'text-[var(--primary)] font-medium '
-                          : 'text-[var(--grayscale-40)]'
-                      }`}
+                          ? 'text-[var(--primary)] font-medium'
+                          : 'text-[var(--grayscale-40)]',
+                      )}
                     >
                       취미 피드
                     </motion.button>
