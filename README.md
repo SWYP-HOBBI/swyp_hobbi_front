@@ -40,9 +40,12 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-v5-007ACC?style=flat-square&logo=TypeScript&logoColor=white)
 ![TanStack](https://img.shields.io/badge/TanStack-v5.74.4-34B700?style=flat-square&logo=ReactQuery&logoColor=white)
 ![Zustand](https://img.shields.io/badge/Zustand-v5.0.3-FF4710?style=flat-square&logo=zustand&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-EE6B1B?style=flat-square&logo=tailwindcss&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4.1.10-EE6B1B?style=flat-square&logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer%20Motion-v12.11.4-00BFFF?style=flat-square&logo=framer&logoColor=white)
 ![Husky](https://img.shields.io/badge/Husky-v9.1.7-6B32A8?style=flat-square&logo=husky&logoColor=white)
+![LintStaged](https://img.shields.io/badge/LintStaged-v15.5.1-6B43A8?style=flat-square&logo=LintStaged&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-v3.5.3-9B43A8?style=flat-square&logo=Prettier&logoColor=white)
+![Eslint](https://img.shields.io/badge/Eslint-v9-9A43B8?style=flat-square&logo=Eslint&logoColor=white)
 ![StoryBook](https://img.shields.io/badge/StoryBook-v9.0.9-FF4785?style=flat-square&logo=StoryBook&logoColor=white)
 
 
