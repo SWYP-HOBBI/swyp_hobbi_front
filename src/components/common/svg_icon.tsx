@@ -1,6 +1,6 @@
 import React from 'react';
 
-type IconName =
+export type IconName =
   | 'logo'
   | 'checkbox_on'
   | 'checkbox_off'
@@ -26,10 +26,6 @@ type IconName =
   | 'kakao'
   | 'google'
   | 'tooltip';
-// | 'hobbi_h'
-// | 'hobbi_o'
-// | 'hobbi_b'
-// | 'hobbi_i';
 
 interface SvgIconProps {
   name: IconName;

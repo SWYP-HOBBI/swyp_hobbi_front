@@ -2,6 +2,7 @@
 
 import React, { InputHTMLAttributes } from 'react';
 import SvgIcon from './svg_icon';
+import clsx from 'clsx';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -53,17 +54,20 @@ export default function Input({
   const inputType = type === 'password' && showPassword ? 'text' : type;
 
   // 컨테이너 스타일 (기본/에러 상태)
-  const inputContainerStyles = `relative flex items-center w-full rounded-lg border  ${
-    containerClassName?.includes('border-none')
-      ? ''
-      : error
+  const inputContainerStyles = clsx(
+    'relative flex items-center w-full rounded-lg border',
+    !containerClassName?.includes('border-none') &&
+      (error
         ? 'border-like focus-within:border-like'
-        : 'border-grayscale-20 focus-within:border-primary'
-  } ${disabled ? 'bg-grayscale-5 cursor-not-allowed' : ''}
-  ${containerClassName}`;
+        : 'border-grayscale-20 focus-within:border-primary'),
+    disabled && 'bg-grayscale-5 cursor-not-allowed',
+    containerClassName,
+  );
 
   return (
-    <div className={`w-full font-medium max-md:text-sm ${containerClassName}`}>
+    <div
+      className={clsx('w-full font-medium max-md:text-sm', containerClassName)}
+    >
       {label && (
         <label
           htmlFor={id}
@@ -78,7 +82,10 @@ export default function Input({
         <input
           id={id}
           type={inputType}
-          className={`w-full h-[60px] max-md:h-[48px] p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed [-webkit-autofill:hover]:!bg-none [-webkit-autofill:focus]:!bg-none [-webkit-autofill:active]:!bg-none [-webkit-autofill]:!bg-none max-md:placeholder:text-xs placeholder:text-sm ${className}`}
+          className={clsx(
+            'w-full h-[60px] max-md:h-[48px] p-5 bg-transparent outline-none text-grayscale-80 disabled:cursor-not-allowed [-webkit-autofill:hover]:!bg-none [-webkit-autofill:focus]:!bg-none [-webkit-autofill:active]:!bg-none [-webkit-autofill]:!bg-none max-md:placeholder:text-xs placeholder:text-sm',
+            className,
+          )}
           value={value}
           onChange={onChange}
           disabled={disabled}
