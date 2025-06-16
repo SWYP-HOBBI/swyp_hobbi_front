@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { getLevelIcon } from '../rank/level_badge';
+import clsx from 'clsx';
 
 type ProfileVariant =
   | 'vertical'
@@ -10,11 +11,20 @@ type ProfileVariant =
   | 'horizontal-small'
   | 'vertical-large';
 
+/**
+ * 프로필(아바타+닉네임+레벨) 컴포넌트
+ * - imageUrl: 프로필 이미지 URL
+ * - nickname: 닉네임
+ * - variant: 레이아웃(세로/가로/크기)
+ * - userLevel: 레벨(뱃지)
+ * - className: 추가 클래스(확장성)
+ */
 interface ProfileProps {
   imageUrl?: string;
   nickname?: string;
   variant?: ProfileVariant;
   userLevel?: number;
+  className?: string;
 }
 
 export default function Profile({
@@ -22,6 +32,7 @@ export default function Profile({
   nickname = 'nickname',
   variant = 'vertical',
   userLevel,
+  className,
 }: ProfileProps) {
   const isVerticalLarge = variant === 'vertical-large';
   const isVertical = variant === 'vertical' || isVerticalLarge;
@@ -29,7 +40,6 @@ export default function Profile({
 
   const imageSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
   const svgSize = isHorizontalSmall ? 36 : isVerticalLarge ? 72 : 52;
-
 
   // 등급 시스템 뱃지
   const badgeSize = imageSize === 36 ? 15 : imageSize === 72 ? 25 : 20;
@@ -39,16 +49,22 @@ export default function Profile({
 
   return (
     <div
-      className={`flex ${
-        isVertical ? 'flex-col items-center' : 'flex-row items-center'
-      }`}
+      className={clsx(
+        'flex',
+        isVertical ? 'flex-col items-center' : 'flex-row items-center',
+        className,
+      )}
     >
       <div
         style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
-        className="relative rounded-full bg-grayscale-10 flex items-center justify-center"
+        className={clsx(
+          'relative rounded-full bg-grayscale-10 flex items-center justify-center',
+        )}
       >
         <div
-          className="rounded-full bg-grayscale-10 flex items-center justify-center overflow-hidden"
+          className={clsx(
+            'rounded-full bg-grayscale-10 flex items-center justify-center overflow-hidden',
+          )}
           style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
         >
           {!showDefaultProfile ? (
@@ -70,16 +86,16 @@ export default function Profile({
             {getLevelIcon(userLevel, badgeSize)}
           </div>
         )}
-
       </div>
 
       <div
-        className={`
-        ${
+        className={clsx(
           isHorizontalSmall
             ? 'text-sm leading-[140%] tracking-[-0.1px] font-normal'
-            : 'text-[18px] leading-[150%] tracking-[-0.1px] font-medium'
-        } text-grayscale-100 ${isVertical ? 'mt-[12px]' : 'ml-[12px]'}`}
+            : 'text-[18px] leading-[150%] tracking-[-0.1px] font-medium',
+          'text-grayscale-100',
+          isVertical ? 'mt-[12px]' : 'ml-[12px]',
+        )}
       >
         {nickname}
       </div>
