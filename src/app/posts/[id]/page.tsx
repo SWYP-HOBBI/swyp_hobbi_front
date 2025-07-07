@@ -186,21 +186,8 @@ export default function PostDetailPage() {
     );
   }
 
-  // 게시글 없음
-  if (!post) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-[960px] mx-auto  p-9 text-center"
-      >
-        게시글을 찾을 수 없습니다.
-      </motion.div>
-    );
-  }
-
-  // 오류 발생
-  if (error) {
+  // 게시글 없음, 에러
+  if (error || !post) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
