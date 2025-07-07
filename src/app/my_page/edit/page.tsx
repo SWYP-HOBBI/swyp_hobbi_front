@@ -18,13 +18,14 @@ import {
   HobbyTag,
 } from '@/types/hobby';
 import Input from '@/components/common/input';
+
+import Loader from '@/components/common/loader';
+import { MBTI_OPTIONS } from '@/types/auth';
+import { useModalStore } from '@/store/modal';
 import {
   getPasswordConfirmError,
   getPasswordError,
 } from '@/utils/password_validation';
-import Loader from '@/components/common/loader';
-import { MBTI_OPTIONS } from '@/types/auth';
-import { useModalStore } from '@/store/modal';
 
 export default function EditMyPage() {
   const router = useRouter();
