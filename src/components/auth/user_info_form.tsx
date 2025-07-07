@@ -1,6 +1,6 @@
 import { Gender, MBTI_OPTIONS, UserInfoFormData } from '@/types/auth';
 import { useSignupStore } from '@/store/signup';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import HobbySelector, {
   CustomDropdownButton,
   CustomDropdownItem,
@@ -8,9 +8,9 @@ import HobbySelector, {
 import { useHobbyStore } from '@/store/hobby';
 import Input from '@/components/common/input';
 import Button from '@/components/common/button';
-
 import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
+import { z } from 'zod';
 
 /**
  * 회원가입 상세 정보 입력 폼 Props 인터페이스
@@ -21,6 +21,31 @@ interface UserInfoFormProps {
   onSubmit: (data: UserInfoFormData) => void;
   onPrevStep: () => void;
 }
+
+// zod 스키마 정의
+const UserInfoSchema = z.object({
+  nickname: z
+    .string()
+    .min(2, '닉네임은 2자 이상이어야 합니다.')
+    .max(10, '닉네임은 10자 이하여야 합니다.')
+    .regex(
+      /^[^!@#$%^&*(),.?":{}|<>\s]+$/,
+      '특수문자와 공백은 사용할 수 없습니다.',
+    ),
+  birthYear: z.number().min(1900, '올바른 년도를 선택해주세요.'),
+  birthMonth: z
+    .number()
+    .min(1, '월을 선택해주세요.')
+    .max(12, '월을 선택해주세요.'),
+  birthDay: z
+    .number()
+    .min(1, '일을 선택해주세요.')
+    .max(31, '일을 선택해주세요.'),
+  gender: z.enum(['남성', '여성'], { message: '성별을 선택해주세요.' }),
+  mbti: z.string().optional(),
+  hobbyTags: z.array(z.string()).max(15, '최대 15개까지 선택 가능합니다.'),
+});
+type UserInfoFormError = Partial<Record<keyof UserInfoFormData, string>>;
 
 /**
  * 회원가입 상세 정보 입력 폼 컴포넌트
@@ -56,6 +81,9 @@ export default function UserInfoForm({
   const [isDayOpen, setIsDayOpen] = useState(false); // 일 선택 상태
   const [isMbtiOpen, setIsMbtiOpen] = useState(false); // MBTI 선택 상태
 
+  // zod 에러 상태
+  const [formError, setFormError] = useState<UserInfoFormError>({});
+
   // 현재 날짜 관련 상수 추가
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -73,13 +101,6 @@ export default function UserInfoForm({
     );
   }, []);
 
-  // // 컴포넌트가 언마운트될 때 선택된 취미들을 초기화
-  // useEffect(() => {
-  //   return () => {
-  //     resetSelections();
-  //   };
-  // }, [resetSelections]);
-
   /**
    * 선택된 취미 태그가 변경될 때마다 signupData 업데이트
    */
@@ -93,73 +114,45 @@ export default function UserInfoForm({
    * 입력 필드 변경 핸들러
    * 닉네임 입력 시 검증 상태 초기화
    */
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    if (name === 'nickname') {
-      setIsNicknameVerified(false);
-    }
-    updateSignupData({ [name]: value });
-  };
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      if (name === 'nickname') {
+        setIsNicknameVerified(false);
+      }
+      updateSignupData({ [name]: value });
 
-  /**
-   * 닉네임 유효성 검사 함수 추가
-   */
-  const validateNickname = (
-    nickname: string,
-  ): { isValid: boolean; message: string } => {
-    // 공백 검사
-    if (!nickname.trim()) {
-      return { isValid: false, message: '닉네임을 입력해주세요.' };
-    }
-
-    // 길이 검사 (2~10자)
-    if (nickname.length < 2 || nickname.length > 10) {
-      return {
-        isValid: false,
-        message: '닉네임은 2~10자 사이로 입력해주세요.',
-      };
-    }
-
-    // 특수문자 검사 (특수문자 불가)
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
-    if (specialCharRegex.test(nickname)) {
-      return { isValid: false, message: '특수문자는 사용할 수 없습니다.' };
-    }
-
-    // 공백 문자 포함 검사
-    if (nickname.includes(' ')) {
-      return { isValid: false, message: '공백은 포함할 수 없습니다.' };
-    }
-
-    return { isValid: true, message: '' };
-  };
+      // 실시간 zod 유효성 검사
+      if (name === 'nickname') {
+        const result = UserInfoSchema.shape.nickname.safeParse(value);
+        setFormError((prev) => ({
+          ...prev,
+          nickname: result.success ? undefined : result.error.errors[0].message,
+        }));
+      }
+    },
+    [updateSignupData, setIsNicknameVerified],
+  );
 
   /**
    * 닉네임 중복 검사 핸들러
    * API 호출을 통해 닉네임 중복 여부 확인
    */
-  const handleNicknameCheck = async () => {
-    // 유효성 검사 수행
-    const validation = validateNickname(signupData.nickname);
-
-    if (!validation.isValid) {
+  const handleNicknameCheck = useCallback(async () => {
+    const result = UserInfoSchema.shape.nickname.safeParse(signupData.nickname);
+    if (!result.success) {
       setIsError(true);
-      setErrorMessage(validation.message);
+      setErrorMessage(result.error.errors[0].message);
       setIsNicknameVerified(false);
       return;
     }
-
     try {
       setIsLoading(true);
       setIsError(false);
       setErrorMessage(null);
-
       const response = await authService.checkNicknameDuplicate(
         signupData.nickname,
       );
-
       if (
         response &&
         typeof response === 'object' &&
@@ -171,7 +164,6 @@ export default function UserInfoForm({
         setIsNicknameVerified(false);
         return;
       }
-
       setIsNicknameVerified(true);
     } catch (error) {
       setIsError(true);
@@ -184,38 +176,61 @@ export default function UserInfoForm({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [
+    signupData.nickname,
+    setIsError,
+    setErrorMessage,
+    setIsNicknameVerified,
+    setIsLoading,
+  ]);
 
   /**
    * 성별 선택 핸들러
    * 선택된 성별 업데이트
    */
-  const handleGenderSelect = (gender: Gender) => {
-    updateSignupData({ gender });
-  };
+  const handleGenderSelect = useCallback(
+    (gender: Gender) => {
+      updateSignupData({ gender });
+    },
+    [updateSignupData],
+  );
 
   /**
    * 폼 제출 핸들러
    * 닉네임 검증 후 회원가입 데이터 제출
    */
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!isNicknameVerified) {
-      alert('닉네임 중복 확인이 필요합니다.');
-      return;
-    }
-
-    onSubmit({
-      birthYear: signupData.birthYear,
-      birthMonth: signupData.birthMonth,
-      birthDay: signupData.birthDay,
-      gender: signupData.gender,
-      nickname: signupData.nickname,
-      mbti: signupData.mbti,
-      hobbyTags: signupData.hobbyTags,
-    });
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const result = UserInfoSchema.safeParse({
+        ...signupData,
+        hobbyTags: selectedHobbyTags.map((tag) => tag.subCategory),
+      });
+      if (!result.success) {
+        const fieldErrors: UserInfoFormError = {};
+        result.error.errors.forEach((err) => {
+          if (err.path[0])
+            fieldErrors[err.path[0] as keyof UserInfoFormData] = err.message;
+        });
+        setFormError(fieldErrors);
+        return;
+      }
+      if (!isNicknameVerified) {
+        alert('닉네임 중복 확인이 필요합니다.');
+        return;
+      }
+      onSubmit({
+        birthYear: signupData.birthYear,
+        birthMonth: signupData.birthMonth,
+        birthDay: signupData.birthDay,
+        gender: signupData.gender,
+        nickname: signupData.nickname,
+        mbti: signupData.mbti,
+        hobbyTags: signupData.hobbyTags,
+      });
+    },
+    [signupData, selectedHobbyTags, isNicknameVerified, onSubmit],
+  );
 
   /**
    * 폼 유효성 검사
@@ -223,26 +238,14 @@ export default function UserInfoForm({
    * - 생년월일 검증
    * - 성별 선택 검증
    */
-  const isFormValid = () => {
-    // 닉네임 검증 (닉네임 입력 및 중복확인 완료)
-    const isNicknameValid =
-      signupData.nickname.trim() !== '' && isNicknameVerified;
-
-    // 생년월일 검증
-    const isBirthValid =
-      signupData.birthYear > 1900 &&
-      signupData.birthYear <= new Date().getFullYear() &&
-      signupData.birthMonth >= 1 &&
-      signupData.birthMonth <= 12 &&
-      signupData.birthDay >= 1 &&
-      signupData.birthDay <= 31;
-
-    // 성별 검증
-    const isGenderValid =
-      signupData.gender === '남성' || signupData.gender === '여성';
-
-    return isNicknameValid && isBirthValid && isGenderValid;
-  };
+  const isFormValid = useCallback(() => {
+    const result = UserInfoSchema.safeParse({
+      ...signupData,
+      hobbyTags: selectedHobbyTags.map((tag) => tag.subCategory),
+    });
+    // 닉네임 중복확인까지 완료해야만 true
+    return result.success && isNicknameVerified;
+  }, [signupData, selectedHobbyTags, isNicknameVerified]);
 
   /**
    * 월 날짜 검증
@@ -316,17 +319,16 @@ export default function UserInfoForm({
           placeholder="닉네임을 입력해주세요."
           showClearButton
           required
+          error={formError.nickname}
         />
         <Button
           type="button"
           onClick={() => {
             if (isNicknameVerified) {
-              // 인증 완료 상태에서는 수정 모드로 전환
               setIsNicknameVerified(false);
               setErrorMessage(null);
               setIsError(false);
             } else {
-              // 미인증 상태에서는 중복 확인 실행
               handleNicknameCheck();
             }
           }}
@@ -343,12 +345,16 @@ export default function UserInfoForm({
         </Button>
       </div>
 
+      {formError.nickname && (
+        <p className="text-xs text-like mt-2 max-md:text-[8px]">
+          *{formError.nickname}
+        </p>
+      )}
       {isError && errorMessage && (
         <p className="text-xs text-like mt-2 max-md:text-[8px]">
           *{errorMessage}
         </p>
       )}
-
       {isNicknameVerified && (
         <p className="text-xs text-grayscale-80 mt-2 max-md:text-[8px]">
           *사용 가능한 닉네임입니다.
@@ -444,6 +450,12 @@ export default function UserInfoForm({
           </CustomDropdownButton>
         </div>
       </div>
+      {/* 생년월일 에러 */}
+      {(formError.birthYear || formError.birthMonth || formError.birthDay) && (
+        <p className="text-xs text-like mt-2 max-md:text-[8px]">
+          *{formError.birthYear || formError.birthMonth || formError.birthDay}
+        </p>
+      )}
 
       {/* 성별 선택 */}
       <div className="mt-6 mb-3 max-md:mb-2">
@@ -476,6 +488,11 @@ export default function UserInfoForm({
           여자
         </Button>
       </div>
+      {formError.gender && (
+        <p className="text-xs text-like mt-2 max-md:text-[8px]">
+          *{formError.gender}
+        </p>
+      )}
 
       {/* MBTI 선택 */}
       <div className="mt-6 mb-3 max-md:mb-2">
@@ -509,6 +526,11 @@ export default function UserInfoForm({
           ))}
         </CustomDropdownButton>
       </div>
+      {formError.mbti && (
+        <p className="text-xs text-like mt-2 max-md:text-[8px]">
+          *{formError.mbti}
+        </p>
+      )}
 
       {/* 취미 선택 */}
       <div className="mt-6 mb-3 max-md:mb-2">
@@ -523,6 +545,11 @@ export default function UserInfoForm({
         </label>
       </div>
       <HobbySelector maxCount={15} />
+      {formError.hobbyTags && (
+        <p className="text-xs text-like mt-2 max-md:text-[8px]">
+          *{formError.hobbyTags}
+        </p>
+      )}
 
       <Button
         type="submit"

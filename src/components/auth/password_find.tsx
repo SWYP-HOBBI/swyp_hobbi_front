@@ -5,13 +5,31 @@ import Input from '@/components/common/input';
 import Button from '@/components/common/button';
 import { useEmailVerification } from '@/hooks/use_email_verification';
 import SvgIcon from '../common/svg_icon';
-import {
-  getPasswordConfirmError,
-  getPasswordError,
-} from '@/utils/password_validation';
 import { authService } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import { useModalStore } from '@/store/modal';
+import { useState, useCallback } from 'react';
+import { z } from 'zod';
+
+// zod 스키마 정의
+const PasswordFindSchema = z
+  .object({
+    email: z.string().email('유효한 이메일을 입력해주세요.'),
+    password: z
+      .string()
+      .min(8, '비밀번호는 8자 이상이어야 합니다.')
+      .max(20, '비밀번호는 20자 이하여야 합니다.')
+      .regex(/[A-Z]/, '영문 대문자를 포함해야 합니다.')
+      .regex(/[a-z]/, '영문 소문자를 포함해야 합니다.')
+      .regex(/[0-9]/, '숫자를 포함해야 합니다.'),
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: '비밀번호가 일치하지 않습니다.',
+    path: ['passwordConfirm'],
+  });
+
+const EmailSchema = z.string().email('유효한 이메일을 입력해주세요.');
 
 export default function PasswordFind({}) {
   const {
@@ -32,55 +50,94 @@ export default function PasswordFind({}) {
       skipDuplicateCheck: true,
     });
 
+  // zod 에러 상태
+  type PasswordFindFormError = Partial<
+    Record<'email' | 'password' | 'passwordConfirm', string>
+  >;
+  const [formError, setFormError] = useState<PasswordFindFormError>({});
+
   /**
    * 입력 필드 변경 핸들러
    * 모든 입력 필드의 변경사항을 Zustand 스토어에 업데이트
    */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    updateSignupData({ [name]: value });
-  };
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      updateSignupData({ [name]: value });
+
+      if (name === 'password' || name === 'passwordConfirm') {
+        const nextData = { ...signupData, [name]: value };
+        const result = PasswordFindSchema.safeParse(nextData);
+        setFormError((prev) => ({
+          ...prev,
+          password: result.success
+            ? undefined
+            : result.error.errors.find((e) => e.path[0] === 'password')
+                ?.message,
+          passwordConfirm: !nextData.passwordConfirm
+            ? undefined
+            : result.success
+              ? undefined
+              : result.error.errors.find((e) => e.path[0] === 'passwordConfirm')
+                  ?.message,
+        }));
+        return;
+      }
+
+      if (name === 'email') {
+        const result = EmailSchema.safeParse(value);
+        setFormError((prev) => ({
+          ...prev,
+          email: result.success ? undefined : result.error.errors[0].message,
+        }));
+      }
+    },
+    [signupData, updateSignupData],
+  );
 
   /**
    * 폼 유효성 검사
    * 모든 입력 필드가 유효한 경우 true 반환
    */
-  const isFormValid = () => {
-    return (
-      signupData?.email?.trim() !== '' &&
-      signupData?.password?.trim() !== '' &&
-      signupData?.passwordConfirm?.trim() !== '' &&
-      !getPasswordError(signupData.password || '') &&
-      !getPasswordConfirmError(
-        signupData.password || '',
-        signupData.passwordConfirm || '',
-      ) &&
-      isEmailVerified
-    );
-  };
+  const isFormValid = useCallback(() => {
+    const result = PasswordFindSchema.safeParse(signupData);
+    return result.success && isEmailVerified;
+  }, [signupData, isEmailVerified]);
 
   /**
    * 폼 제출 핸들러
    * 유효성 검사 후 상위 컴포넌트로 데이터 전달
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isFormValid()) {
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      const result = PasswordFindSchema.safeParse(signupData);
+      if (!result.success) {
+        const fieldErrors: PasswordFindFormError = {};
+        result.error.errors.forEach((err) => {
+          if (err.path[0])
+            fieldErrors[err.path[0] as keyof PasswordFindFormError] =
+              err.message;
+        });
+        setFormError(fieldErrors);
+        return;
+      }
+      if (!isEmailVerified) {
+        setFormError((prev) => ({
+          ...prev,
+          email: '이메일 인증이 필요합니다.',
+        }));
+        return;
+      }
       try {
         const token = localStorage.getItem('passwordResetToken');
-
         if (!token) {
           throw new Error('이메일 인증이 필요합니다.');
         }
-
         await authService.resetPassword(token, signupData.password || '');
-
-        // 비밀번호 변경 완료 후 로컬스토리지 데이터 제거
         localStorage.removeItem('passwordResetToken');
         localStorage.removeItem('verifiedEmail');
         localStorage.removeItem('emailVerified');
-
-        // 성공 모달 표시
         openModal({
           message: '새 비밀번호가 설정되었습니다.\n다시 로그인 해주세요.',
           confirmText: '로그인 하기',
@@ -88,7 +145,6 @@ export default function PasswordFind({}) {
         });
       } catch (error) {
         console.error('비밀번호 변경 중 오류:', error);
-        // 에러 모달 표시
         openModal({
           title: '비밀번호 변경 실패',
           message: '비밀번호 변경 중 오류가 발생했습니다.\n다시 시도해 주세요.',
@@ -96,8 +152,9 @@ export default function PasswordFind({}) {
           type: 'error',
         });
       }
-    }
-  };
+    },
+    [signupData, isEmailVerified, openModal, router],
+  );
 
   const handleBackButton = () => {
     router.back();
@@ -146,6 +203,7 @@ export default function PasswordFind({}) {
                 ? '인증이 완료되었습니다.'
                 : '이메일을 입력해주세요.'
             }
+            error={formError.email}
           />
 
           {/* 이메일 인증 버튼 */}
@@ -200,7 +258,7 @@ export default function PasswordFind({}) {
             label="새 비밀번호"
             value={signupData.password}
             onChange={handleChange}
-            error={getPasswordError(signupData.password || '')}
+            error={formError.password}
             helperText="영문 대소문자, 숫자를 포함해 8자 이상 20자 이하로 입력해주세요."
             required
             showPasswordToggle
@@ -215,10 +273,7 @@ export default function PasswordFind({}) {
             label="새 비밀번호 재확인"
             value={signupData.passwordConfirm}
             onChange={handleChange}
-            error={getPasswordConfirmError(
-              signupData.password || '',
-              signupData.passwordConfirm || '',
-            )}
+            error={formError.passwordConfirm}
             required
             showPasswordToggle
             showClearButton
