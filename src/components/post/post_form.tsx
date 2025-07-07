@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useHobbyStore } from '@/store/hobby';
 import { ImageFile, PostDetail } from '@/types/post';
 import Button from '../common/button';
@@ -6,6 +6,7 @@ import HobbySelector from '../common/hobby_selector';
 import Input from '../common/input';
 import PostImageUploader from './post_image_uploader';
 import { motion } from 'framer-motion';
+import { z } from 'zod';
 
 import {
   HOBBY_MAIN_CATEGORIES,
@@ -36,6 +37,23 @@ interface PostFormProps {
  * 5. 게시글 작성 버튼 클릭
  */
 
+// zod 스키마 정의
+const PostFormSchema = z.object({
+  title: z
+    .string()
+    .min(1, '제목을 입력해주세요.')
+    .max(30, '제목은 30자 이하로 입력해주세요.'),
+  content: z
+    .string()
+    .min(10, '내용은 최소 10자 이상 입력해주세요.')
+    .max(2000, '내용은 2,000자 이하로 입력해주세요.'),
+  hobbyTags: z
+    .array(z.string())
+    .min(1, '태그를 선택해주세요.')
+    .max(5, '태그는 최대 5개까지 선택할 수 있습니다.'),
+});
+type PostFormError = Partial<Record<'title' | 'content' | 'hobbyTags', string>>;
+
 export default function PostForm({
   initialData,
   onSubmit,
@@ -52,6 +70,7 @@ export default function PostForm({
     })) || [],
   );
   const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
+  const [formError, setFormError] = useState<PostFormError>({});
 
   /**
    * 게시글 수정 시 기존 취미 태그 데이터 처리를 위한 useEffect
@@ -125,23 +144,58 @@ export default function PostForm({
     }
   }, [initialData?.postHobbyTags, setSelectedHobbyTags]);
 
+  // 실시간 유효성 검사
+  const handleTitleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(e.target.value);
+      const result = PostFormSchema.shape.title.safeParse(e.target.value);
+      setFormError((prev) => ({
+        ...prev,
+        title: result.success ? undefined : result.error.errors[0].message,
+      }));
+    },
+    [],
+  );
+
+  const handleContentChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setContent(e.target.value);
+      const result = PostFormSchema.shape.content.safeParse(e.target.value);
+      setFormError((prev) => ({
+        ...prev,
+        content: result.success ? undefined : result.error.errors[0].message,
+      }));
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const result = PostFormSchema.shape.hobbyTags.safeParse(
+      selectedHobbyTags.map((tag) => tag.subCategory),
+    );
+    setFormError((prev) => ({
+      ...prev,
+      hobbyTags: result.success ? undefined : result.error.errors[0].message,
+    }));
+  }, [selectedHobbyTags]);
+
   /**
    * 이미지 업로드 핸들러
    */
-  const handleImageUpload = (files: File[]) => {
+  const handleImageUpload = useCallback((files: File[]) => {
     const newImages = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
     setImages((prev) => [...prev, ...newImages]);
-  };
+  }, []);
 
   /**
    * 이미지 삭제 핸들러
    *
    * 1. 이미지 삭제
    */
-  const handleImageRemove = (index: number) => {
+  const handleImageRemove = useCallback((index: number) => {
     setImages((prev) => {
       const newImages = [...prev]; // 기존 이미지 배열 복사
       const removedImage = newImages[index]; // 삭제할 이미지 추출
@@ -158,22 +212,7 @@ export default function PostForm({
       newImages.splice(index, 1);
       return newImages;
     });
-  };
-
-  /**
-   * 게시글 데이터 유효성 검사
-   *
-   * 1. 제목 유효성 검사
-   * 2. 내용 유효성 검사
-   * 3. 취미 태그 유효성 검사
-   */
-  const validatePostData = () => {
-    if (!title.trim()) throw new Error('제목을 입력해주세요.');
-    if (!content.trim()) throw new Error('내용을 입력해주세요.');
-    if (content.trim().length < 10)
-      throw new Error('내용은 최소 10자 이상 입력해주세요.');
-    if (selectedHobbyTags.length === 0) throw new Error('태그를 선택해주세요.');
-  };
+  }, []);
 
   /**
    * 게시글 데이터 생성
@@ -212,9 +251,22 @@ export default function PostForm({
    * 2. 게시글 데이터 생성
    * 3. 게시글 제출
    */
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
+    const result = PostFormSchema.safeParse({
+      title,
+      content,
+      hobbyTags: selectedHobbyTags.map((tag) => tag.subCategory),
+    });
+    if (!result.success) {
+      const fieldErrors: PostFormError = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0])
+          fieldErrors[err.path[0] as keyof PostFormError] = err.message;
+      });
+      setFormError(fieldErrors);
+      return;
+    }
     try {
-      validatePostData();
       const formData = createFormData();
       await onSubmit(formData);
     } catch (error) {
@@ -223,7 +275,7 @@ export default function PostForm({
         error instanceof Error ? error.message : '게시글 처리에 실패했습니다.',
       );
     }
-  };
+  }, [title, content, selectedHobbyTags, images, deletedImageUrls, onSubmit]);
 
   // 애니메이션 variants 정의
   const containerVariants = {
@@ -242,7 +294,7 @@ export default function PostForm({
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 300,
         damping: 30,
       },
@@ -264,7 +316,7 @@ export default function PostForm({
         <Input
           placeholder="제목을 입력하세요. *최대 30자 이하"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={handleTitleChange}
           maxLength={30}
           className="placeholder:text-lg placeholder:text-grayscale-60 placeholder:font-medium border-none"
         />
@@ -291,6 +343,7 @@ export default function PostForm({
           images={images}
           onImageUpload={handleImageUpload}
           onImageRemove={handleImageRemove}
+          onImageReorder={setImages}
         />
       </motion.div>
 
@@ -305,7 +358,7 @@ export default function PostForm({
           minLength={10}
           maxLength={2000}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={handleContentChange}
         />
       </motion.div>
 
@@ -318,7 +371,9 @@ export default function PostForm({
               fullWidth
               className="px-6 py-2 max-md:h-[60px]"
               onClick={handleSubmit}
-              disabled={!title || !content || !selectedHobbyTags.length}
+              disabled={Boolean(
+                formError.title || formError.content || formError.hobbyTags,
+              )}
             >
               {submitButtonText}
             </Button>

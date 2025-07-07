@@ -3,20 +3,13 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ['kr.object.ncloudstorage.com'],
-    unoptimized: false,
+    domains: ['hobbi-dev.s3.ap-northeast-2.amazonaws.com'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'kr.object.ncloudstorage.com',
+        hostname: 'hobbi-dev.s3.ap-northeast-2.amazonaws.com',
         port: '',
-        pathname: '/hobbi-img/**/*',
-      },
-      {
-        protocol: 'https',
-        hostname: 'kr.object.ncloudstorage.com',
-        port: '',
-        pathname: '/hobbi-img/profile/**/*',
+        pathname: '/hobbi-dev/**',
       },
     ],
   },

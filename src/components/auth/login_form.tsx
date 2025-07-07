@@ -2,13 +2,14 @@ import { LoginRequest } from '@/types/auth';
 import { useAuthStore } from '@/store/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Input from '@/components/common/input';
 import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 import Button from '../common/button';
 import SocialButton from '../common/social_button';
 import { useModalStore } from '@/store/modal';
+import { z } from 'zod';
 
 /**
  * 로그인 폼 컴포넌트
@@ -19,6 +20,13 @@ import { useModalStore } from '@/store/modal';
  * 3. 비회원 접근
  * 4. 회원가입 및 계정 찾기
  */
+
+// zod 스키마 정의
+const LoginSchema = z.object({
+  email: z.string().email('유효한 이메일을 입력해주세요.'),
+  password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.'),
+});
+type LoginFormError = Partial<Record<'email' | 'password', string>>;
 
 export default function LoginForm() {
   const router = useRouter();
@@ -40,24 +48,43 @@ export default function LoginForm() {
     email: '',
     password: '',
   });
+  // zod 에러 상태
+  const [formError, setFormError] = useState<LoginFormError>({});
 
   /**
    * 입력 필드 변경 핸들러
    * - 폼 데이터 업데이트
    * - 에러 상태 초기화
    */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // 사용자가 입려을 시작하면 이전 에러 메시지 초기화
-    if (isError) {
-      setIsError(false);
-      setErrorMessage(null);
-    }
-  };
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+      // 사용자가 입력을 시작하면 이전 에러 메시지 초기화
+      if (isError) {
+        setIsError(false);
+        setErrorMessage(null);
+      }
+      // zod 실시간 유효성 검사
+      if (name === 'email') {
+        const result = LoginSchema.shape.email.safeParse(value);
+        setFormError((prev) => ({
+          ...prev,
+          email: result.success ? undefined : result.error.errors[0].message,
+        }));
+      } else if (name === 'password') {
+        const result = LoginSchema.shape.password.safeParse(value);
+        setFormError((prev) => ({
+          ...prev,
+          password: result.success ? undefined : result.error.errors[0].message,
+        }));
+      }
+    },
+    [isError, setIsError, setErrorMessage],
+  );
 
   /**
    * 로그인 폼 제출 핸들러
@@ -67,40 +94,52 @@ export default function LoginForm() {
    * 4. 인증 정보 저장
    * 5. 페이지 이동
    */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setIsLoading(true);
+      setIsError(false);
+      setErrorMessage(null);
 
-    setIsLoading(true);
-    setIsError(false);
-    setErrorMessage(null);
-
-    try {
-      const userData = await authService.login(
-        formData.email,
-        formData.password,
-      );
-
-      setAuth(userData);
-      router.push('/posts');
-    } catch (error: any) {
-      setIsError(true);
-
-      // errorCode 기반 에러 처리
-      if (error.data?.errorCode === 'USER_NOT_FOUND') {
-        setErrorMessage(
-          '등록되지 않은 이메일입니다. 회원가입 후 이용해 주세요.',
-        );
-      } else if (error.status === 401) {
-        setErrorMessage(
-          '비밀번호가 일치하지 않습니다. 비밀번호를 다시 확인해 주세요.',
-        );
-      } else {
-        setErrorMessage('로그인 중 오류가 발생했습니다');
+      // zod 전체 폼 유효성 검사
+      const result = LoginSchema.safeParse(formData);
+      if (!result.success) {
+        const fieldErrors: LoginFormError = {};
+        result.error.errors.forEach((err) => {
+          if (err.path[0])
+            fieldErrors[err.path[0] as keyof LoginFormError] = err.message;
+        });
+        setFormError(fieldErrors);
+        setIsLoading(false);
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
+      try {
+        const userData = await authService.login(
+          formData.email,
+          formData.password,
+        );
+        setAuth(userData);
+        router.push('/posts');
+      } catch (error: any) {
+        setIsError(true);
+        if (error.data?.errorCode === 'USER_NOT_FOUND') {
+          setErrorMessage(
+            '등록되지 않은 이메일입니다. 회원가입 후 이용해 주세요.',
+          );
+        } else if (error.status === 401) {
+          setErrorMessage(
+            '비밀번호가 일치하지 않습니다. 비밀번호를 다시 확인해 주세요.',
+          );
+        } else {
+          setErrorMessage('로그인 중 오류가 발생했습니다');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [formData, setIsLoading, setIsError, setErrorMessage, setAuth, router],
+  );
 
   /**
    * 소셜 로그인 핸들러
@@ -156,7 +195,7 @@ export default function LoginForm() {
           disabled={isLoading}
           required
           showClearButton
-          error={errorMessage}
+          error={formError.email || errorMessage}
         />
 
         {/* 비밀번호 입력 */}
@@ -171,7 +210,7 @@ export default function LoginForm() {
           required
           showPasswordToggle
           showClearButton
-          error={errorMessage}
+          error={formError.password || errorMessage}
         />
 
         {/* 로그인 버튼 */}

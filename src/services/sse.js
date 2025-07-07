@@ -22,7 +22,7 @@ export const connectNotificationSSE = (onMessage) => {
   eventSource.onopen = () => {};
 
   eventSource.onmessage = (event) => {
-    console.log('[SSE] onmessage:', event.data);
+    // console.log('[SSE] onmessage:', event.data);
   };
 
   eventSource.addEventListener('notification', (event) => {

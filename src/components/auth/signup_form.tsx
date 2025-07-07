@@ -4,11 +4,8 @@ import Input from '@/components/common/input';
 import Button from '@/components/common/button';
 import { useEmailVerification } from '@/hooks/use_email_verification';
 import SvgIcon from '../common/svg_icon';
-import {
-  getPasswordConfirmError,
-  getPasswordError,
-} from '@/utils/password_validation';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { z } from 'zod';
 
 /**
  * 회원가입 폼 Props 인터페이스
@@ -19,6 +16,49 @@ interface SignupFormProps {
   onSubmit: (data: SignupFormData) => void;
   onBackButton: () => void;
 }
+
+// Zod 스키마 정의
+const SignupSchema = z
+  .object({
+    username: z
+      .string()
+      .min(2, '이름은 2자 이상이어야 합니다.')
+      .max(10, '이름은 10자 이하여야 합니다.')
+      .regex(/^[가-힣a-zA-Z]+$/, '이름은 한글 또는 영문만 입력 가능합니다.'),
+    email: z.string().email('유효한 이메일을 입력해주세요.'),
+    password: z
+      .string()
+      .min(8, '비밀번호는 8자 이상이어야 합니다.')
+      .max(20, '비밀번호는 20자 이하여야 합니다.')
+      .regex(/[A-Z]/, '영문 대문자를 포함해야 합니다.')
+      .regex(/[a-z]/, '영문 소문자를 포함해야 합니다.')
+      .regex(/[0-9]/, '숫자를 포함해야 합니다.'),
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: '비밀번호가 일치하지 않습니다.',
+    path: ['passwordConfirm'],
+  });
+
+// 타입 체크: SignupFormData와 zod 스키마 타입 일치 확인 (컴파일 타임)
+type SignupZodType = z.infer<typeof SignupSchema>;
+// 아래 줄에서 타입이 다르면 에러 발생
+// type _Check = SignupZodType extends SignupFormData ? true : never;
+
+// 각 필드별 단일 스키마
+const UsernameSchema = z
+  .string()
+  .min(2, '이름은 2자 이상이어야 합니다.')
+  .max(10, '이름은 10자 이하여야 합니다.')
+  .regex(/^[가-힣a-zA-Z]+$/, '이름은 한글 또는 영문만 입력 가능합니다.');
+const EmailSchema = z.string().email('유효한 이메일을 입력해주세요.');
+const PasswordSchema = z
+  .string()
+  .min(8, '비밀번호는 8자 이상이어야 합니다.')
+  .max(20, '비밀번호는 20자 이하여야 합니다.')
+  .regex(/[A-Z]/, '영문 대문자를 포함해야 합니다.')
+  .regex(/[a-z]/, '영문 소문자를 포함해야 합니다.')
+  .regex(/[0-9]/, '숫자를 포함해야 합니다.');
 
 /**
  * 회원가입 폼 컴포넌트
@@ -39,112 +79,89 @@ export default function SignupForm({
     isEmailVerified,
     isLoading,
     isError,
-    setIsError,
     errorMessage,
-    setErrorMessage,
   } = useSignupStore();
 
   const { isEmailSent, emailTimer, formatTime, checkEmailAndSendVerification } =
     useEmailVerification();
 
-  // 이름 유효성 검사 상태
-  const [usernameError, setUsernameError] = useState<string | null>(null);
+  // zod 에러 상태
+  type SignupFormError = Partial<Record<keyof SignupFormData, string>>;
+  const [formError, setFormError] = useState<SignupFormError>({});
 
-  // 이름 유효성 검사 함수
-  const validateUsername = (
-    username: string,
-  ): { isValid: boolean; message: string } => {
-    // 공백 검사
-    if (!username.trim()) {
-      return { isValid: false, message: '이름을 입력해주세요.' };
-    }
+  // 입력 필드 변경 핸들러
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      updateSignupData({ [name]: value });
 
-    // 길이 검사 (2~10자)
-    if (username.length < 2 || username.length > 10) {
-      return {
-        isValid: false,
-        message: '이름은 2~10자 사이로 입력해주세요.',
-      };
-    }
-
-    // 특수문자 검사
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
-    if (specialCharRegex.test(username)) {
-      return { isValid: false, message: '특수문자는 사용할 수 없습니다.' };
-    }
-
-    // 숫자 검사
-    const numberRegex = /[0-9]/;
-    if (numberRegex.test(username)) {
-      return { isValid: false, message: '숫자는 사용할 수 없습니다.' };
-    }
-
-    // 공백 문자 포함 검사
-    if (username.includes(' ')) {
-      return { isValid: false, message: '공백은 포함할 수 없습니다.' };
-    }
-
-    return { isValid: true, message: '' };
-  };
-
-  /**
-   * 입력 필드 변경 핸들러
-   * 모든 입력 필드의 변경사항을 Zustand 스토어에 업데이트
-   */
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-
-    if (name === 'username') {
-      const validation = validateUsername(value);
-      if (!validation.isValid) {
-        setUsernameError(validation.message);
-      } else {
-        setUsernameError(null);
+      if (name === 'password' || name === 'passwordConfirm') {
+        const nextData = { ...signupData, [name]: value };
+        const result = SignupSchema.safeParse(nextData);
+        setFormError((prev) => ({
+          ...prev,
+          password: result.success
+            ? undefined
+            : result.error.errors.find((e) => e.path[0] === 'password')
+                ?.message,
+          passwordConfirm: !nextData.passwordConfirm
+            ? undefined
+            : result.success
+              ? undefined
+              : result.error.errors.find((e) => e.path[0] === 'passwordConfirm')
+                  ?.message,
+        }));
+        return;
       }
-    }
 
-    updateSignupData({ [name]: value });
-  };
+      if (name === 'username') {
+        const result = UsernameSchema.safeParse(value);
+        setFormError((prev) => ({
+          ...prev,
+          username: result.success ? undefined : result.error.errors[0].message,
+        }));
+      } else if (name === 'email') {
+        const result = EmailSchema.safeParse(value);
+        setFormError((prev) => ({
+          ...prev,
+          email: result.success ? undefined : result.error.errors[0].message,
+        }));
+      }
+    },
+    [signupData, updateSignupData],
+  );
 
-  /**
-   * 폼 유효성 검사
-   * 모든 입력 필드가 유효한 경우 true 반환
-   */
-  const isFormValid = () => {
-    return (
-      signupData?.username?.trim() !== '' &&
-      signupData?.email?.trim() !== '' &&
-      signupData?.password?.trim() !== '' &&
-      signupData?.passwordConfirm?.trim() !== '' &&
-      // 비밀번호 유효성 검사
-      !getPasswordError(signupData.password || '') &&
-      // 비밀번호 확인 일치 여부
-      !getPasswordConfirmError(
-        signupData.password || '',
-        signupData.passwordConfirm || '',
-      ) &&
-      // 이메일 인증 완료 여부
-      isEmailVerified
-    );
-  };
+  // 폼 유효성 검사 (zod)
+  const isFormValid = useCallback(() => {
+    const result = SignupSchema.safeParse(signupData);
+    return result.success && isEmailVerified;
+  }, [signupData, isEmailVerified]);
 
-  /**
-   * 폼 제출 핸들러
-   * 유효성 검사 후 상위 컴포넌트로 데이터 전달
-   */
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isFormValid()) {
-      onSubmit({
-        username: signupData.username || '',
-        email: signupData.email || '',
-        password: signupData.password || '',
-        passwordConfirm: signupData.passwordConfirm || '',
-      });
-    }
-  };
+  // 폼 제출 핸들러
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const result = SignupSchema.safeParse(signupData);
+      if (!result.success) {
+        const fieldErrors: SignupFormError = {};
+        result.error.errors.forEach((err) => {
+          if (err.path[0])
+            fieldErrors[err.path[0] as keyof SignupFormData] = err.message;
+        });
+        setFormError(fieldErrors);
+        return;
+      }
+      if (!isEmailVerified) {
+        setFormError((prev) => ({
+          ...prev,
+          email: '이메일 인증이 필요합니다.',
+        }));
+        return;
+      }
+      onSubmit(result.data);
+    },
+    [signupData, isEmailVerified, onSubmit],
+  );
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-0">
@@ -171,10 +188,11 @@ export default function SignupForm({
           onChange={handleChange}
           showClearButton
           required
+          error={formError.username}
         />
-        {usernameError && (
+        {formError.username && (
           <p className="text-xs text-like mt-2 max-md:text-[8px]">
-            *{usernameError}
+            *{formError.username}
           </p>
         )}
       </div>
@@ -208,6 +226,7 @@ export default function SignupForm({
                 ? '인증이 완료되었습니다.'
                 : '이메일을 입력해주세요.'
             }
+            error={formError.email}
           />
 
           {/* 이메일 인증 버튼 */}
@@ -260,7 +279,7 @@ export default function SignupForm({
         label="비밀번호"
         value={signupData.password}
         onChange={handleChange}
-        error={getPasswordError(signupData.password || '')}
+        error={formError.password}
         helperText="영문 대소문자, 숫자를 포함해 8자 이상 20자 이하로 입력해주세요."
         required
         showPasswordToggle
@@ -276,10 +295,7 @@ export default function SignupForm({
         label="비밀번호 재확인"
         value={signupData.passwordConfirm}
         onChange={handleChange}
-        error={getPasswordConfirmError(
-          signupData.password || '',
-          signupData.passwordConfirm || '',
-        )}
+        error={formError.passwordConfirm}
         required
         showPasswordToggle
         showClearButton

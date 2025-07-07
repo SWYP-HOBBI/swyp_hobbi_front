@@ -52,10 +52,7 @@ interface PostCommentProps {
  * 3. 댓글 수정
  * 4. 댓글 삭제
  */
-export default function PostComment({
-  postId,
-  onCommentUpdate,
-}: PostCommentProps) {
+const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
   const router = useRouter();
   const { openModal } = useModalStore();
   const [newComment, setNewComment] = useState('');
@@ -68,32 +65,26 @@ export default function PostComment({
   const currentUserId = useAuthStore((state) => state.userId);
   const { userInfo, fetchUserInfo } = useUserProfileStore();
 
-  // 컴포넌트 마운트 시 사용자 정보 가져오기
+  // 컴포넌트 마운트 시 사용자 정보 가져오기 (userInfo 없을 때만)
   useEffect(() => {
-    fetchUserInfo();
-  }, [fetchUserInfo]);
+    if (!userInfo) fetchUserInfo();
+  }, [fetchUserInfo, userInfo]);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 784);
     };
-
-    // 초기값 설정
     handleResize();
-
-    // 리사이즈 이벤트 리스너 등록
     window.addEventListener('resize', handleResize);
-
-    // 클린업 함수
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  const truncateContent = (content: string, maxLength: number) => {
+  const truncateContent = useCallback((content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
     return content.slice(0, maxLength) + '...';
-  };
+  }, []);
 
   const userId = useAuthStore((state) => state.userId);
   const observerRef = useRef<HTMLDivElement>(null);
@@ -293,13 +284,14 @@ export default function PostComment({
     });
   };
 
-  if (status === 'pending')
-    return (
-      <div className="flex justify-center items-center h-screen mx-auto">
-        <Loader />
-      </div>
-    );
-  if (status === 'error') return <GlobalError error={error} reset={refetch} />;
+  // 댓글 수정/삭제 권한 체크 함수 수정
+  const canModifyComment = useCallback(
+    (commentUserId: number) => {
+      if (!currentUserId) return false;
+      return currentUserId === commentUserId;
+    },
+    [currentUserId],
+  );
 
   const handleReplyTo = (comment: Comment) => {
     setReplyTo({
@@ -313,11 +305,13 @@ export default function PostComment({
     setReplyTo(null);
   };
 
-  // 댓글 수정/삭제 권한 체크 함수 수정
-  const canModifyComment = (commentUserId: number) => {
-    if (!currentUserId) return false; // 로그인하지 않은 경우
-    return currentUserId === commentUserId; // userId가 같은 경우에만 수정/삭제 가능
-  };
+  if (status === 'pending')
+    return (
+      <div className="flex justify-center items-center h-screen mx-auto">
+        <Loader />
+      </div>
+    );
+  if (status === 'error') return <GlobalError error={error} reset={refetch} />;
 
   return (
     <div
@@ -528,13 +522,19 @@ export default function PostComment({
                 <span>&quot;{truncateContent(replyTo.content, 10)}&quot;</span>
               </span>
             </div>
-            <button onClick={handleCancelReply}>
+            <button type="button" onClick={handleCancelReply}>
               <SvgIcon name="delete" color="var(--grayscale-70)" size={12} />
             </button>
           </div>
         )}
 
-        <div className="flex gap-2 mt-6 items-center">
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await handleCreateComment(newComment, replyTo?.commentId);
+          }}
+          className="flex gap-2 mt-6 items-center"
+        >
           <div className="w-[56px] h-[56px] max-md:w-[32px] max-md:h-[32px] flex-shrink-0">
             {currentUserId && userInfo?.userImageUrl ? (
               <Image
@@ -553,12 +553,6 @@ export default function PostComment({
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            onKeyDown={async (e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                await handleCreateComment(newComment, replyTo?.commentId);
-              }
-            }}
             placeholder={
               currentUserId
                 ? '댓글을 입력하세요.'
@@ -572,15 +566,15 @@ export default function PostComment({
             variant="outline"
             className="w-[140px]"
             size="sm"
-            onClick={async () =>
-              await handleCreateComment(newComment, replyTo?.commentId)
-            }
+            type="submit"
             disabled={isSubmitting || !currentUserId}
           >
             등록
           </Button>
-        </div>
+        </form>
       </div>
     </div>
   );
-}
+};
+
+export default PostComment;
