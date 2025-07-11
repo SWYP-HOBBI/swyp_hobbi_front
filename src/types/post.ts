@@ -1,7 +1,7 @@
 export interface PostWrite {
   title: string;
   content: string;
-  userId: number; // 삭제 될 수 있음.
+  userId: number;
   hobbyTags: string[];
 }
 

@@ -9,15 +9,28 @@ import { z } from 'zod';
 
 /**
  * 회원가입 폼 Props 인터페이스
- * @param onSubmit - 회원가입 데이터 제출 핸들러
- * @param onBackButton - 이전 단계로 이동 핸들러
+ *
+ * @param onSubmit - 회원가입 데이터가 유효성 검사를 통과했을 때 호출되는 콜백 함수
+ *                   부모 컴포넌트에서 다음 단계로 진행하는 로직을 처리
+ * @param onBackButton - 이전 단계로 이동할 때 호출되는 콜백 함수
+ *                       회원가입 프로세스에서 뒤로 가기 기능을 제공
  */
 interface SignupFormProps {
   onSubmit: (data: SignupFormData) => void;
   onBackButton: () => void;
 }
 
-// Zod 스키마 정의
+// ===== ZOD 스키마 정의 =====
+
+/**
+ * 회원가입 폼 전체 데이터 유효성 검사를 위한 Zod 스키마
+ *
+ * 각 필드별 검증 규칙:
+ * - username: 2-10자, 한글/영문만 허용
+ * - email: 유효한 이메일 형식
+ * - password: 8-20자, 영문 대소문자+숫자 포함
+ * - passwordConfirm: password와 일치 여부 확인
+ */
 const SignupSchema = z
   .object({
     username: z
@@ -37,21 +50,41 @@ const SignupSchema = z
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: '비밀번호가 일치하지 않습니다.',
-    path: ['passwordConfirm'],
+    path: ['passwordConfirm'], // 에러가 발생한 필드 지정
   });
 
-// 타입 체크: SignupFormData와 zod 스키마 타입 일치 확인 (컴파일 타임)
+/**
+ * 타입 체크: SignupFormData와 zod 스키마 타입 일치 확인 (컴파일 타임)
+ *
+ * 이 타입 체크를 통해 런타임에서 발생할 수 있는 타입 불일치 문제를
+ * 컴파일 타임에 미리 발견할 수 있습니다.
+ */
 type SignupZodType = z.infer<typeof SignupSchema>;
-// 아래 줄에서 타입이 다르면 에러 발생
+// 아래 줄에서 타입이 다르면 에러 발생 (현재 주석 처리됨)
 // type _Check = SignupZodType extends SignupFormData ? true : never;
 
-// 각 필드별 단일 스키마
+// ===== 개별 필드 스키마 (실시간 유효성 검사용) =====
+
+/**
+ * 사용자명 유효성 검사 스키마
+ * 실시간 유효성 검사를 위해 개별적으로 정의
+ */
 const UsernameSchema = z
   .string()
   .min(2, '이름은 2자 이상이어야 합니다.')
   .max(10, '이름은 10자 이하여야 합니다.')
   .regex(/^[가-힣a-zA-Z]+$/, '이름은 한글 또는 영문만 입력 가능합니다.');
+
+/**
+ * 이메일 유효성 검사 스키마
+ * 실시간 유효성 검사를 위해 개별적으로 정의
+ */
 const EmailSchema = z.string().email('유효한 이메일을 입력해주세요.');
+
+/**
+ * 비밀번호 유효성 검사 스키마
+ * 실시간 유효성 검사를 위해 개별적으로 정의
+ */
 const PasswordSchema = z
   .string()
   .min(8, '비밀번호는 8자 이상이어야 합니다.')
@@ -61,43 +94,85 @@ const PasswordSchema = z
   .regex(/[0-9]/, '숫자를 포함해야 합니다.');
 
 /**
- * 회원가입 폼 컴포넌트
+ * 회원가입 폼 메인 컴포넌트
  *
- * 주요 기능
+ * 사용자의 회원가입 정보를 수집하고 유효성을 검사하는 컴포넌트입니다.
+ *
+ * 주요 기능:
  * 1. 사용자 기본 정보 입력 (이름, 이메일, 비밀번호, 비밀번호 확인)
- * 2. 이메일 인증
- * 3. 실시간 유효성 검사
- * 4. 단계별 회원가입
+ * 2. 이메일 인증 시스템 (인증 메일 전송, 재전송, 타이머)
+ * 3. 실시간 유효성 검사 (Zod 스키마 기반)
+ * 4. 단계별 회원가입 프로세스 지원
+ *
+ * 기술적 특징:
+ * - Zod를 사용한 강력한 유효성 검사
+ * - Zustand를 통한 전역 상태 관리
+ * - 커스텀 훅을 통한 이메일 인증 로직 분리
+ * - 실시간 에러 피드백
+ * - 반응형 디자인 (모바일/데스크톱)
  */
 export default function SignupForm({
   onSubmit,
   onBackButton,
 }: SignupFormProps) {
+  // ===== 스토어 및 훅 초기화 =====
+
+  /**
+   * 회원가입 관련 상태와 액션을 가져오는 스토어
+   */
   const {
-    signupData,
-    updateSignupData,
-    isEmailVerified,
-    isLoading,
-    isError,
-    errorMessage,
+    signupData, // 회원가입 폼 데이터
+    updateSignupData, // 폼 데이터 업데이트 함수
+    isEmailVerified, // 이메일 인증 완료 여부
+    isLoading, // 로딩 상태
+    isError, // 에러 발생 여부
+    errorMessage, // 에러 메시지
   } = useSignupStore();
 
+  /**
+   * 이메일 인증 관련 기능을 제공하는 커스텀 훅
+   */
   const { isEmailSent, emailTimer, formatTime, checkEmailAndSendVerification } =
     useEmailVerification();
 
-  // zod 에러 상태
+  // ===== 로컬 상태 관리 =====
+
+  /**
+   * Zod 유효성 검사 에러 상태
+   * 각 필드별 실시간 유효성 검사 결과를 저장
+   */
   type SignupFormError = Partial<Record<keyof SignupFormData, string>>;
   const [formError, setFormError] = useState<SignupFormError>({});
 
-  // 입력 필드 변경 핸들러
+  // ===== 이벤트 핸들러 함수들 =====
+
+  /**
+   * 입력 필드 변경 핸들러
+   *
+   * 사용자가 입력할 때마다 호출되며 다음 작업을 수행합니다:
+   * 1. 스토어의 폼 데이터 업데이트
+   * 2. 실시간 유효성 검사 수행
+   * 3. 에러 상태 업데이트
+   *
+   * 특별한 처리:
+   * - 비밀번호/비밀번호 확인: 전체 스키마 검증으로 일치 여부 확인
+   * - 사용자명/이메일: 개별 스키마로 실시간 검증
+   *
+   * @param e - 입력 이벤트 객체
+   */
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
+
+      // 스토어의 폼 데이터 업데이트
       updateSignupData({ [name]: value });
 
+      // ===== 비밀번호 관련 필드 특별 처리 =====
       if (name === 'password' || name === 'passwordConfirm') {
+        // 비밀번호 변경 시 전체 스키마로 검증 (일치 여부 확인을 위해)
         const nextData = { ...signupData, [name]: value };
         const result = SignupSchema.safeParse(nextData);
+
         setFormError((prev) => ({
           ...prev,
           password: result.success
@@ -105,7 +180,7 @@ export default function SignupForm({
             : result.error.errors.find((e) => e.path[0] === 'password')
                 ?.message,
           passwordConfirm: !nextData.passwordConfirm
-            ? undefined
+            ? undefined // 비밀번호 확인이 비어있으면 에러 표시하지 않음
             : result.success
               ? undefined
               : result.error.errors.find((e) => e.path[0] === 'passwordConfirm')
@@ -114,6 +189,7 @@ export default function SignupForm({
         return;
       }
 
+      // ===== 개별 필드 실시간 유효성 검사 =====
       if (name === 'username') {
         const result = UsernameSchema.safeParse(value);
         setFormError((prev) => ({
@@ -131,18 +207,38 @@ export default function SignupForm({
     [signupData, updateSignupData],
   );
 
-  // 폼 유효성 검사 (zod)
+  /**
+   * 폼 전체 유효성 검사 함수
+   *
+   * 제출 버튼 활성화 여부를 결정하는 데 사용됩니다.
+   *
+   * @returns {boolean} 폼이 유효하고 이메일이 인증되었는지 여부
+   */
   const isFormValid = useCallback(() => {
     const result = SignupSchema.safeParse(signupData);
-    return result.success && isEmailVerified;
+    return result.success && isEmailVerified; // 모든 검증 통과 + 이메일 인증 완료
   }, [signupData, isEmailVerified]);
 
-  // 폼 제출 핸들러
+  /**
+   * 폼 제출 핸들러
+   *
+   * 회원가입 데이터를 최종 검증하고 부모 컴포넌트에 전달합니다.
+   *
+   * 검증 단계:
+   * 1. Zod 스키마를 통한 전체 데이터 유효성 검사
+   * 2. 이메일 인증 완료 여부 확인
+   * 3. 검증 통과 시 부모 컴포넌트에 데이터 전달
+   *
+   * @param e - 폼 제출 이벤트 객체
+   */
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault();
+      e.preventDefault(); // 기본 폼 제출 동작 방지
+
+      // ===== Zod 전체 폼 유효성 검사 =====
       const result = SignupSchema.safeParse(signupData);
       if (!result.success) {
+        // 유효성 검사 실패 시 필드별 에러 메시지 설정
         const fieldErrors: SignupFormError = {};
         result.error.errors.forEach((err) => {
           if (err.path[0])
@@ -151,6 +247,8 @@ export default function SignupForm({
         setFormError(fieldErrors);
         return;
       }
+
+      // ===== 이메일 인증 확인 =====
       if (!isEmailVerified) {
         setFormError((prev) => ({
           ...prev,
@@ -158,15 +256,19 @@ export default function SignupForm({
         }));
         return;
       }
+
+      // ===== 검증 통과 시 부모 컴포넌트에 데이터 전달 =====
       onSubmit(result.data);
     },
     [signupData, isEmailVerified, onSubmit],
   );
 
+  // ===== JSX 렌더링 =====
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-0">
-      {/* 헤더 */}
+      {/* ===== 헤더 섹션 ===== */}
       <div className="relative flex items-center justify-center mb-8">
+        {/* 뒤로 가기 버튼 */}
         <div className="absolute left-0" onClick={onBackButton}>
           <SvgIcon
             name="arrow_left"
@@ -174,10 +276,11 @@ export default function SignupForm({
             color="var(--grayscale-60)"
           />
         </div>
+        {/* 제목 */}
         <h1 className="text-[32px] font-bold max-md:text-lg">회원가입</h1>
       </div>
 
-      {/* 이름 입력 */}
+      {/* ===== 이름 입력 섹션 ===== */}
       <div className="space-y-2">
         <Input
           id="username"
@@ -186,10 +289,11 @@ export default function SignupForm({
           label="이름"
           value={signupData.username}
           onChange={handleChange}
-          showClearButton
+          showClearButton // 입력값 지우기 버튼
           required
           error={formError.username}
         />
+        {/* 이름 에러 메시지 */}
         {formError.username && (
           <p className="text-xs text-like mt-2 max-md:text-[8px]">
             *{formError.username}
@@ -197,7 +301,7 @@ export default function SignupForm({
         )}
       </div>
 
-      {/* 이메일 인증 */}
+      {/* ===== 이메일 인증 섹션 ===== */}
       <div className="mt-6 mb-3 max-md:mb-2">
         <label
           htmlFor="email"
@@ -210,16 +314,16 @@ export default function SignupForm({
 
       <div className="flex flex-col gap-2">
         <div className="flex gap-2 w-full items-center">
-          {/* 이메일 입력 */}
+          {/* 이메일 입력 필드 */}
           <Input
             id="email"
             name="email"
             type="email"
             value={signupData.email}
             onChange={handleChange}
-            disabled={isEmailVerified || isLoading}
+            disabled={isEmailVerified || isLoading} // 인증 완료 또는 로딩 중일 때 비활성화
             showClearButton
-            containerClassName="w-[60%]"
+            containerClassName="w-[60%]" // 컨테이너 너비 설정
             required
             placeholder={
               isEmailVerified
@@ -233,13 +337,13 @@ export default function SignupForm({
           <Button
             type="button"
             onClick={checkEmailAndSendVerification}
-            disabled={!signupData.email || isLoading}
+            disabled={!signupData.email || isLoading} // 이메일이 없거나 로딩 중일 때 비활성화
             variant={
               isEmailVerified
-                ? 'secondary'
+                ? 'secondary' // 인증 완료: 보조 스타일
                 : isEmailSent
-                  ? 'outline'
-                  : 'primary'
+                  ? 'outline' // 메일 전송됨: 아웃라인 스타일
+                  : 'primary' // 기본: 주요 스타일
             }
             size="md"
             className="w-[40%] max-md:text-sm max-md:px-2 max-md:w-[45%] whitespace-normal break-keep"
@@ -254,16 +358,19 @@ export default function SignupForm({
           </Button>
         </div>
 
-        {/* 이메일 인증 오류 */}
+        {/* ===== 이메일 인증 상태 메시지들 ===== */}
+
+        {/* 이메일 인증 오류 메시지 */}
         {isError && errorMessage && (
           <p className="text-xs text-like">*{errorMessage}</p>
         )}
 
-        {/* 이메일 인증 완료 */}
+        {/* 이메일 인증 완료 메시지 */}
         {isEmailVerified && (
           <p className="text-xs text-grayscale-80">*인증이 완료되었습니다.</p>
         )}
 
+        {/* 인증 메일 전송 후 타이머 표시 */}
         {isEmailSent && !isEmailVerified && (
           <div className="text-xs text-grayscale-60 text-right">
             <p>*인증 유효시간 {formatTime(emailTimer)}</p>
@@ -271,7 +378,7 @@ export default function SignupForm({
         )}
       </div>
 
-      {/* 비밀번호 입력 */}
+      {/* ===== 비밀번호 입력 섹션 ===== */}
       <Input
         id="password"
         name="password"
@@ -282,12 +389,12 @@ export default function SignupForm({
         error={formError.password}
         helperText="영문 대소문자, 숫자를 포함해 8자 이상 20자 이하로 입력해주세요."
         required
-        showPasswordToggle
+        showPasswordToggle // 비밀번호 표시/숨김 토글
         showClearButton
         containerClassName="mt-6"
       />
 
-      {/* 비밀번호 확인 */}
+      {/* ===== 비밀번호 확인 섹션 ===== */}
       <Input
         id="passwordConfirm"
         name="passwordConfirm"
@@ -302,10 +409,10 @@ export default function SignupForm({
         containerClassName="mt-6"
       />
 
-      {/* 제출 버튼 */}
+      {/* ===== 제출 버튼 섹션 ===== */}
       <Button
         type="submit"
-        disabled={!isFormValid() || isLoading}
+        disabled={!isFormValid() || isLoading} // 폼이 유효하지 않거나 로딩 중일 때 비활성화
         variant="primary"
         size="lg"
         fullWidth
