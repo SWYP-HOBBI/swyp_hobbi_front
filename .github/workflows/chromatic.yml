@@ -3,8 +3,18 @@ name: 'Chromatic Deployment'
 on:
   push:
     branches: [main, develop]
+    paths:
+      - '.storybook/**'
+      - 'src/**/*.stories.*'
+      - 'src/**/*.mdx'
+      - 'package.json'
   pull_request:
     branches: [main, develop]
+    paths:
+      - '.storybook/**'
+      - 'src/**/*.stories.*'
+      - 'src/**/*.mdx'
+      - 'package.json'
 
 permissions:
   pull-requests: write
