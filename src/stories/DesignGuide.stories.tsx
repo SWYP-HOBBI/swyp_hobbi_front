@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import React from 'react';
 
 const meta: Meta = {
-  title: 'DesignGuide',
+  title: '#DesignGuide',
 };
 
 export default meta;
