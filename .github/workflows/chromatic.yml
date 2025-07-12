@@ -33,3 +33,9 @@ jobs:
           #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/ko/deploy/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.TOKEN }}
+      - name: Create comment PR
+        uses: thollander/actions-comment-pull-request@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          message: '🚨Storybook: ${{ steps.chromatic.outputs.storybookUrl }}'
