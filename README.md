@@ -1,7 +1,6 @@
 <div align="center">
   
-[![Storybook](https://img.shields.io/badge/Storybook%20-FF4785?style=flat-square&logo=storybook&logoColor=white)](https://685004915b4c4c7b97cd81df-xyulgjxvab.chromatic.com)
-
+[![Storybook](https://img.shields.io/badge/Storybook%20-FF4785?style=flat-square&logo=storybook&logoColor=white)](https://685004915b4c4c7b97cd81df-zyyxxmczve.chromatic.com/)
 </div>
 
 ![main](https://github.com/user-attachments/assets/82194ad6-5334-497e-b227-ce57561318dd)
@@ -32,7 +31,6 @@
 
 ![Frame (9)](https://github.com/user-attachments/assets/4ca85685-fcf9-4c25-a6a2-0c792767386c)
 
-
 ## 📚 Libraries
 
 ![Next.js](https://img.shields.io/badge/Next.js-v15.3.1-1E9BCF?style=flat-square&logo=Next.js&logoColor=white)
@@ -48,11 +46,9 @@
 ![Eslint](https://img.shields.io/badge/Eslint-v9-9A43B8?style=flat-square&logo=Eslint&logoColor=white)
 ![StoryBook](https://img.shields.io/badge/StoryBook-v9.0.9-FF4785?style=flat-square&logo=StoryBook&logoColor=white)
 
-
 ## 🏘️ TEAM
 
 ![Frame (14)](https://github.com/user-attachments/assets/77da9574-fadb-45ea-8e41-bf380bb0d38f)
-
 
 <div align="center">
   
@@ -61,7 +57,6 @@
 |                                                PM                                                 |                                                Designer                                                 |                                                Front End                                                |                                                Front End                                                |                                                Back End                                                 |                                                Back End                                                 |                                                Back End                                                 |
 |                                                 **김현섭**                                                 |                                                 **장혜경**                                                 |                                                 [**박현석**](https://github.com/ssseok)                                                 |                                                 [**유소민**](https://github.com/SoMin-Yoo)                                                 |                                                 [**최서웅**](https://github.com/ChoiSeoWoong)                                                 |                                                 [**김지원**](https://github.com/asdf1019)                                                 |                                 [**이재원**](https://github.com/wwwond)                                 |
 </div>
-
 
 ## 📂 Folder Structure
 
