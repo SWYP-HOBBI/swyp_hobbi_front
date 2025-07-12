@@ -15,18 +15,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name : Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - run: npm ci
 
-      - name : Build Storybook
+      - name: Build Storybook
         run: npm run build-storybook
 
-      - name : Run Chromatic
+      - name: Run Chromatic
         uses: chromaui/action@latest
         # Options required for Chromatic's GitHub Action
         with:
