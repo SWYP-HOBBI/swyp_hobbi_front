@@ -1,19 +1,16 @@
-# Workflow name
 name: 'Chromatic Deployment'
 
-# Event for the workflow
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
 
-# List of jobs
 jobs:
   chromatic:
     name: 'Run Chromatic'
     runs-on: ubuntu-latest
-    # Job steps
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,12 +30,12 @@ jobs:
       - name: Run Chromatic
         id: chromatic
         uses: chromaui/action@latest
-        # Options required for Chromatic's GitHub Action
         with:
-          #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/ko/deploy/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.TOKEN }}
+
       - name: Create comment PR
+        if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v3
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
