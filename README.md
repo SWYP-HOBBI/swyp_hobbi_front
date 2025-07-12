@@ -1,6 +1,6 @@
 <div align="center">
   
-[![Storybook](https://img.shields.io/badge/Storybook%20-FF4785?style=flat-square&logo=storybook&logoColor=white)](https://685004915b4c4c7b97cd81df-zyyxxmczve.chromatic.com/)
+[![Storybook](https://img.shields.io/badge/Storybook%20-FF4785?style=flat-square&logo=storybook&logoColor=white)](https://685004915b4c4c7b97cd81df-miycaxhdjb.chromatic.com/?path=/story/designguide--design-guide)
 </div>
 
 ![main](https://github.com/user-attachments/assets/82194ad6-5334-497e-b227-ce57561318dd)
