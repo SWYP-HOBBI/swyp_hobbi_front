@@ -89,7 +89,6 @@ const TAB_ITEMS: TabItem[] = [
     path: '/posts/write',
     icon: 'write',
     requiresAuth: true,
-    mobileLabel: '글쓰기',
   },
   {
     id: 'myPage',
@@ -145,7 +144,7 @@ const FeedMenu = ({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -20, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="absolute left-[222px] top-[20px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 z-50 min-w-[120px] text-center text-sm"
+      className="absolute left-[222px] top-[10px] bg-grayscale-0 rounded-lg shadow-lg border border-gray-100 z-50 min-w-[120px] text-center text-sm"
     >
       {[
         { value: 'all', label: '전체 피드' },
@@ -184,7 +183,7 @@ const DesktopTabItem = ({
   showLabel,
   unreadCount,
 }: TabItemProps & { unreadCount?: number }) => {
-  const label = showLabel ? item.mobileLabel || item.label : item.label;
+  const label = item.label;
   // 알림 탭이면 오른쪽 끝에 뱃지
   if (item.id === 'notification') {
     return (
@@ -439,32 +438,41 @@ export default function TabBar() {
             <div key={item.id} className="relative w-full h-[52px]">
               {item.id === 'home' ? (
                 // 홈 탭 (피드 메뉴 포함)
-                <div className="w-full flex items-center h-[52px] cursor-pointer">
-                  <div
-                    className="flex items-center flex-1"
-                    onClick={() => handleTabClick(item)}
-                  >
-                    <DesktopTabItem
-                      item={item}
-                      isActive={isHome}
+                <>
+                  <div className="w-full flex items-center h-[52px] cursor-pointer">
+                    <div
+                      className="flex items-center flex-1"
                       onClick={() => handleTabClick(item)}
-                      iconSize={36}
-                      showLabel={true}
-                      unreadCount={unreadCount}
-                    />
+                    >
+                      <DesktopTabItem
+                        item={item}
+                        isActive={isHome}
+                        onClick={() => handleTabClick(item)}
+                        iconSize={36}
+                        showLabel={true}
+                        unreadCount={unreadCount}
+                      />
+                    </div>
+                    {/* 피드 메뉴 드롭다운 버튼 */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowFeedMenu(!showFeedMenu);
+                      }}
+                      className="ml-2 transform transition-transform duration-200 -rotate-90"
+                      aria-label="피드 메뉴 열기"
+                    >
+                      <SvgIcon name="arrow_down" size={24} />
+                    </button>
                   </div>
-                  {/* 피드 메뉴 드롭다운 버튼 */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowFeedMenu(!showFeedMenu);
-                    }}
-                    className="ml-2 transform transition-transform duration-200 -rotate-90"
-                    aria-label="피드 메뉴 열기"
-                  >
-                    <SvgIcon name="arrow_down" size={24} />
-                  </button>
-                </div>
+                  {/* 피드 메뉴 드롭다운 (홈 탭에서만 노출) */}
+                  <FeedMenu
+                    isVisible={showFeedMenu && !isSearchOpen}
+                    feedType={feedType}
+                    onFeedTypeChange={setFeedType}
+                    onClose={() => setShowFeedMenu(false)}
+                  />
+                </>
               ) : (
                 // 일반 탭
                 <DesktopTabItem
@@ -503,13 +511,7 @@ export default function TabBar() {
           </button>
         </div>
       </div>
-      {/* 피드 메뉴 드롭다운 (홈 탭에서만 노출) */}
-      <FeedMenu
-        isVisible={showFeedMenu && !isSearchOpen}
-        feedType={feedType}
-        onFeedTypeChange={setFeedType}
-        onClose={() => setShowFeedMenu(false)}
-      />
+      {/* FeedMenu는 더 이상 DesktopTabBar 바깥에 있지 않음 */}
     </div>
   );
 
