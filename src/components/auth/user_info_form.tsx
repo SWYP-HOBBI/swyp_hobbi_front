@@ -42,24 +42,24 @@ interface UserInfoFormProps {
 const UserInfoSchema = z.object({
   nickname: z
     .string()
-    .min(2, '닉네임은 2자 이상이어야 합니다.')
-    .max(10, '닉네임은 10자 이하여야 합니다.')
+    .min(2, '* 닉네임은 2자 이상이어야 합니다.')
+    .max(10, '* 닉네임은 10자 이하여야 합니다.')
     .regex(
       /^[^!@#$%^&*(),.?":{}|<>\s]+$/,
-      '특수문자와 공백은 사용할 수 없습니다.',
+      '* 특수문자와 공백은 사용할 수 없습니다.',
     ),
-  birthYear: z.number().min(1900, '올바른 년도를 선택해주세요.'),
+  birthYear: z.number().min(1900, '* 올바른 년도를 선택해주세요.'),
   birthMonth: z
     .number()
-    .min(1, '월을 선택해주세요.')
-    .max(12, '월을 선택해주세요.'),
+    .min(1, '* 월을 선택해주세요.')
+    .max(12, '* 월을 선택해주세요.'),
   birthDay: z
     .number()
-    .min(1, '일을 선택해주세요.')
-    .max(31, '일을 선택해주세요.'),
-  gender: z.enum(['남성', '여성'], { message: '성별을 선택해주세요.' }),
+    .min(1, '* 일을 선택해주세요.')
+    .max(31, '* 일을 선택해주세요.'),
+  gender: z.enum(['남성', '여성'], { message: '* 성별을 선택해주세요.' }),
   mbti: z.string().optional(), // 선택사항
-  hobbyTags: z.array(z.string()).max(15, '최대 15개까지 선택 가능합니다.'),
+  hobbyTags: z.array(z.string()).max(15, '* 최대 15개까지 선택 가능합니다.'),
 });
 
 /**

@@ -6,6 +6,8 @@ import { useEmailVerification } from '@/hooks/use_email_verification';
 import SvgIcon from '../common/svg_icon';
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
+import { authService } from '@/services/api';
+import VerificationCodeInput from '@/components/common/verification_code_input';
 
 /**
  * 회원가입 폼 Props 인터페이스
@@ -16,7 +18,7 @@ import { z } from 'zod';
  *                       회원가입 프로세스에서 뒤로 가기 기능을 제공
  */
 interface SignupFormProps {
-  onSubmit: (data: SignupFormData) => void;
+  onSubmit: (data: Omit<SignupFormData, 'verificationCode'>) => void;
   onBackButton: () => void;
 }
 
@@ -35,63 +37,35 @@ const SignupSchema = z
   .object({
     username: z
       .string()
-      .min(2, '이름은 2자 이상이어야 합니다.')
-      .max(10, '이름은 10자 이하여야 합니다.')
-      .regex(/^[가-힣a-zA-Z]+$/, '이름은 한글 또는 영문만 입력 가능합니다.'),
-    email: z.string().email('유효한 이메일을 입력해주세요.'),
+      .min(2, '* 이름은 2자 이상이어야 합니다.')
+      .max(10, '* 이름은 10자 이하여야 합니다.')
+      .regex(/^[가-힣a-zA-Z]+$/, '* 이름은 한글 또는 영문만 입력 가능합니다.'),
+    email: z.string().email('* 유효한 이메일을 입력해주세요.'),
     password: z
       .string()
-      .min(8, '비밀번호는 8자 이상이어야 합니다.')
-      .max(20, '비밀번호는 20자 이하여야 합니다.')
-      .regex(/[A-Z]/, '영문 대문자를 포함해야 합니다.')
-      .regex(/[a-z]/, '영문 소문자를 포함해야 합니다.')
-      .regex(/[0-9]/, '숫자를 포함해야 합니다.'),
+      .min(8, '* 비밀번호는 8자 이상이어야 합니다.')
+      .max(20, '* 비밀번호는 20자 이하여야 합니다.')
+      .regex(/[A-Z]/, '* 영문 대문자를 포함해야 합니다.')
+      .regex(/[a-z]/, '* 영문 소문자를 포함해야 합니다.')
+      .regex(/[0-9]/, '* 숫자를 포함해야 합니다.'),
     passwordConfirm: z.string(),
+    verificationCode: z.string().optional(),
+    // isEmailVerified는 실제 데이터에는 없지만, refine에서 참조를 위해 추가
+    isEmailVerified: z.boolean().optional(),
   })
+  .refine(
+    (data) =>
+      data.isEmailVerified ||
+      (data.verificationCode && data.verificationCode.length === 6),
+    {
+      message: '* 인증 코드는 6자리여야 합니다.',
+      path: ['verificationCode'],
+    },
+  )
   .refine((data) => data.password === data.passwordConfirm, {
-    message: '비밀번호가 일치하지 않습니다.',
-    path: ['passwordConfirm'], // 에러가 발생한 필드 지정
+    message: '* 비밀번호가 일치하지 않습니다.',
+    path: ['passwordConfirm'],
   });
-
-/**
- * 타입 체크: SignupFormData와 zod 스키마 타입 일치 확인 (컴파일 타임)
- *
- * 이 타입 체크를 통해 런타임에서 발생할 수 있는 타입 불일치 문제를
- * 컴파일 타임에 미리 발견할 수 있습니다.
- */
-type SignupZodType = z.infer<typeof SignupSchema>;
-// 아래 줄에서 타입이 다르면 에러 발생 (현재 주석 처리됨)
-// type _Check = SignupZodType extends SignupFormData ? true : never;
-
-// ===== 개별 필드 스키마 (실시간 유효성 검사용) =====
-
-/**
- * 사용자명 유효성 검사 스키마
- * 실시간 유효성 검사를 위해 개별적으로 정의
- */
-const UsernameSchema = z
-  .string()
-  .min(2, '이름은 2자 이상이어야 합니다.')
-  .max(10, '이름은 10자 이하여야 합니다.')
-  .regex(/^[가-힣a-zA-Z]+$/, '이름은 한글 또는 영문만 입력 가능합니다.');
-
-/**
- * 이메일 유효성 검사 스키마
- * 실시간 유효성 검사를 위해 개별적으로 정의
- */
-const EmailSchema = z.string().email('유효한 이메일을 입력해주세요.');
-
-/**
- * 비밀번호 유효성 검사 스키마
- * 실시간 유효성 검사를 위해 개별적으로 정의
- */
-const PasswordSchema = z
-  .string()
-  .min(8, '비밀번호는 8자 이상이어야 합니다.')
-  .max(20, '비밀번호는 20자 이하여야 합니다.')
-  .regex(/[A-Z]/, '영문 대문자를 포함해야 합니다.')
-  .regex(/[a-z]/, '영문 소문자를 포함해야 합니다.')
-  .regex(/[0-9]/, '숫자를 포함해야 합니다.');
 
 /**
  * 회원가입 폼 메인 컴포넌트
@@ -123,17 +97,27 @@ export default function SignupForm({
   const {
     signupData, // 회원가입 폼 데이터
     updateSignupData, // 폼 데이터 업데이트 함수
-    isEmailVerified, // 이메일 인증 완료 여부
     isLoading, // 로딩 상태
     isError, // 에러 발생 여부
     errorMessage, // 에러 메시지
+    setIsLoading, // 로딩 상태 설정
+    setIsError, // 에러 상태 설정
+    setErrorMessage, // 에러 메시지 설정
+    setIsEmailVerified, // 이메일 인증 상태 설정
+    setIsEmailSent, // 이메일 발송 상태 설정
+    setEmailTimer, // 타이머 설정
   } = useSignupStore();
 
   /**
    * 이메일 인증 관련 기능을 제공하는 커스텀 훅
    */
-  const { isEmailSent, emailTimer, formatTime, checkEmailAndSendVerification } =
-    useEmailVerification();
+  const {
+    isEmailVerified,
+    isEmailSent,
+    emailTimer,
+    formatTime,
+    checkEmailAndSendVerification,
+  } = useEmailVerification();
 
   // ===== 로컬 상태 관리 =====
 
@@ -154,10 +138,6 @@ export default function SignupForm({
    * 2. 실시간 유효성 검사 수행
    * 3. 에러 상태 업데이트
    *
-   * 특별한 처리:
-   * - 비밀번호/비밀번호 확인: 전체 스키마 검증으로 일치 여부 확인
-   * - 사용자명/이메일: 개별 스키마로 실시간 검증
-   *
    * @param e - 입력 이벤트 객체
    */
   const handleChange = useCallback(
@@ -167,11 +147,15 @@ export default function SignupForm({
       // 스토어의 폼 데이터 업데이트
       updateSignupData({ [name]: value });
 
+      const nextData = { ...signupData, [name]: value };
+      const result = SignupSchema.safeParse({
+        ...nextData,
+        isEmailVerified,
+      } as any);
+
       // ===== 비밀번호 관련 필드 특별 처리 =====
       if (name === 'password' || name === 'passwordConfirm') {
         // 비밀번호 변경 시 전체 스키마로 검증 (일치 여부 확인을 위해)
-        const nextData = { ...signupData, [name]: value };
-        const result = SignupSchema.safeParse(nextData);
 
         setFormError((prev) => ({
           ...prev,
@@ -188,23 +172,24 @@ export default function SignupForm({
         }));
         return;
       }
-
-      // ===== 개별 필드 실시간 유효성 검사 =====
       if (name === 'username') {
-        const result = UsernameSchema.safeParse(value);
         setFormError((prev) => ({
           ...prev,
-          username: result.success ? undefined : result.error.errors[0].message,
+          username: result.success
+            ? undefined
+            : result.error.errors.find((e) => e.path[0] === 'username')
+                ?.message,
         }));
       } else if (name === 'email') {
-        const result = EmailSchema.safeParse(value);
         setFormError((prev) => ({
           ...prev,
-          email: result.success ? undefined : result.error.errors[0].message,
+          email: result.success
+            ? undefined
+            : result.error.errors.find((e) => e.path[0] === 'email')?.message,
         }));
       }
     },
-    [signupData, updateSignupData],
+    [signupData, updateSignupData, isEmailVerified],
   );
 
   /**
@@ -215,9 +200,84 @@ export default function SignupForm({
    * @returns {boolean} 폼이 유효하고 이메일이 인증되었는지 여부
    */
   const isFormValid = useCallback(() => {
-    const result = SignupSchema.safeParse(signupData);
-    return result.success && isEmailVerified; // 모든 검증 통과 + 이메일 인증 완료
+    const result = SignupSchema.safeParse({
+      ...signupData,
+      isEmailVerified,
+    } as any);
+    return result.success && isEmailVerified;
   }, [signupData, isEmailVerified]);
+  /**
+   * 인증 코드 확인 핸들러
+   *
+   * 사용자가 입력한 6자리 인증 코드를 서버에 전송하여 이메일 인증을 완료합니다.
+   *
+   * 처리 과정:
+   * 1. 인증 코드 유효성 검사
+   * 2. 서버에 인증 코드 전송
+   * 3. 인증 성공 시 이메일 인증 상태 업데이트
+   * 4. 에러 처리 및 상태 정리
+   */
+  const handleVerifyCode = useCallback(async () => {
+    if (
+      !signupData.verificationCode ||
+      signupData.verificationCode.length !== 6
+    ) {
+      setFormError((prev) => ({
+        ...prev,
+        verificationCode: '* 6자리 인증 코드를 입력해주세요.',
+      }));
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      setErrorMessage(null);
+
+      // 인증 코드 확인 API 호출
+      await authService.verifyEmail(
+        signupData.verificationCode,
+        signupData.email,
+      );
+
+      // 인증 성공 시 상태 업데이트
+      setIsEmailVerified(true);
+      setIsEmailSent(false);
+      setEmailTimer(0);
+
+      // 인증 코드 필드 초기화
+      updateSignupData({ verificationCode: '' });
+
+      // 에러 상태 초기화
+      setFormError((prev) => ({
+        ...prev,
+        verificationCode: undefined,
+      }));
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : '인증 코드 확인 중 오류가 발생했습니다.',
+      );
+      setFormError((prev) => ({
+        ...prev,
+        verificationCode: '* 인증 코드가 올바르지 않습니다.',
+      }));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    signupData.verificationCode,
+    signupData.email,
+    setIsLoading,
+    setIsError,
+    setErrorMessage,
+    setIsEmailVerified,
+    setIsEmailSent,
+    setEmailTimer,
+    updateSignupData,
+  ]);
 
   /**
    * 폼 제출 핸들러
@@ -233,12 +293,13 @@ export default function SignupForm({
    */
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault(); // 기본 폼 제출 동작 방지
-
-      // ===== Zod 전체 폼 유효성 검사 =====
-      const result = SignupSchema.safeParse(signupData);
+      e.preventDefault();
+      const result = SignupSchema.safeParse({
+        ...signupData,
+        verificationCode: signupData.verificationCode ?? '',
+        isEmailVerified,
+      } as any);
       if (!result.success) {
-        // 유효성 검사 실패 시 필드별 에러 메시지 설정
         const fieldErrors: SignupFormError = {};
         result.error.errors.forEach((err) => {
           if (err.path[0])
@@ -247,8 +308,6 @@ export default function SignupForm({
         setFormError(fieldErrors);
         return;
       }
-
-      // ===== 이메일 인증 확인 =====
       if (!isEmailVerified) {
         setFormError((prev) => ({
           ...prev,
@@ -256,9 +315,9 @@ export default function SignupForm({
         }));
         return;
       }
-
-      // ===== 검증 통과 시 부모 컴포넌트에 데이터 전달 =====
-      onSubmit(result.data);
+      // 불필요한 필드 제거 후 전달
+      const { isEmailVerified: _, verificationCode: __, ...rest } = result.data;
+      onSubmit(rest);
     },
     [signupData, isEmailVerified, onSubmit],
   );
@@ -293,12 +352,6 @@ export default function SignupForm({
           required
           error={formError.username}
         />
-        {/* 이름 에러 메시지 */}
-        {formError.username && (
-          <p className="text-xs text-like mt-2 max-md:text-[8px]">
-            *{formError.username}
-          </p>
-        )}
       </div>
 
       {/* ===== 이메일 인증 섹션 ===== */}
@@ -372,42 +425,72 @@ export default function SignupForm({
 
         {/* 인증 메일 전송 후 타이머 표시 */}
         {isEmailSent && !isEmailVerified && (
-          <div className="text-xs text-grayscale-60 text-right">
-            <p>*인증 유효시간 {formatTime(emailTimer)}</p>
+          <p className="text-xs text-grayscale-50 text-right">
+            *메일을 발송했습니다. 인증 유효시간 {formatTime(emailTimer)}
+          </p>
+        )}
+
+        {/* ===== 인증 코드 입력 섹션 ===== */}
+        {isEmailSent && !isEmailVerified && (
+          <div className="flex gap-2 w-full items-center mt-4 justify-between">
+            {/* 인증 코드 입력 필드 */}
+            <VerificationCodeInput
+              value={signupData.verificationCode || ''}
+              onChange={(val) => updateSignupData({ verificationCode: val })}
+              disabled={isLoading}
+            />
+            {/* 인증 확인 버튼 */}
+            <Button
+              type="button"
+              onClick={handleVerifyCode}
+              disabled={
+                !signupData.verificationCode ||
+                signupData.verificationCode.length !== 6 ||
+                isLoading
+              }
+              variant="outline"
+              size="md"
+              className="w-[40%] max-md:text-sm max-md:px-2 max-md:w-[45%] whitespace-normal break-keep"
+            >
+              {isLoading ? '처리 중...' : '인증 확인'}
+            </Button>
           </div>
         )}
+        <p className="text-xs text-like">{formError.verificationCode}</p>
       </div>
 
       {/* ===== 비밀번호 입력 섹션 ===== */}
-      <Input
-        id="password"
-        name="password"
-        type="password"
-        label="비밀번호"
-        value={signupData.password}
-        onChange={handleChange}
-        error={formError.password}
-        helperText="영문 대소문자, 숫자를 포함해 8자 이상 20자 이하로 입력해주세요."
-        required
-        showPasswordToggle // 비밀번호 표시/숨김 토글
-        showClearButton
-        containerClassName="mt-6"
-      />
+      <div className="mt-6">
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          label="비밀번호"
+          value={signupData.password}
+          onChange={handleChange}
+          error={formError.password}
+          helperText="영문 대소문자, 숫자를 포함해 8자 이상 20자 이하로 입력해주세요."
+          required
+          showPasswordToggle // 비밀번호 표시/숨김 토글
+          showClearButton
+        />
+      </div>
 
       {/* ===== 비밀번호 확인 섹션 ===== */}
-      <Input
-        id="passwordConfirm"
-        name="passwordConfirm"
-        type="password"
-        label="비밀번호 재확인"
-        value={signupData.passwordConfirm}
-        onChange={handleChange}
-        error={formError.passwordConfirm}
-        required
-        showPasswordToggle
-        showClearButton
-        containerClassName="mt-6"
-      />
+      <div className="mt-6">
+        <Input
+          id="passwordConfirm"
+          name="passwordConfirm"
+          type="password"
+          label="비밀번호 재확인"
+          value={signupData.passwordConfirm}
+          onChange={handleChange}
+          error={formError.passwordConfirm}
+          required
+          showPasswordToggle
+          showClearButton
+        />
+      </div>
 
       {/* ===== 제출 버튼 섹션 ===== */}
       <Button
