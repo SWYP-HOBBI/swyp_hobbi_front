@@ -295,18 +295,18 @@ export const authService = {
   /**
    * 이메일 인증 확인
    *
-   * 사용자가 이메일로 받은 인증 코드를 확인하여 계정을 활성화합니다.
+   * 사용자가 이메일로 받은 6자리 인증 코드를 확인하여 계정을 활성화합니다.
    *
-   * @param token - 이메일로 받은 인증 토큰
+   * @param code - 이메일로 받은 6자리 인증 코드
    * @param email - 인증할 이메일 주소
    */
-  verifyEmail: async (token: string, email: string) => {
+  verifyEmail: async (code: string, email: string) => {
     return fetchApi('/email/verification/check', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ token, email }),
+      body: JSON.stringify({ code, email }),
     });
   },
 

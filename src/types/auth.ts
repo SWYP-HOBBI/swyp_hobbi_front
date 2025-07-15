@@ -50,6 +50,7 @@ export interface SignupFormData {
   email: string;
   password: string;
   passwordConfirm: string;
+  verificationCode: string;
 }
 
 // 회원가입 폼 데이터 타입
@@ -76,6 +77,7 @@ export interface SignupRequest {
   username?: string;
   password?: string;
   passwordConfirm?: string;
+  verificationCode?: string;
   birthYear: number;
   birthMonth: number;
   birthDay: number;

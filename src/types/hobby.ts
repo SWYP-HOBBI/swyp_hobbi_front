@@ -132,7 +132,6 @@ export const HOBBY_SUB_CATEGORIES: HobbySubCategories = {
     '중국어',
     '불어',
     '러시아어',
-    '기타',
   ],
 
   CRAFT_HANDMADE: [
@@ -179,7 +178,6 @@ export const HOBBY_SUB_CATEGORIES: HobbySubCategories = {
     '봉사',
     '재능나눔',
     '환경보호',
-    '기타',
   ],
 } as const;
 

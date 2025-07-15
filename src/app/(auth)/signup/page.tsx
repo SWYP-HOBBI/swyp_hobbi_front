@@ -90,7 +90,7 @@ export default function Signup() {
    *
    * @param data - 1단계에서 제출된 기본 정보 (이름, 이메일, 비밀번호 등)
    */
-  const handleSignup = (data: SignupFormData) => {
+  const handleSignup = (data: Omit<SignupFormData, 'verificationCode'>) => {
     updateSignupData(data);
     setSignupStep('userInfo');
   };
@@ -124,8 +124,9 @@ export default function Signup() {
         currentSignupData.socialProvider && currentSignupData.socialId;
 
       // ===== API 호출을 통한 회원가입 완료 =====
+      const { verificationCode, ...apiData } = currentSignupData;
       const userData: LoginResponse = await authService.signup({
-        ...currentSignupData,
+        ...apiData,
         // 소셜 회원가입의 경우 password 관련 필드 제외
         // 일반 회원가입의 경우 password 필드 포함
         ...(isSocialSignup
