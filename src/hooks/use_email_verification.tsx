@@ -78,7 +78,6 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
    * - setIsLoading: 로딩 상태 설정
    * - setIsError: 에러 상태 설정
    * - setErrorMessage: 에러 메시지 설정
-   * - setIsEmailVerified: 이메일 인증 상태 설정
    * - setIsEmailSent: 이메일 발송 상태 설정
    * - setEmailTimer: 타이머 설정
    */
@@ -88,7 +87,6 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
     setIsError, // 에러 상태 설정
     setErrorMessage, // 에러 메시지 설정
     isEmailVerified, // 이메일 인증 완료 여부
-    setIsEmailVerified, // 이메일 인증 상태 설정
     isEmailSent, // 이메일 인증 메일 발송 상태
     setIsEmailSent, // 이메일 인증 메일 발송 상태 설정
     emailTimer, // 이메일 인증 타이머
