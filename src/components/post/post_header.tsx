@@ -1,6 +1,7 @@
 import SvgIcon from '@/components/common/svg_icon';
 import { useState, useRef, useEffect } from 'react';
 import Profile from '../common/profile';
+import { useIsMobile } from '@/hooks/use_is_mobile';
 
 /**
  * 게시글 헤더 Props 인터페이스
@@ -73,39 +74,7 @@ export default function PostHeader({
    */
   const menuRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * 모바일 환경 여부 상태
-   * 반응형 레이아웃 적용을 위해 사용
-   */
-  const [isMobile, setIsMobile] = useState(false);
-
-  // ===== 사이드 이펙트 =====
-
-  /**
-   * 화면 크기 감지 및 모바일 상태 업데이트
-   *
-   * 동작 방식:
-   * 1. 초기 렌더링 시 화면 크기 확인
-   * 2. 리사이즈 이벤트 리스너 등록
-   * 3. 784px 기준으로 모바일/데스크톱 구분
-   * 4. 컴포넌트 언마운트 시 이벤트 리스너 해제
-   */
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 784);
-    };
-
-    // 초기값 설정
-    handleResize();
-
-    // 리사이즈 이벤트 리스너 등록
-    window.addEventListener('resize', handleResize);
-
-    // 클린업 함수
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const isMobile = useIsMobile();
 
   /**
    * 메뉴 외부 클릭 감지 및 메뉴 닫기

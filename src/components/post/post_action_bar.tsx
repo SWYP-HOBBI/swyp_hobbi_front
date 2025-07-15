@@ -143,7 +143,7 @@ export default function PostActionBar({
       </div>
 
       {/* ===== 오른쪽 작성 시간 표시 ===== */}
-      <span className="text-grayscale-40r">{formatDate(createdAt)}</span>
+      <span className="text-grayscale-40">{formatDate(createdAt)}</span>
     </div>
   );
 }
