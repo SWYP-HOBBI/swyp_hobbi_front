@@ -7,15 +7,13 @@ import { authService } from '@/services/api';
 /**
  * 이메일 인증 관련 커스텀 훅
  *
- * 회원가입 및 비밀번호 찾기 시 이메일 인증을 관리하는 종합적인 훅입니다.
+ * 회원가입 및 비밀번호 찾기 시 이메일 인증을 관리하는 훅입니다.
  *
  * 주요 기능:
  * 1. 이메일 중복 확인 (회원가입 시)
- * 2. 인증 메일 발송
+ * 2. 인증 메일 발송 (6자리 코드 포함)
  * 3. 인증 타이머 관리 (3분 카운트다운)
- * 4. 인증 상태 관리 및 동기화
- * 5. 로컬 스토리지를 통한 인증 상태 유지
- * 6. 다중 창 간 인증 상태 동기화
+ * 4. 인증 상태 관리
  *
  * 사용 시나리오:
  * - 회원가입: 이메일 중복 확인 후 인증 메일 발송
@@ -23,10 +21,9 @@ import { authService } from '@/services/api';
  *
  * 기술적 특징:
  * - Zustand 스토어를 통한 상태 관리
- * - 로컬 스토리지를 통한 인증 상태 유지
- * - StorageEvent를 통한 다중 창 동기화
- * - 타이머를 통한 인증 시간 제한
+ * - 타이머를 통한 인증 시간 제한 (3분)
  * - 에러 처리 및 로딩 상태 관리
+ * - 6자리 인증 코드 방식 지원
  *
  * 반환값:
  * - isEmailVerified: 이메일 인증 완료 여부
@@ -38,10 +35,10 @@ import { authService } from '@/services/api';
  * 인증 프로세스:
  * 1. 이메일 입력 확인
  * 2. 이메일 중복 확인 (회원가입 시)
- * 3. 인증 메일 발송
+ * 3. 인증 메일 발송 (6자리 코드 포함)
  * 4. 3분 타이머 시작
- * 5. 사용자가 메일에서 인증 링크 클릭
- * 6. 인증 완료 시 상태 업데이트
+ * 5. 사용자가 메일에서 6자리 코드 확인
+ * 6. 코드 입력 후 인증 완료
  */
 
 /**
@@ -60,7 +57,7 @@ interface EmailVerificationConfig {
 /**
  * 이메일 인증 커스텀 훅
  *
- * 이메일 인증과 관련된 모든 로직을 관리하는 종합적인 훅입니다.
+ * 이메일 인증과 관련된 모든 로직을 관리하는 훅입니다.
  *
  * @param config - 이메일 인증 설정 옵션 (선택적)
  * @returns 이메일 인증 관련 상태와 함수들
@@ -78,22 +75,20 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
    * - emailTimer: 인증 타이머 (초 단위)
    *
    * 함수:
-   * - updateSignupData: 회원가입 데이터 업데이트
-   * - setIsEmailVerified: 이메일 인증 상태 설정
    * - setIsLoading: 로딩 상태 설정
    * - setIsError: 에러 상태 설정
    * - setErrorMessage: 에러 메시지 설정
+   * - setIsEmailVerified: 이메일 인증 상태 설정
    * - setIsEmailSent: 이메일 발송 상태 설정
    * - setEmailTimer: 타이머 설정
    */
   const {
     signupData, // 회원가입 데이터
-    updateSignupData, // 회원가입 데이터 업데이트
-    isEmailVerified, // 이메일 인증 상태
-    setIsEmailVerified, // 이메일 인증 상태 설정
     setIsLoading, // 로딩 상태 설정
     setIsError, // 에러 상태 설정
     setErrorMessage, // 에러 메시지 설정
+    isEmailVerified, // 이메일 인증 완료 여부
+    setIsEmailVerified, // 이메일 인증 상태 설정
     isEmailSent, // 이메일 인증 메일 발송 상태
     setIsEmailSent, // 이메일 인증 메일 발송 상태 설정
     emailTimer, // 이메일 인증 타이머
@@ -158,7 +153,7 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
    * 1. 이메일 입력 확인
    * 2. 로딩 상태 설정 및 에러 초기화
    * 3. 이메일 중복 확인 (설정에 따라 스킵 가능)
-   * 4. 인증 메일 발송
+   * 4. 인증 메일 발송 (6자리 코드 포함)
    * 5. 타이머 시작 (3분)
    * 6. 에러 처리 및 상태 정리
    *
@@ -251,74 +246,6 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // ===== 이메일 인증 상태 관리 =====
-
-  /**
-   * 이메일 인증 상태 관리 useEffect
-   *
-   * 로컬 스토리지를 통해 인증 상태를 유지하고,
-   * 여러 창 간의 인증 상태를 동기화합니다.
-   *
-   * 주요 기능:
-   * 1. 로컬 스토리지에서 인증 상태 복원
-   * 2. 다중 창 간 인증 상태 동기화
-   * 3. 인증 완료 시 자동 상태 업데이트
-   *
-   * 동작 방식:
-   * 1. 컴포넌트 마운트 시 로컬 스토리지 확인
-   * 2. 저장된 인증 정보가 현재 이메일과 일치하면 인증 상태 복원
-   * 3. StorageEvent 리스너 등록으로 다른 창의 변경 감지
-   * 4. 인증 상태 변경 시 자동 동기화
-   *
-   * 로컬 스토리지 키:
-   * - emailVerified: 인증 완료 여부 (true/false)
-   * - verifiedEmail: 인증된 이메일 주소
-   *
-   * 동기화 시나리오:
-   * - 사용자가 새 창에서 인증 완료
-   * - 기존 창에서 인증 상태 자동 업데이트
-   * - 페이지 새로고침 시 인증 상태 유지
-   */
-  useEffect(() => {
-    // ===== 로컬 스토리지에서 인증 상태 확인 =====
-    const checkVerificationStatus = () => {
-      const storedVerified = localStorage.getItem('emailVerified') === 'true';
-      const storedEmail = localStorage.getItem('verifiedEmail');
-
-      // ===== 인증 상태 복원 조건 =====
-      // 저장된 인증 정보가 현재 이메일과 일치하는 경우 인증 상태 복원
-      if (
-        storedVerified &&
-        storedEmail &&
-        (!signupData.email || signupData.email === storedEmail)
-      ) {
-        updateSignupData({ email: storedEmail });
-        setIsEmailVerified(true);
-        setIsEmailSent(false);
-      }
-    };
-
-    // ===== 초기 상태 확인 =====
-    checkVerificationStatus();
-
-    // ===== 다중 창 동기화 =====
-    // 다른 창에서의 인증 상태 변경 감지
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'emailVerified' || e.key === 'verifiedEmail') {
-        checkVerificationStatus();
-      }
-    };
-
-    // ===== 스토리지 이벤트 리스너 등록 =====
-    window.addEventListener('storage', handleStorageChange);
-
-    // ===== 클린업 함수 =====
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
   // ===== 훅 반환값 =====
 
   /**
@@ -332,7 +259,7 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
    * - checkEmailAndSendVerification: 인증 메일 발송 함수 (async function)
    */
   return {
-    isEmailVerified, // 이메일 인증 상태
+    isEmailVerified, // 이메일 인증 완료 여부
     isEmailSent, // 이메일 인증 메일 발송 상태
     emailTimer, // 이메일 인증 타이머
     formatTime, // 타이머 시간 포맷
