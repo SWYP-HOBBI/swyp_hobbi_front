@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import MyProfile from '../common/my_profile';
-import { fetchApi, userService } from '@/services/api';
+import { userService } from '@/services/api';
 import { MyPageInfo } from '@/types/my_page';
 
 export default function UserProfile() {
