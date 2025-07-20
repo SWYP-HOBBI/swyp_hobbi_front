@@ -90,7 +90,7 @@ export default function Signup() {
    *
    * @param data - 1단계에서 제출된 기본 정보 (이름, 이메일, 비밀번호 등)
    */
-  const handleSignup = (data: Omit<SignupFormData, 'verificationCode'>) => {
+  const handleSignup = (data: SignupFormData) => {
     updateSignupData(data);
     setSignupStep('userInfo');
   };
