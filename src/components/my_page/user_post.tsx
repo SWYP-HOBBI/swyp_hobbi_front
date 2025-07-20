@@ -8,8 +8,6 @@ import { useModalStore } from '@/store/modal';
 import { userService, postService } from '@/services/api';
 import UserPostCard from '@/components/my_page/user_post_card';
 import { MyPostsResponse } from '@/types/my_page';
-import GlobalError from '@/app/global-error';
-import Loader from '../common/loader';
 
 export default function UserPost() {
   const { userId } = useAuthStore();

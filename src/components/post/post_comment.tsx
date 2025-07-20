@@ -15,6 +15,7 @@ import Button from '../common/button';
 import { DefaultProfile } from '../common/profile';
 import { formatDate } from '@/utils/date';
 import GlobalError from '@/app/global-error';
+import { useIsMobile } from '@/hooks/use_is_mobile';
 
 /**
  * 댓글 데이터 인터페이스 (대댓글 포함)
@@ -139,11 +140,7 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
    */
   const [editContent, setEditContent] = useState('');
 
-  /**
-   * 모바일 환경 여부
-   * 반응형 레이아웃 적용을 위해 사용
-   */
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
 
   /**
    * 댓글 제출 중 상태
@@ -177,26 +174,6 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
     if (!userInfo) fetchUserInfo();
   }, [fetchUserInfo, userInfo]);
 
-  /**
-   * 화면 크기 감지 및 모바일 상태 업데이트
-   *
-   * 동작 방식:
-   * 1. 초기 렌더링 시 화면 크기 확인
-   * 2. 리사이즈 이벤트 리스너 등록
-   * 3. 784px 기준으로 모바일/데스크톱 구분
-   * 4. 컴포넌트 언마운트 시 이벤트 리스너 해제
-   */
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 784);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   // ===== 유틸리티 함수들 =====
 
   /**
@@ -213,12 +190,6 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
     if (content.length <= maxLength) return content;
     return content.slice(0, maxLength) + '...';
   }, []);
-
-  /**
-   * 현재 사용자 ID (권한 확인용)
-   * useAuthStore에서 직접 가져와서 최신 상태 보장
-   */
-  const userId = useAuthStore((state) => state.userId);
 
   /**
    * IntersectionObserver 관찰 대상 요소 참조
@@ -411,7 +382,7 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
         postId,
         content,
         parentCommentId,
-        userId,
+        currentUserId,
       );
       setNewComment('');
       setReplyTo(null);
@@ -466,7 +437,12 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
     }
 
     try {
-      await commentService.updateComment(commentId, content, postId, userId);
+      await commentService.updateComment(
+        commentId,
+        content,
+        postId,
+        currentUserId,
+      );
       setEditingCommentId(null);
       setEditContent('');
       await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
@@ -526,11 +502,11 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
   );
 
   /**
-   * 답글 대상 설정
+   * 대댓글(답글) 대상 설정
    *
-   * 답글을 작성할 댓글을 설정합니다.
+   * 대댓글(답글)을 작성할 댓글을 설정합니다.
    *
-   * @param comment - 답글 대상 댓글
+   * @param comment - 대댓글(답글) 대상 댓글
    */
   const handleReplyTo = (comment: Comment) => {
     setReplyTo({
@@ -541,9 +517,9 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
   };
 
   /**
-   * 답글 대상 취소
+   * 대댓글(답글) 대상 취소
    *
-   * 답글 대상을 취소하고 일반 댓글 작성 모드로 돌아갑니다.
+   * 대댓글(답글) 대상을 취소하고 일반 댓글 작성 모드로 돌아갑니다.
    */
   const handleCancelReply = () => {
     setReplyTo(null);

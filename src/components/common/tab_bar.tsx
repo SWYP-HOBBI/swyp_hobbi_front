@@ -338,7 +338,13 @@ export default function TabBar() {
    * - 글쓰기/마이페이지: 인증 필요시 모달, 아니면 이동
    * - 기타: 이동
    */
-  const handleTabClick = (item: TabItem) => {
+  const handleTabClick = (item: TabItem, event?: React.MouseEvent) => {
+    // 모바일에서 이벤트 전파 방지
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     switch (item.id) {
       case 'home':
         handlePageNavigation(item.path);
@@ -527,7 +533,7 @@ export default function TabBar() {
         {TAB_ITEMS.map((item) => (
           <button
             key={item.id}
-            onClick={() => handleTabClick(item)}
+            onClick={(e) => handleTabClick(item, e)}
             className="flex flex-col items-center space-y-1"
           >
             <MobileTabItem
@@ -545,7 +551,7 @@ export default function TabBar() {
                           ? isMyPage
                           : false
               }
-              onClick={() => handleTabClick(item)}
+              onClick={() => {}} // 빈 함수로 변경 (이벤트 전파 방지)
               iconSize={24}
               showLabel={true}
               unreadCount={item.id === 'notification' ? unreadCount : undefined}

@@ -18,7 +18,7 @@ import VerificationCodeInput from '@/components/common/verification_code_input';
  *                       회원가입 프로세스에서 뒤로 가기 기능을 제공
  */
 interface SignupFormProps {
-  onSubmit: (data: Omit<SignupFormData, 'verificationCode'>) => void;
+  onSubmit: (data: SignupFormData) => void;
   onBackButton: () => void;
 }
 
