@@ -470,11 +470,6 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
           onCommentUpdate?.();
         } catch (error) {
           console.error('댓글 삭제에 실패했습니다:', error);
-          openModal({
-            type: 'error',
-            message: '댓글 삭제에 실패했습니다.\n다시 시도해 주세요.',
-            confirmText: '확인',
-          });
         }
       },
     });
