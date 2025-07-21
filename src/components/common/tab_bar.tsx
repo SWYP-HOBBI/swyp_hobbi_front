@@ -9,8 +9,8 @@ import { useSearchStore } from '@/store/search';
 import { useEffect, useState } from 'react';
 import { useNotificationStore } from '@/store/notification';
 import { useFeedStore } from '@/store/feed';
-import { notificationService } from '@/services/api';
 import clsx from 'clsx';
+import { notificationApi } from '@/api/notification';
 
 /**
  * 하단/사이드 TabBar(네비게이션) 컴포넌트
@@ -405,7 +405,7 @@ export default function TabBar() {
     if (!isAuthenticated) return;
     const fetchUnreadCount = async () => {
       try {
-        const response = await notificationService.getUnreadCount();
+        const response = await notificationApi.getUnreadCount();
         setUnreadCount(Number(response));
       } catch (error) {
         console.error('알림 수 조회 실패:', error);

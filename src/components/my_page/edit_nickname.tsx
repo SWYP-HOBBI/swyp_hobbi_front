@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { userService } from '@/services/api';
+import { userApi } from '@/api/user';
 
 interface EditNicknameProps {
   currentNickname: string;
@@ -42,9 +42,7 @@ export default function EditNickname({
     setIsLoading(true);
     setIsError(false);
     try {
-      const response = await userService.validateNickname({
-        nickname: newNickname,
-      });
+      const response = await userApi.validateNickname(newNickname);
 
       if (response.exists) {
         setIsError(true);
@@ -65,7 +63,7 @@ export default function EditNickname({
   const handleSave = async () => {
     if (!isNicknameVerified) return;
     try {
-      await userService.updateNickname({ nickname: newNickname });
+      await userApi.updateNickname(newNickname);
       onNicknameChange(newNickname);
       setShowNicknameEdit(false);
     } catch (error) {

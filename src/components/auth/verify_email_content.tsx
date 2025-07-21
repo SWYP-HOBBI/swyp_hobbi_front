@@ -2,8 +2,8 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
+import { authApi } from '@/api/auth';
 
 export default function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -28,14 +28,14 @@ export default function VerifyEmailContent() {
 
       try {
         if (reset) {
-          await authService.verifyPasswordFindEmail(token, email);
+          await authApi.verifyPasswordFindEmail(token, email);
           setIsSuccess(true);
           localStorage.setItem('passwordResetToken', token);
           setTimeout(() => {
             window.close();
           }, 2000);
         } else {
-          await authService.verifyEmail(token, email);
+          await authApi.verifyEmail(token, email);
         }
         setIsSuccess(true);
         localStorage.setItem('emailVerified', 'true');

@@ -3,7 +3,7 @@
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useChallengeStore } from '@/store/challenge';
-import { challengeService } from '@/services/api';
+import { challengeApi } from '@/api/challenge';
 
 /**
  * 챌린지 아이템 Props 인터페이스
@@ -140,7 +140,7 @@ export default function ChallengeItem({
    */
   const handleStart = async () => {
     try {
-      await challengeService.startChallenge(Number(id));
+      await challengeApi.startChallenge(Number(id));
       startChallenge(id);
     } catch (error) {
       console.error('챌린지 시작 실패:', error);

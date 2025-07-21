@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 import Input from '@/components/common/input';
-import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 import Button from '../common/button';
 import SocialButton from '../common/social_button';
 import { useModalStore } from '@/store/modal';
 import { z } from 'zod';
+import { authApi } from '@/api/auth';
 
 /**
  * 로그인 폼 컴포넌트 (LoginForm)
@@ -170,10 +170,7 @@ export default function LoginForm() {
 
       try {
         // ===== API 호출을 통한 로그인 시도 =====
-        const userData = await authService.login(
-          formData.email,
-          formData.password,
-        );
+        const userData = await authApi.login(formData.email, formData.password);
 
         // 로그인 성공 시 인증 정보 저장 및 페이지 이동
         setAuth(userData);
@@ -212,7 +209,7 @@ export default function LoginForm() {
   const handleSocialLogin = async (provider: 'kakao' | 'google') => {
     try {
       // 소셜 로그인 URL 가져오기
-      const loginUrl = authService.getSocialLoginUrl(provider);
+      const loginUrl = authApi.getSocialLoginUrl(provider);
 
       // 소셜 로그인 페이지로 리다이렉트
       window.location.href = loginUrl;

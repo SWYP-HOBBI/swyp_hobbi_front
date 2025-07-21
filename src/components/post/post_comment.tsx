@@ -1,5 +1,4 @@
 import { Comment } from '@/types/post';
-import { commentService } from '@/services/api';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/store/auth';
 import { useUserProfileStore } from '@/store/user_profile';
@@ -16,6 +15,7 @@ import { DefaultProfile } from '../common/profile';
 import { formatDate } from '@/utils/date';
 import GlobalError from '@/app/global-error';
 import { useIsMobile } from '@/hooks/use_is_mobile';
+import { commentApi } from '@/api/comment';
 
 /**
  * 댓글 데이터 인터페이스 (대댓글 포함)
@@ -223,7 +223,7 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
   } = useInfiniteQuery<Comment[], Error, InfiniteData<Comment[]>>({
     queryKey: ['comments', postId],
     queryFn: ({ pageParam }) => {
-      return commentService.getComments({
+      return commentApi.getComments({
         postId,
         lastCommentId: pageParam as number,
         pageSize: 15,
@@ -378,7 +378,7 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
 
     try {
       setIsSubmitting(true);
-      await commentService.createComment(
+      await commentApi.createComment(
         postId,
         content,
         parentCommentId,
@@ -437,12 +437,7 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
     }
 
     try {
-      await commentService.updateComment(
-        commentId,
-        content,
-        postId,
-        currentUserId,
-      );
+      await commentApi.updateComment(commentId, content, postId, currentUserId);
       setEditingCommentId(null);
       setEditContent('');
       await queryClient.invalidateQueries({ queryKey: ['comments', postId] });
@@ -466,7 +461,7 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
       showCancelButton: true,
       onConfirm: async () => {
         try {
-          await commentService.deleteComment(commentId);
+          await commentApi.deleteComment(commentId);
           // ===== 댓글 목록 쿼리 무효화 =====
           await queryClient.invalidateQueries({
             queryKey: ['comments', postId],

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import Loader from '@/components/common/loader';
-import { authService } from '@/services/api';
+import { authApi } from '@/api/auth';
 
 /**
  * 소셜 로그인 제공자 타입 정의
@@ -115,8 +115,8 @@ export default function SocialLoginCallback({ params }: Props) {
         // ===== 제공자별 소셜 로그인 API 호출 =====
         const loginMethod =
           resolvedParams.provider === 'kakao'
-            ? authService.kakaoLogin // 카카오 로그인
-            : authService.googleLogin; // 구글 로그인
+            ? authApi.kakaoLogin // 카카오 로그인
+            : authApi.googleLogin; // 구글 로그인
 
         const response = await loginMethod(code);
 
@@ -139,7 +139,7 @@ export default function SocialLoginCallback({ params }: Props) {
               onConfirm: async () => {
                 try {
                   // ===== 계정 연동 API 호출 =====
-                  await authService.linkSocialAccount();
+                  await authApi.linkSocialAccount();
 
                   // ===== 연동 성공 시 마이페이지로 이동 =====
                   router.push('/my_page');

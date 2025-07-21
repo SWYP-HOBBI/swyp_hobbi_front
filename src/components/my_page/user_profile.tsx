@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import MyProfile from '../common/my_profile';
-import { userService } from '@/services/api';
 import { MyPageInfo } from '@/types/my_page';
+import { userApi } from '@/api/user';
 
 export default function UserProfile() {
   const [userInfo, setUserInfo] = useState<MyPageInfo | null>(null);
@@ -11,7 +11,7 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const data = await userService.getMyPageInfo();
+        const data = await userApi.getMyPageInfo();
         setUserInfo(data);
       } catch (err) {
         console.error('사용자 정보 로딩 실패:', err);

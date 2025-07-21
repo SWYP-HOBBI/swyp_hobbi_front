@@ -42,7 +42,7 @@ export interface MyPageModify {
   hobbyTags: string[];
 }
 
-// 닉네임 중복 확인 요청/응답
+// 닉네임 중복 확인 요청/응답 (삭제)
 export interface NicknameValidationRequest {
   nickname: string;
 }
@@ -52,7 +52,7 @@ export interface NicknameValidationResponse {
   message: string;
 }
 
-// 닉네임 변경 요청
+// 닉네임 변경 요청 (삭제)
 export interface UpdateNickname {
   nickname: string;
 }
@@ -63,7 +63,7 @@ export interface UpdatePassword {
   confirmPassword: string;
 }
 
-// 프로필 사진 업로드 응답
+// 프로필 사진 업로드 응답 (삭제)
 export interface ProfileImageUpload {
   userImageUrl: string;
 }
@@ -77,19 +77,4 @@ export interface UpdateUserInfo {
   birthDay: number;
   mbti: string;
   hobbyTags: string[];
-}
-
-// 회원 탈퇴 요청
-export interface DeleteUserRequest {
-  reason: string;
-}
-
-// 회원 탈퇴 응답
-export interface DeleteUserResponse {
-  message: string;
-}
-
-// 현재 비밀번호 응답
-export interface CurrentPasswordRequest {
-  currentPassword: string;
 }

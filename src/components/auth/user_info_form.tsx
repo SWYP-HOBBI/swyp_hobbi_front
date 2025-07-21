@@ -8,9 +8,9 @@ import HobbySelector, {
 import { useHobbyStore } from '@/store/hobby';
 import Input from '@/components/common/input';
 import Button from '@/components/common/button';
-import { authService } from '@/services/api';
 import SvgIcon from '../common/svg_icon';
 import { z } from 'zod';
+import { authApi } from '@/api/auth';
 
 /**
  * 회원가입 상세 정보 입력 폼 Props 인터페이스
@@ -225,7 +225,7 @@ export default function UserInfoForm({
       setErrorMessage(null);
 
       // ===== API 호출을 통한 중복 검사 =====
-      const response = await authService.checkNicknameDuplicate(
+      const response = await authApi.checkNicknameDuplicate(
         signupData.nickname,
       );
 

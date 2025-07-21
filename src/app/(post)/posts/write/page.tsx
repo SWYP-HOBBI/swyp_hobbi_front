@@ -3,9 +3,9 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHobbyStore } from '@/store/hobby';
-import { postService } from '@/services/api';
 import PostForm from '@/components/post/post_form';
 import { useModalStore } from '@/store/modal';
+import { postApi } from '@/api/post';
 
 /**
  * 게시글 작성 페이지 메인 컴포넌트
@@ -96,7 +96,7 @@ export default function PostWrite() {
   const handleSubmit = async (formData: FormData) => {
     try {
       // ===== 게시글 작성 요청 =====
-      const { postId } = await postService.writePost(formData);
+      const { postId } = await postApi.writePost(formData);
 
       // ===== 성공 처리 =====
       // 게시글 작성 완료 후에만 취미 태그 초기화

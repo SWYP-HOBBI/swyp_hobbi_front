@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Challenge } from '@/types/challenge';
-import { challengeService } from '@/services/api';
+import { challengeApi } from '@/api/challenge';
 
 /**
  * 다음 월요일 자정까지의 시간을 계산하는 함수
@@ -167,7 +167,7 @@ export const useChallengeStore = create<ChallengeStore>((set) => ({
    * 로컬 상태와 동기화합니다.
    *
    * 처리 과정:
-   * 1. challengeService.getChallenges() API 호출
+   * 1. challengeApi.getChallenges() API 호출
    * 2. 응답 데이터를 로컬 챌린지와 매핑
    * 3. 진행률(current)과 상태(status) 업데이트
    * 4. 에러 발생 시 콘솔에 로그 출력
@@ -184,7 +184,7 @@ export const useChallengeStore = create<ChallengeStore>((set) => ({
    */
   fetchChallenges: async () => {
     try {
-      const response = await challengeService.getChallenges();
+      const response = await challengeApi.getChallenges();
 
       set((state) => ({
         challenges: state.challenges.map((challenge) => {
