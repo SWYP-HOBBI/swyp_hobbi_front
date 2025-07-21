@@ -8,9 +8,9 @@ import { useSignupStore } from '@/store/signup';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import SvgIcon from '@/components/common/svg_icon';
-import { authService } from '@/services/api';
 import { useHobbyStore } from '@/store/hobby';
 import { useEffect } from 'react';
+import { authApi } from '@/api/auth';
 
 /**
  * 회원가입 페이지 메인 컴포넌트
@@ -125,7 +125,7 @@ export default function Signup() {
 
       // ===== API 호출을 통한 회원가입 완료 =====
       const { verificationCode, ...apiData } = currentSignupData;
-      const userData: LoginResponse = await authService.signup({
+      const userData: LoginResponse = await authApi.signup({
         ...apiData,
         // 소셜 회원가입의 경우 password 관련 필드 제외
         // 일반 회원가입의 경우 password 필드 포함

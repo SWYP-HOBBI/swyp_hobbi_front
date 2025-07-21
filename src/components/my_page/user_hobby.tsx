@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Tag from '../common/tag';
-import { userService } from '@/services/api';
 import { MyPageInfo } from '@/types/my_page';
+import { userApi } from '@/api/user';
 
 interface UserHobbyProps {
   hobbyTags: string[];
@@ -13,7 +13,7 @@ export default function UserHobby() {
   useEffect(() => {
     const fetchHobbies = async () => {
       try {
-        const data: MyPageInfo = await userService.getMyPageInfo();
+        const data: MyPageInfo = await userApi.getMyPageInfo();
 
         setHobbyTags(data.hobbyTags || []);
       } catch (err) {

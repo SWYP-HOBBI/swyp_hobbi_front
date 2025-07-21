@@ -1,7 +1,7 @@
 import { AuthState } from '@/types/auth';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { authService } from '@/services/api';
+import { authApi } from '@/api/auth';
 
 /**
  * 인증 상태 초기값
@@ -134,7 +134,7 @@ export const useAuthStore = create<AuthState>()(
        */
       logout: async () => {
         try {
-          await authService.logout();
+          await authApi.logout();
           set(initialState);
           // ===== 로그아웃 후 홈페이지로 리다이렉트 =====
           window.location.href = '/';

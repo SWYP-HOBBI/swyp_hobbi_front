@@ -4,11 +4,11 @@ import { useRef, useEffect } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import SvgIcon from '@/components/common/svg_icon';
-import { notificationService } from '@/services/api';
 import { Notification, NotificationListProps } from '@/types/notification';
 import { formatDate } from '@/utils/date';
 import { useNotificationStore } from '@/store/notification';
 import GlobalError from '@/app/global-error';
+import { notificationApi } from '@/api/notification';
 
 export default function NotificationList({
   showCheckbox,
@@ -34,7 +34,7 @@ export default function NotificationList({
     queryKey: ['notifications'],
     queryFn: async ({ pageParam }) => {
       const lastNotificationId = pageParam ? Number(pageParam) : undefined;
-      return await notificationService.getNotifications(lastNotificationId, 15);
+      return await notificationApi.getNotifications(lastNotificationId, 15);
     },
     getNextPageParam: (lastPage) => {
       if (!lastPage || lastPage.length < 15) return undefined;
@@ -73,7 +73,7 @@ export default function NotificationList({
   // 알림 상세 조회 & 이동
   const handleClick = async (notification: Notification) => {
     try {
-      const detail = await notificationService.getNotificationDetail(
+      const detail = await notificationApi.getNotificationDetail(
         notification.notificationId,
       );
 

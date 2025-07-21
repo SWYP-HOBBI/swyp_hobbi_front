@@ -5,11 +5,11 @@ import Input from '@/components/common/input';
 import Button from '@/components/common/button';
 import { useEmailVerification } from '@/hooks/use_email_verification';
 import SvgIcon from '../common/svg_icon';
-import { authService } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import { useModalStore } from '@/store/modal';
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
+import { authApi } from '@/api/auth';
 
 // ===== ZOD 스키마 정의 =====
 
@@ -111,7 +111,7 @@ export default function PasswordFind({}) {
    */
   const { isEmailSent, emailTimer, formatTime, checkEmailAndSendVerification } =
     useEmailVerification({
-      sendVerificationEmail: authService.sendPasswordFindEmail, // 비밀번호 찾기용 이메일 전송
+      sendVerificationEmail: authApi.sendPasswordFindEmail, // 비밀번호 찾기용 이메일 전송
       skipDuplicateCheck: true, // 중복 검사 건너뛰기
     });
 
@@ -242,7 +242,7 @@ export default function PasswordFind({}) {
         }
 
         // ===== API 호출을 통한 비밀번호 재설정 =====
-        await authService.resetPassword(token, signupData.password || '');
+        await authApi.resetPassword(token, signupData.password || '');
 
         // ===== 성공 시 localStorage 정리 =====
         localStorage.removeItem('passwordResetToken');

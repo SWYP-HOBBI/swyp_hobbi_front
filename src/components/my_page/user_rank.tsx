@@ -5,9 +5,9 @@ import ChallengeItem from '../rank/challenge_item';
 import LevelProgressBar from '../rank/level_progress_bar';
 import { useChallengeStore } from '@/store/challenge';
 import { Rank } from '@/types/rank';
-import { userService } from '@/services/api';
 import { Tooltip } from '../rank/tooltip';
 import { formatRemainingTime } from '@/utils/date';
+import { userApi } from '@/api/user';
 
 /**
  * 사용자 등급 및 챌린지 컴포넌트
@@ -121,7 +121,7 @@ export default function UserRank() {
   useEffect(() => {
     const fetchRank = async () => {
       try {
-        const data = await userService.getUserRank();
+        const data = await userApi.getUserRank();
         setUserRank(data);
       } catch (err) {
         console.error('등급 정보 조회 실패:', err);

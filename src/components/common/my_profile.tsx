@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import SvgIcon from '@/components/common/svg_icon';
-import { userService } from '@/services/api';
 import { getLevelIcon } from '../rank/level_badge';
 import clsx from 'clsx';
+import { userApi } from '@/api/user';
 
 /**
  * 내 프로필(아바타) 컴포넌트
@@ -46,11 +46,10 @@ export default function MyProfile({
 
     setIsLoading(true);
     try {
-      const response = await userService.uploadProfileImage(file);
-      const imageUrl = response.userImageUrl;
+      const response = await userApi.uploadProfileImage(file);
 
-      if (imageUrl) {
-        setPreviewUrl(imageUrl);
+      if (response) {
+        setPreviewUrl(response);
       } else {
         console.error('서버에서 이미지 URL을 찾을 수 없습니다.');
       }
@@ -66,7 +65,7 @@ export default function MyProfile({
   useEffect(() => {
     const fetchLevel = async () => {
       try {
-        const res = await userService.getUserRank();
+        const res = await userApi.getUserRank();
         const currentLevel =
           res.currentExp >= res.requiredExp ? res.level + 1 : res.level;
         setLevel(currentLevel);

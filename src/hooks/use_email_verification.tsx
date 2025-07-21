@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSignupStore } from '@/store/signup';
-import { authService } from '@/services/api';
+import { authApi } from '@/api/auth';
 
 /**
  * 이메일 인증 관련 커스텀 훅
@@ -46,11 +46,11 @@ import { authService } from '@/services/api';
  *
  * 훅의 동작을 커스터마이징할 수 있는 설정 옵션들입니다.
  *
- * @param sendVerificationEmail - 인증 메일 발송 함수 (기본값: authService.sendVerificationEmail)
+ * @param sendVerificationEmail - 인증 메일 발송 함수 (기본값: authApi.sendVerificationEmail)
  * @param skipDuplicateCheck - 이메일 중복 확인 스킵 여부 (비밀번호 찾기 시 사용)
  */
 interface EmailVerificationConfig {
-  sendVerificationEmail?: typeof authService.sendVerificationEmail;
+  sendVerificationEmail?: typeof authApi.sendVerificationEmail;
   skipDuplicateCheck?: boolean;
 }
 
@@ -181,7 +181,7 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
       // ===== 이메일 중복 확인 =====
       // 비밀번호 찾기에서는 중복 확인을 스킵
       if (!config?.skipDuplicateCheck) {
-        const duplicateResponse = await authService.checkEmailDuplicate(
+        const duplicateResponse = await authApi.checkEmailDuplicate(
           signupData.email,
         );
 
@@ -202,7 +202,7 @@ export function useEmailVerification(config?: EmailVerificationConfig) {
       // ===== 인증 메일 발송 =====
       // 설정에서 커스텀 함수를 사용하거나 기본 함수 사용
       const sendEmail =
-        config?.sendVerificationEmail || authService.sendVerificationEmail;
+        config?.sendVerificationEmail || authApi.sendVerificationEmail;
       await sendEmail(signupData.email);
 
       // ===== 타이머 시작 =====

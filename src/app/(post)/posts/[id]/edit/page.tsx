@@ -3,10 +3,10 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { PostDetail } from '@/types/post';
-import { postService } from '@/services/api';
 import { useModalStore } from '@/store/modal';
 import PostForm from '@/components/post/post_form';
 import Loader from '@/components/common/loader';
+import { postApi } from '@/api/post';
 
 /**
  * 게시글 수정 페이지 메인 컴포넌트
@@ -103,7 +103,7 @@ export default function EditPostPage() {
       try {
         setIsLoading(true);
         // ===== 게시글 상세 정보 API 호출 =====
-        const data = await postService.getPostDetail(Number(id));
+        const data = await postApi.getPostDetail(Number(id));
         setPost(data);
       } catch (error) {
         // ===== 에러 처리 =====
@@ -140,7 +140,7 @@ export default function EditPostPage() {
   const handleSubmit = async (formData: FormData) => {
     try {
       // ===== 게시글 수정 API 호출 =====
-      await postService.updatePost(Number(id), formData);
+      await postApi.updatePost(Number(id), formData);
 
       // ===== 성공 처리 =====
       openModal({

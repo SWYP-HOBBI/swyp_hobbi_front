@@ -3,12 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { searchService } from '@/services/api';
 import Loader from '@/components/common/loader';
 import Tag from '@/components/common/tag';
 import { SearchPostResponse } from '@/types/search';
 import SearchCard from '@/components/search/search_card';
 import SearchCardSkeleton from './search_card_skeleton';
+import { searchApi } from '@/api/search';
 
 /**
  * 무한 스크롤 페이지 파라미터 타입
@@ -151,7 +151,7 @@ export default function SearchContent() {
       const hobbyTags = searchParams.getAll('hobby_tags') || [];
 
       // ===== 검색 API 호출 =====
-      return await searchService.getSearchPosts({
+      return await searchApi.getSearchPosts({
         keyword_text: keywordText,
         keyword_user: keywordUser,
         mbti,

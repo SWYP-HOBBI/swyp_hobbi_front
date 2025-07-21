@@ -5,9 +5,10 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
-import { userService, postService } from '@/services/api';
 import UserPostCard from '@/components/my_page/user_post_card';
 import { MyPostsResponse } from '@/types/my_page';
+import { postApi } from '@/api/post';
+import { userApi } from '@/api/user';
 
 export default function UserPost() {
   const { userId } = useAuthStore();
@@ -20,10 +21,7 @@ export default function UserPost() {
     useInfiniteQuery({
       queryKey: ['userPosts', userId],
       queryFn: async ({ pageParam }) =>
-        await userService.getMyPosts(
-          pageParam ? Number(pageParam) : undefined,
-          15,
-        ),
+        await userApi.getMyPosts(pageParam ? Number(pageParam) : undefined, 15),
       getNextPageParam: (lastPage: MyPostsResponse) => {
         if (!lastPage || lastPage.isLast || lastPage.posts.length < 15)
           return undefined;
@@ -74,7 +72,7 @@ export default function UserPost() {
                 showCancelButton: true,
                 onConfirm: async () => {
                   try {
-                    await postService.deletePost(postId);
+                    await postApi.deletePost(postId);
                     await queryClient.invalidateQueries({
                       queryKey: ['userPosts', userId],
                     });
