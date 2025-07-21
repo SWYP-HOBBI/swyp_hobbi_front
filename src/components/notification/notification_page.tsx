@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import NotificationList from './notification_list';
-import { notificationService } from '@/services/api';
 import { Notification } from '@/types/notification';
 import { useNotificationStore } from '@/store/notification';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
+import { notificationApi } from '@/api/notification';
 
 export default function NotificationPage() {
   const [isDeleteVisible, setIsDeleteVisible] = useState(true); // 알림삭제 버튼 표시 여부
@@ -47,7 +47,7 @@ export default function NotificationPage() {
     try {
       if (selectedNotifications.length === 0) return;
 
-      await notificationService.markSelectedRead(selectedNotifications);
+      await notificationApi.markSelectedRead(selectedNotifications);
 
       // 체크된 알림을 UI에서도 제거
       queryClient.setQueryData(['notifications'], (oldData: any) => {
@@ -121,7 +121,7 @@ export default function NotificationPage() {
                     onClick={async () => {
                       handleButtonClick('전체 읽음');
                       try {
-                        await notificationService.markAllRead(); // 전체 읽음 API
+                        await notificationApi.markAllRead(); // 전체 읽음 API
                         queryClient.setQueryData(
                           ['notifications'],
                           (oldData: any) => {

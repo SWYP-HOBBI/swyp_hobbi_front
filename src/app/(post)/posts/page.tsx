@@ -7,8 +7,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-
-import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import { useFeedStore } from '@/store/feed';
 import PostCard from '@/components/post/post_card';
@@ -16,6 +14,7 @@ import PostCardSkeleton from '@/components/post/post_card_skeleton';
 import { PostCardProps, InfinitePostsResponse } from '@/types/post';
 import SvgIcon from '@/components/common/svg_icon';
 import GlobalError from '@/app/global-error';
+import { postApi } from '@/api/post';
 
 /**
  * 게시글 목록 페이지 메인 컴포넌트
@@ -106,7 +105,7 @@ export default function PostsPage() {
       if (!isAuthenticated) {
         // ===== 비로그인 사용자 처리 =====
         // 비로그인 사용자는 항상 전체 피드만 볼 수 있음
-        return await postService.getPublicPosts({
+        return await postApi.getPublicPosts({
           cursor_id: pageParam ? Number(pageParam) : undefined,
           limit: 15,
         });
@@ -114,7 +113,7 @@ export default function PostsPage() {
 
       // ===== 로그인 사용자 처리 =====
       // 로그인 사용자의 피드 타입에 따른 조회
-      return await postService.getInfiniteScrollPosts({
+      return await postApi.getInfiniteScrollPosts({
         tagExist: feedType === 'hobby', // 취미 피드일 때만 true
         lastPostId: pageParam ? Number(pageParam) : undefined,
         pageSize: 15,
@@ -141,7 +140,7 @@ export default function PostsPage() {
    * - UI 즉시 반영으로 사용자 경험 향상
    */
   const likeMutation = useMutation({
-    mutationFn: (postId: string) => postService.likePost(Number(postId)),
+    mutationFn: (postId: string) => postApi.likePost(Number(postId)),
     onSuccess: (_, postId) => {
       // ===== 낙관적 업데이트: 캐시된 데이터 즉시 수정 =====
       queryClient.setQueryData<InfinitePostsResponse>(
@@ -176,7 +175,7 @@ export default function PostsPage() {
    * - UI 즉시 반영으로 사용자 경험 향상
    */
   const unlikeMutation = useMutation({
-    mutationFn: (postId: string) => postService.unlikePost(Number(postId)),
+    mutationFn: (postId: string) => postApi.unlikePost(Number(postId)),
     onSuccess: (_, postId) => {
       // ===== 낙관적 업데이트: 캐시된 데이터 즉시 수정 =====
       queryClient.setQueryData<InfinitePostsResponse>(

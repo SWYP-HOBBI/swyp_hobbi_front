@@ -9,8 +9,9 @@ import UserRank from '@/components/my_page/user_rank';
 import UserPost from '@/components/my_page/user_post';
 import GlobalError from '@/app/global-error';
 import SvgIcon from '@/components/common/svg_icon';
-import { userService, authService } from '@/services/api';
 import Loader from '@/components/common/loader';
+import { authApi } from '@/api/auth';
+import { userApi } from '@/api/user';
 
 /**
  * 마이페이지 컴포넌트
@@ -120,9 +121,9 @@ export default function MyPage() {
     queryKey: ['myPageData'],
     queryFn: async () => {
       const [userProfileData, userPostData, userRankData] = await Promise.all([
-        userService.getMyPageInfo(),
-        userService.getMyPosts(),
-        userService.getUserRank(),
+        userApi.getMyPageInfo(),
+        userApi.getMyPosts(),
+        userApi.getUserRank(),
       ]);
       return { userProfileData, userPostData, userRankData };
     },
@@ -168,7 +169,7 @@ export default function MyPage() {
    */
   const handleSnsMenuClick = async () => {
     try {
-      const status = await userService.getLoginStatus();
+      const status = await userApi.getLoginStatus();
       setSocialStatus(status);
       setShowSnsMenu(!showSnsMenu);
     } catch (error) {
@@ -325,7 +326,7 @@ export default function MyPage() {
                           onClick={() => {
                             if (!socialStatus.kakao) {
                               const kakaoUrl =
-                                authService.getSocialLoginUrl('kakao');
+                                authApi.getSocialLoginUrl('kakao');
                               const urlWithState = `${kakaoUrl}&state=mypage`;
                               window.location.href = urlWithState;
                             }
@@ -354,7 +355,7 @@ export default function MyPage() {
                           onClick={() => {
                             if (!socialStatus.google) {
                               const googleUrl =
-                                authService.getSocialLoginUrl('google');
+                                authApi.getSocialLoginUrl('google');
                               const urlWithState = `${googleUrl}&state=mypage`;
                               window.location.href = urlWithState;
                             }

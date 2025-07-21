@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { userService } from '@/services/api';
 import Input from '../common/input';
+import { userApi } from '@/api/user';
+
 interface EditPasswordProps {
   showPasswordEdit: boolean;
   setShowPasswordEdit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +24,7 @@ export default function EditPassword({
     try {
       setIsLoading(true);
 
-      const response = await userService.checkCurrentPassword(currentPassword);
+      const response = await userApi.checkCurrentPassword(currentPassword);
       if (response.check) {
         setShowPasswordEdit(true);
         setCurrentPasswordError(null);

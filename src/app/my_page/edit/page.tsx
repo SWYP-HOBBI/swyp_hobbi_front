@@ -9,7 +9,6 @@ import HobbySelector, {
 import MyProfile from '@/components/common/my_profile';
 import EditNickname from '@/components/my_page/edit_nickname';
 import EditPassword from '@/components/my_page/edit_password';
-import { userService } from '@/services/api';
 import { useHobbyStore } from '@/store/hobby';
 import { MyPageModify, UpdateUserInfo } from '@/types/my_page';
 import {
@@ -26,6 +25,7 @@ import {
   getPasswordConfirmError,
   getPasswordError,
 } from '@/utils/password_validation';
+import { userApi } from '@/api/user';
 
 export default function EditMyPage() {
   const router = useRouter();
@@ -114,7 +114,7 @@ export default function EditMyPage() {
     setIsLoading(true);
 
     try {
-      await userService.updatePassword({
+      await userApi.updatePassword({
         newPassword,
         confirmPassword,
       });
@@ -134,7 +134,7 @@ export default function EditMyPage() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const data = await userService.getMyModifyPage();
+        const data = await userApi.getMyModifyPage();
         setUserInfo(data);
         setUsername(data.username);
         setCurrentNickname(data.nickname);
@@ -187,7 +187,7 @@ export default function EditMyPage() {
 
     setIsLoading(true);
     try {
-      await userService.updateUserInfo(updatedUserInfo);
+      await userApi.updateUserInfo(updatedUserInfo);
       openModal({
         title: '개인정보가 수정되었습니다.',
         message: '마이페이지로 이동합니다.',

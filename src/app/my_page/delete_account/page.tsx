@@ -1,7 +1,7 @@
 'use client';
 
+import { userApi } from '@/api/user';
 import SvgIcon from '@/components/common/svg_icon';
-import { userService } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 // import { useAuthStore } from '@/store/auth';
@@ -30,7 +30,7 @@ export default function MyPageEdit() {
       selectedReason === '기타: 직접입력' ? customReason : selectedReason;
 
     try {
-      await userService.deleteUser(reason); // 서버에 탈퇴 요청
+      await userApi.deleteUser(reason); // 서버에 탈퇴 요청
       router.push('/my_page/delete_confirm'); // 완료 페이지로 이동
     } catch (error) {
       console.error('회원 탈퇴 실패:', error);

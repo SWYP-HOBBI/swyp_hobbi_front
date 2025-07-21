@@ -5,11 +5,11 @@ import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Input from '@/components/common/input';
-import { authService } from '@/services/api';
 import Button from '@/components/common/button';
 import { useModalStore } from '@/store/modal';
 import SvgIcon from '@/components/common/svg_icon';
 import Link from 'next/link';
+import { authApi } from '@/api/auth';
 
 /**
  * 소셜 로그인 페이지 메인 컴포넌트
@@ -127,10 +127,7 @@ export default function SocialLoginPage() {
 
     try {
       // ===== API 호출을 통한 로그인 시도 =====
-      const userData = await authService.login(
-        formData.email,
-        formData.password,
-      );
+      const userData = await authApi.login(formData.email, formData.password);
 
       // ===== 로그인 성공 시 인증 상태 저장 =====
       setAuth(userData);
@@ -145,7 +142,7 @@ export default function SocialLoginPage() {
           // ===== 계정 연동 선택 시 처리 =====
           try {
             // API 호출을 통한 소셜 계정 연동
-            await authService.linkSocialAccount();
+            await authApi.linkSocialAccount();
 
             // 연동 성공 시 메인 페이지로 이동
             router.push('/posts');

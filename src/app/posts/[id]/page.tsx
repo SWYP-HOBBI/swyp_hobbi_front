@@ -9,10 +9,10 @@ import PostComment from '@/components/post/post_comment';
 import PostHeader from '@/components/post/post_header';
 import PostImageSlider from '@/components/post/post_image_slider';
 import PostActionBar from '@/components/post/post_action_bar';
-import { postService } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import { useModalStore } from '@/store/modal';
 import Loader from '@/components/common/loader';
+import { postApi } from '@/api/post';
 
 /**
  * 게시글 상세 페이지 메인 컴포넌트
@@ -174,15 +174,15 @@ export default function PostDetailPage() {
           // ===== 로그인 상태에 따른 API 호출 =====
           if (isLoggedIn) {
             // 로그인 사용자는 회원용 API 시도
-            data = await postService.getPostDetail(Number(id));
+            data = await postApi.getPostDetail(Number(id));
           } else {
             // 비로그인 사용자는 공개 API 호출
-            data = await postService.getPublicPostDetail(Number(id));
+            data = await postApi.getPublicPostDetail(Number(id));
           }
         } catch (apiError) {
           // ===== 회원용 API 실패 시 공개 API로 fallback =====
           if (isLoggedIn) {
-            data = await postService.getPublicPostDetail(Number(id));
+            data = await postApi.getPublicPostDetail(Number(id));
           } else {
             throw apiError;
           }
@@ -246,7 +246,7 @@ export default function PostDetailPage() {
       onConfirm: async () => {
         try {
           // ===== 게시글 삭제 API 호출 =====
-          await postService.deletePost(post.postId);
+          await postApi.deletePost(post.postId);
           // 삭제 성공 시 게시글 목록 페이지로 이동
           router.push('/posts');
         } catch (err) {
@@ -291,15 +291,15 @@ export default function PostDetailPage() {
       // ===== 좋아요 상태에 따른 API 호출 =====
       if (post.liked) {
         // 이미 좋아요가 되어있다면 취소
-        await postService.unlikePost(post.postId);
+        await postApi.unlikePost(post.postId);
       } else {
         // 좋아요가 안되어있다면 좋아요
-        await postService.likePost(post.postId);
+        await postApi.likePost(post.postId);
       }
 
       // ===== 서버에서 최신 데이터 재조회 =====
       // 낙관적 업데이트 대신 서버 데이터로 동기화
-      const updatedPost = await postService.getPostDetail(Number(id));
+      const updatedPost = await postApi.getPostDetail(Number(id));
       setPost(updatedPost);
     } catch (error) {
       // ===== 에러 처리 =====
@@ -320,7 +320,7 @@ export default function PostDetailPage() {
    */
   const handleCommentUpdate = async () => {
     try {
-      const updatedPost = await postService.getPostDetail(Number(id));
+      const updatedPost = await postApi.getPostDetail(Number(id));
       setPost(updatedPost);
     } catch (error) {
       console.error('게시글 정보 업데이트 중 오류:', error);

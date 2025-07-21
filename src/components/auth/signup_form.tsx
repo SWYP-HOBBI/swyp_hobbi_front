@@ -6,8 +6,8 @@ import { useEmailVerification } from '@/hooks/use_email_verification';
 import SvgIcon from '../common/svg_icon';
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
-import { authService } from '@/services/api';
 import VerificationCodeInput from '@/components/common/verification_code_input';
+import { authApi } from '@/api/auth';
 
 /**
  * 회원가입 폼 Props 인터페이스
@@ -235,10 +235,7 @@ export default function SignupForm({
       setErrorMessage(null);
 
       // 인증 코드 확인 API 호출
-      await authService.verifyEmail(
-        signupData.verificationCode,
-        signupData.email,
-      );
+      await authApi.verifyEmail(signupData.verificationCode, signupData.email);
 
       // 인증 성공 시 상태 업데이트
       setIsEmailVerified(true);

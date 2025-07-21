@@ -34,12 +34,12 @@ export interface NotificationDetailResponse {
   createdAt: string; // 생성 시간
 }
 
-// 알림 선택 읽음 처리 요청 타입
+// 알림 선택 읽음 처리 요청 타입 (삭제)
 export interface MarkSelectedReadRequest {
   notificationIds: number[]; // 읽음 처리할 알림 ID 목록
 }
 
-// 읽지 않은 알림 수 응답 타입
+// 읽지 않은 알림 수 응답 타입 (삭제)
 export interface UnreadCountResponse {
   unreadCount: number; // 읽지 않은 알림 개수
 }
