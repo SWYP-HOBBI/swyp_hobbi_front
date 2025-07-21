@@ -121,18 +121,6 @@ export default function PostImageSlider({ images }: PostImageSliderProps) {
                     fill
                     className="object-contain rounded-xl"
                     unoptimized
-                    /**
-                     * 이미지 로드 실패 시 처리
-                     *
-                     * 이미지 URL이 유효하지 않거나 네트워크 오류 발생 시
-                     * 기본 이미지로 대체하여 사용자 경험을 개선합니다.
-                     *
-                     * @param e - 이미지 로드 에러 이벤트
-                     */
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/default_post_image.png'; // 기본 이미지 경로
-                    }}
                   />
                 </div>
               </div>
