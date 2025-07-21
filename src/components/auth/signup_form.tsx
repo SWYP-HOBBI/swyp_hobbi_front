@@ -235,7 +235,7 @@ export default function SignupForm({
       setErrorMessage(null);
 
       // 인증 코드 확인 API 호출
-      await authApi.verifyEmail(signupData.verificationCode, signupData.email);
+      await authApi.verifyEmail(signupData.email, signupData.verificationCode);
 
       // 인증 성공 시 상태 업데이트
       setIsEmailVerified(true);
@@ -252,11 +252,7 @@ export default function SignupForm({
       }));
     } catch (error) {
       setIsError(true);
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : '인증 코드 확인 중 오류가 발생했습니다.',
-      );
+      setErrorMessage('인증 코드 확인 중 오류가 발생했습니다.');
       setFormError((prev) => ({
         ...prev,
         verificationCode: '* 인증 코드가 올바르지 않습니다.',
