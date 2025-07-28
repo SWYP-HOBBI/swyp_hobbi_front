@@ -80,14 +80,12 @@ export const authApi = {
     return request<SocialLoginResponse>({
       url: `/oauth/login/kakao?code=${code}`,
       method: 'GET',
-      params: { code },
     });
   },
   googleLogin: async (code: string) => {
     return request<SocialLoginResponse>({
       url: `/oauth/login/google?code=${code}`,
       method: 'GET',
-      params: { code },
     });
   },
   linkSocialAccount: async () => {
