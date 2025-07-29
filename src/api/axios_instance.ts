@@ -7,6 +7,10 @@ const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
 
+const reissueAxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+});
+
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = useAuthStore.getState().accessToken;
@@ -24,7 +28,6 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log(error.config.url);
     // 인증 실패 에러 (로그인/회원가입 실패)
     if (
       error.response?.status === 401 &&
@@ -55,3 +58,4 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+export { reissueAxiosInstance };

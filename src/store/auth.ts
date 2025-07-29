@@ -2,7 +2,7 @@ import { AuthState } from '@/types/auth';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { authApi } from '@/api/auth';
-import axiosInstance from '@/api/axios_instance';
+import { reissueAxiosInstance } from '@/api/axios_instance';
 
 /**
  * 인증 상태 초기값
@@ -215,11 +215,15 @@ export const useAuthStore = create<AuthState>()(
             return false;
           }
 
-          const response = await axiosInstance.post('/token/reissue', null, {
-            headers: {
-              refreshToken,
+          const response = await reissueAxiosInstance.post(
+            '/token/reissue',
+            null,
+            {
+              headers: {
+                refreshToken,
+              },
             },
-          });
+          );
 
           // ===== 액세스 토큰 업데이트 =====
           const { accessToken } = response.data;
@@ -236,7 +240,7 @@ export const useAuthStore = create<AuthState>()(
           // ===== 응답 형식 오류 처리 =====
           throw new Error('토큰 재발급 응답 형식 오류');
         } catch (error: any) {
-          if (error.response.status === 401) {
+          if (error.response?.status === 401) {
             set(initialState);
             window.location.href = '/';
             return false;

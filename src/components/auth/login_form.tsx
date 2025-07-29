@@ -180,7 +180,7 @@ export default function LoginForm() {
         setIsError(true);
 
         // 에러 코드에 따른 구체적인 에러 메시지 설정
-        if (error.data?.errorCode === 'USER_NOT_FOUND') {
+        if (error.response.data?.errorCode === 'USER_NOT_FOUND') {
           setErrorMessage(
             '등록되지 않은 이메일입니다. 회원가입 후 이용해 주세요.',
           );
