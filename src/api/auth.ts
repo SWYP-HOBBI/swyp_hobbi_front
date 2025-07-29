@@ -76,16 +76,19 @@ export const authApi = {
       data: { nickname },
     });
   },
+
   kakaoLogin: async (code: string) => {
     return request<SocialLoginResponse>({
-      url: `/oauth/login/kakao?code=${code}`,
+      url: '/oauth/login/kakao',
       method: 'GET',
+      params: { code },
     });
   },
   googleLogin: async (code: string) => {
     return request<SocialLoginResponse>({
-      url: `/oauth/login/google?code=${code}`,
+      url: '/oauth/login/google',
       method: 'GET',
+      params: { code },
     });
   },
   linkSocialAccount: async () => {

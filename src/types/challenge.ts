@@ -1,5 +1,11 @@
 export type ChallengeStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
+export enum ChallengeType {
+  SHOWOFF = 'SHOWOFF',
+  ROUTINER = 'ROUTINER',
+  RICH = 'RICH',
+}
+
 export interface Challenge {
   id: string;
   title: string;
@@ -8,6 +14,7 @@ export interface Challenge {
   description: string;
   reward: string;
   status: ChallengeStatus;
+  challengeType: ChallengeType;
 }
 
 export interface ChallengeState {
