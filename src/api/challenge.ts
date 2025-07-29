@@ -1,11 +1,14 @@
-import { ChallengeApiResponse } from '@/types/challenge';
+import { ChallengeApiResponse, ChallengeType } from '@/types/challenge';
 import { request } from './request';
 
 export const challengeApi = {
-  startChallenge: async (challengeNumber: number) => {
+  startChallenge: async (challengeType: ChallengeType) => {
     return request<void>({
-      url: `/challenge/start/${challengeNumber}`,
+      url: '/challenge/start',
       method: 'POST',
+      params: {
+        challengeType,
+      },
     });
   },
   getChallenges: async () => {

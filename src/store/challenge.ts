@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Challenge } from '@/types/challenge';
+import { Challenge, ChallengeType } from '@/types/challenge';
 import { challengeApi } from '@/api/challenge';
 
 /**
@@ -90,6 +90,7 @@ const initialChallenges: Challenge[] = [
     description: '좋아요 50개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
+    challengeType: ChallengeType.SHOWOFF,
   },
   {
     id: '2',
@@ -99,6 +100,7 @@ const initialChallenges: Challenge[] = [
     description: '같은 취미 게시글 작성: 3개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
+    challengeType: ChallengeType.ROUTINER,
   },
   {
     id: '3',
@@ -108,6 +110,7 @@ const initialChallenges: Challenge[] = [
     description: '다른 취미 게시글 작성: 3개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
+    challengeType: ChallengeType.RICH,
   },
 ];
 

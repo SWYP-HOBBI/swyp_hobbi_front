@@ -140,7 +140,7 @@ export default function ChallengeItem({
    */
   const handleStart = async () => {
     try {
-      await challengeApi.startChallenge(Number(id));
+      await challengeApi.startChallenge(challenge.challengeType);
       startChallenge(id);
     } catch (error) {
       console.error('챌린지 시작 실패:', error);
