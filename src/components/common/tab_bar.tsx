@@ -91,6 +91,13 @@ const TAB_ITEMS: TabItem[] = [
     requiresAuth: true,
   },
   {
+    id: 'write',
+    label: '메시지 보내기',
+    path: '/message',
+    icon: 'message',
+    requiresAuth: true,
+  },
+  {
     id: 'myPage',
     label: '마이페이지',
     path: '/my_page',
