@@ -23,18 +23,19 @@ export interface ChallengeState {
   weekStartDate: Date | null; // 주의 시작일
 }
 
+// 새로운 API 응답 타입
 export interface ChallengeApiResponse {
-  challenge1: {
+  hobbyShowOff: {
     started: boolean;
     achieved: boolean;
     point: number;
   };
-  challenge2: {
+  hobbyRoutiner: {
     started: boolean;
     achieved: boolean;
     point: number;
   };
-  challenge3: {
+  hobbyRich: {
     started: boolean;
     achieved: boolean;
     point: number;
