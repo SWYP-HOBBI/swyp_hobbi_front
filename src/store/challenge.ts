@@ -193,8 +193,6 @@ export const useChallengeStore = create<ChallengeStore>((set) => ({
     try {
       const response = await challengeApi.getChallenges();
 
-      console.log('🔍 서버 챌린지 응답:', response);
-
       set((state) => ({
         challenges: state.challenges.map((challenge) => {
           // challengeType에 따른 API 응답 키 매핑
@@ -216,12 +214,6 @@ export const useChallengeStore = create<ChallengeStore>((set) => ({
           }
 
           const apiChallenge = response[apiChallengeKey];
-
-          console.log(` 챌린지 ${challenge.title}:`, {
-            challengeType: challenge.challengeType,
-            apiKey: apiChallengeKey,
-            serverData: apiChallenge,
-          });
 
           // API 데이터가 없으면 기존 챌린지 유지
           if (!apiChallenge) return challenge;
