@@ -6,15 +6,10 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { InfiniteData } from '@tanstack/react-query';
 import { useModalStore } from '@/store/modal';
 import { useRouter } from 'next/navigation';
-import SvgIcon from '../common/svg_icon';
-import Profile from '../common/profile';
-import Image from 'next/image';
 import Loader from '../common/loader';
-import Button from '../common/button';
-import { DefaultProfile } from '../common/profile';
-import { formatDate } from '@/utils/date';
 import GlobalError from '@/app/global-error';
-import { useIsMobile } from '@/hooks/use_is_mobile';
+import CommentInput from '../common/comment_input';
+import CommentItem from '../common/comment_item';
 import { commentApi } from '@/api/comment';
 
 /**
@@ -139,8 +134,6 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
    * 수정 모드에서 편집 중인 댓글 내용
    */
   const [editContent, setEditContent] = useState('');
-
-  const isMobile = useIsMobile();
 
   /**
    * 댓글 제출 중 상태
@@ -476,22 +469,6 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
   };
 
   /**
-   * 댓글 수정/삭제 권한 체크 함수
-   *
-   * 현재 사용자가 해당 댓글을 수정/삭제할 수 있는지 확인합니다.
-   *
-   * @param commentUserId - 댓글 작성자 ID
-   * @returns 권한 여부 (boolean)
-   */
-  const canModifyComment = useCallback(
-    (commentUserId: number) => {
-      if (!currentUserId) return false;
-      return currentUserId === commentUserId;
-    },
-    [currentUserId],
-  );
-
-  /**
    * 대댓글(답글) 대상 설정
    *
    * 대댓글(답글)을 작성할 댓글을 설정합니다.
@@ -547,168 +524,36 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
         {structuredComments.map((comment) => (
           <div key={comment.commentId} className="space-y-4 pr-6">
             {/* ===== 부모 댓글 ===== */}
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <Profile
-                  imageUrl={comment.userImageUrl}
-                  nickname={comment.nickname}
-                  variant="horizontal-small"
-                  userLevel={comment.userLevel}
-                />
-              </div>
-              <div className="ml-12">
-                {editingCommentId === comment.commentId ? (
-                  // ===== 수정 모드 UI =====
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 "
-                    />
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() =>
-                          handleUpdateComment(comment.commentId, editContent)
-                        }
-                        className="text-xs text-primary-b40"
-                      >
-                        저장
-                      </button>
-                      <button
-                        onClick={handleCancelEdit}
-                        className="text-xs text-grayscale-60"
-                      >
-                        취소
-                      </button>
-                      <span className="text-xs text-grayscale-40">
-                        {formatDate(comment.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  // ===== 일반 모드 UI =====
-                  <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 inline-block">
-                    <p className="text-grayscale-100 text-sm max-md:text-xs">
-                      {comment.deleted ? '삭제된 댓글입니다.' : comment.content}
-                    </p>
-                  </div>
-                )}
-                {!editingCommentId && !comment.deleted && (
-                  <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
-                    <button
-                      className="font-medium"
-                      onClick={() => handleReplyTo(comment)}
-                    >
-                      답글달기
-                    </button>
-
-                    {/* ===== 수정/삭제 버튼 (작성자만) ===== */}
-                    {canModifyComment(comment.userId) && (
-                      <>
-                        <button
-                          onClick={() => handleStartEdit(comment)}
-                          className="hover:text-primary"
-                        >
-                          수정
-                        </button>
-                        <button
-                          onClick={() => handleDeleteComment(comment.commentId)}
-                          className="hover:text-primary"
-                        >
-                          삭제
-                        </button>
-                      </>
-                    )}
-                    <span className="text-xs text-grayscale-40">
-                      {formatDate(comment.createdAt)}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
+            <CommentItem
+              comment={comment}
+              currentUserId={currentUserId ?? undefined}
+              editingCommentId={editingCommentId}
+              editContent={editContent}
+              onReply={handleReplyTo}
+              onEdit={handleStartEdit}
+              onDelete={handleDeleteComment}
+              onSaveEdit={handleUpdateComment}
+              onCancelEdit={handleCancelEdit}
+              onEditContentChange={setEditContent}
+            />
 
             {/* ===== 대댓글 목록 ===== */}
             {comment.replies && comment.replies.length > 0 && (
               <div className="space-y-4 ml-14">
                 {comment.replies.map((reply) => (
-                  <div key={reply.commentId}>
-                    <Profile
-                      imageUrl={reply.userImageUrl}
-                      nickname={reply.nickname}
-                      variant="horizontal-small"
-                      userLevel={reply.userLevel}
-                    />
-                    <div className="ml-12">
-                      {editingCommentId === reply.commentId ? (
-                        // ===== 대댓글 수정 모드 UI =====
-                        <div className="space-y-2">
-                          <input
-                            type="text"
-                            value={editContent}
-                            onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5"
-                          />
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() =>
-                                handleUpdateComment(
-                                  reply.commentId,
-                                  editContent,
-                                )
-                              }
-                              className="text-xs text-primary-b40"
-                            >
-                              저장
-                            </button>
-                            <button
-                              onClick={handleCancelEdit}
-                              className="text-xs text-grayscale-60"
-                            >
-                              취소
-                            </button>
-                            <span className="text-xs text-grayscale-40">
-                              {formatDate(reply.createdAt)}
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="bg-grayscale-10 rounded-tl-0 rounded-tr-lg rounded-br-lg rounded-bl-lg p-5 inline-block">
-                          <p className="text-grayscale-100 text-sm max-md:text-xs">
-                            {reply.deleted
-                              ? '삭제된 댓글입니다.'
-                              : reply.content}
-                          </p>
-                        </div>
-                      )}
-                      {!editingCommentId && !reply.deleted && (
-                        <div className="flex items-center gap-1 mt-2 text-xs text-grayscale-80">
-                          {/* ===== 대댓글에는 답글달기 버튼 제거 ===== */}
-                          {canModifyComment(reply.userId) && (
-                            <>
-                              <button
-                                onClick={() => handleStartEdit(reply)}
-                                className="hover:text-primary"
-                              >
-                                수정
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteComment(reply.commentId)
-                                }
-                                className="hover:text-primary"
-                              >
-                                삭제
-                              </button>
-                            </>
-                          )}
-                          <span className="text-xs text-grayscale-40">
-                            {formatDate(reply.createdAt)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <CommentItem
+                    key={reply.commentId}
+                    comment={reply}
+                    currentUserId={currentUserId ?? undefined}
+                    editingCommentId={editingCommentId}
+                    editContent={editContent}
+                    isReply={true}
+                    onEdit={handleStartEdit}
+                    onDelete={handleDeleteComment}
+                    onSaveEdit={handleUpdateComment}
+                    onCancelEdit={handleCancelEdit}
+                    onEditContentChange={setEditContent}
+                  />
                 ))}
               </div>
             )}
@@ -728,75 +573,27 @@ const PostComment = ({ postId, onCommentUpdate }: PostCommentProps) => {
         }`}
       />
 
-      {/* ===== 댓글 입력 영역 - 고정 위치 ===== */}
-      <div className="bg-grayscale-0">
-        {/* ===== 답글 작성 중인 경우 표시 ===== */}
-        {replyTo && (
-          <div className="flex items-center mb-3">
-            <div className="flex items-center gap-2 mr-3">
-              <SvgIcon name="reply" color="var(--grayscale-70)" />
-              <span className="text-xs text-grayscale-70">
-                <span>{replyTo.nickname}</span>님에게 답장
-                <span>&quot;{truncateContent(replyTo.content, 10)}&quot;</span>
-              </span>
-            </div>
-            <button type="button" onClick={handleCancelReply}>
-              <SvgIcon name="delete" color="var(--grayscale-70)" size={12} />
-            </button>
-          </div>
-        )}
-
-        {/* ===== 댓글 작성 폼 ===== */}
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await handleCreateComment(newComment, replyTo?.commentId);
-          }}
-          className="flex gap-2 mt-6 items-center"
-        >
-          {/* ===== 프로필 이미지 ===== */}
-          <div className="w-[56px] h-[56px] max-md:w-[32px] max-md:h-[32px] flex-shrink-0">
-            {currentUserId && userInfo?.userImageUrl ? (
-              <Image
-                src={userInfo.userImageUrl}
-                alt="프로필 이미지"
-                className="rounded-full w-full h-full object-cover"
-                width={isMobile ? 32 : 56}
-                height={isMobile ? 32 : 56}
-                unoptimized
-              />
-            ) : (
-              <DefaultProfile size={isMobile ? 32 : 56} />
-            )}
-          </div>
-
-          {/* ===== 댓글 입력 필드 ===== */}
-          <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder={
-              currentUserId
-                ? '댓글을 입력하세요.'
-                : '로그인 후 댓글을 작성할 수 있습니다.'
-            }
-            className="w-full h-[60px] bg-grayscale-5 rounded-2xl px-4 py-3 outline-none max-md:h-[48px]"
-            disabled={isSubmitting || !currentUserId}
-            maxLength={1000}
-          />
-
-          {/* ===== 등록 버튼 ===== */}
-          <Button
-            variant="outline"
-            className="w-[140px]"
-            size="sm"
-            type="submit"
-            disabled={isSubmitting || !currentUserId}
-          >
-            등록
-          </Button>
-        </form>
-      </div>
+      {/* ===== 댓글 입력 영역 ===== */}
+      <CommentInput
+        value={newComment}
+        onChange={setNewComment}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await handleCreateComment(newComment, replyTo?.commentId);
+        }}
+        placeholder={
+          currentUserId
+            ? '댓글을 입력하세요.'
+            : '로그인 후 댓글을 작성할 수 있습니다.'
+        }
+        disabled={isSubmitting}
+        isSubmitting={isSubmitting}
+        currentUserId={currentUserId ?? undefined}
+        userImageUrl={userInfo?.userImageUrl}
+        replyTo={replyTo}
+        onCancelReply={handleCancelReply}
+        truncateContent={truncateContent}
+      />
     </div>
   );
 };
