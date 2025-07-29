@@ -65,7 +65,8 @@ export default function ChallengeItem({
    * - startChallenge: 챌린지 시작 함수 (로컬 상태 업데이트)
    * - completeChallenge: 챌린지 완료 함수 (로컬 상태 업데이트)
    */
-  const { challenges, startChallenge, completeChallenge } = useChallengeStore();
+  const { challenges, fetchChallenges, completeChallenge, startChallenge } =
+    useChallengeStore();
 
   /**
    * 현재 챌린지 데이터 찾기
@@ -141,7 +142,7 @@ export default function ChallengeItem({
   const handleStart = async () => {
     try {
       await challengeApi.startChallenge(challenge.challengeType);
-      startChallenge(id);
+      await fetchChallenges();
     } catch (error) {
       console.error('챌린지 시작 실패:', error);
     }

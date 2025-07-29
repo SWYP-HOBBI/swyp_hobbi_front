@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { Challenge, ChallengeType } from '@/types/challenge';
+import {
+  Challenge,
+  ChallengeApiResponse,
+  ChallengeType,
+} from '@/types/challenge';
 import { challengeApi } from '@/api/challenge';
 
 /**
@@ -189,16 +193,40 @@ export const useChallengeStore = create<ChallengeStore>((set) => ({
     try {
       const response = await challengeApi.getChallenges();
 
+      console.log('🔍 서버 챌린지 응답:', response);
+
       set((state) => ({
         challenges: state.challenges.map((challenge) => {
-          // ===== API 응답에서 해당 챌린지 데이터 찾기 =====
-          const apiChallenge =
-            response[`challenge${challenge.id}` as keyof typeof response];
+          // challengeType에 따른 API 응답 키 매핑
+          let apiChallengeKey: keyof ChallengeApiResponse;
 
-          // ===== API 데이터가 없으면 기존 챌린지 유지 =====
+          switch (challenge.challengeType) {
+            case ChallengeType.SHOWOFF:
+              apiChallengeKey = 'hobbyShowOff';
+              break;
+            case ChallengeType.ROUTINER:
+              apiChallengeKey = 'hobbyRoutiner';
+              break;
+            case ChallengeType.RICH:
+              apiChallengeKey = 'hobbyRich';
+              break;
+            default:
+              console.warn('알 수 없는 챌린지 타입:', challenge.challengeType);
+              return challenge;
+          }
+
+          const apiChallenge = response[apiChallengeKey];
+
+          console.log(` 챌린지 ${challenge.title}:`, {
+            challengeType: challenge.challengeType,
+            apiKey: apiChallengeKey,
+            serverData: apiChallenge,
+          });
+
+          // API 데이터가 없으면 기존 챌린지 유지
           if (!apiChallenge) return challenge;
 
-          // ===== API 데이터로 챌린지 업데이트 =====
+          // API 데이터로 챌린지 업데이트
           return {
             ...challenge,
             current: apiChallenge.point, // 진행률 업데이트
