@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { Challenge } from '@/types/challenge';
+import {
+  Challenge,
+  ChallengeApiResponse,
+  ChallengeType,
+} from '@/types/challenge';
 import { challengeApi } from '@/api/challenge';
 
 /**
@@ -90,6 +94,7 @@ const initialChallenges: Challenge[] = [
     description: '좋아요 50개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
+    challengeType: ChallengeType.SHOWOFF,
   },
   {
     id: '2',
@@ -99,6 +104,7 @@ const initialChallenges: Challenge[] = [
     description: '같은 취미 게시글 작성: 3개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
+    challengeType: ChallengeType.ROUTINER,
   },
   {
     id: '3',
@@ -108,6 +114,7 @@ const initialChallenges: Challenge[] = [
     description: '다른 취미 게시글 작성: 3개',
     reward: '보상 10EXP',
     status: 'NOT_STARTED',
+    challengeType: ChallengeType.RICH,
   },
 ];
 
@@ -188,14 +195,30 @@ export const useChallengeStore = create<ChallengeStore>((set) => ({
 
       set((state) => ({
         challenges: state.challenges.map((challenge) => {
-          // ===== API 응답에서 해당 챌린지 데이터 찾기 =====
-          const apiChallenge =
-            response[`challenge${challenge.id}` as keyof typeof response];
+          // challengeType에 따른 API 응답 키 매핑
+          let apiChallengeKey: keyof ChallengeApiResponse;
 
-          // ===== API 데이터가 없으면 기존 챌린지 유지 =====
+          switch (challenge.challengeType) {
+            case ChallengeType.SHOWOFF:
+              apiChallengeKey = 'hobbyShowOff';
+              break;
+            case ChallengeType.ROUTINER:
+              apiChallengeKey = 'hobbyRoutiner';
+              break;
+            case ChallengeType.RICH:
+              apiChallengeKey = 'hobbyRich';
+              break;
+            default:
+              console.warn('알 수 없는 챌린지 타입:', challenge.challengeType);
+              return challenge;
+          }
+
+          const apiChallenge = response[apiChallengeKey];
+
+          // API 데이터가 없으면 기존 챌린지 유지
           if (!apiChallenge) return challenge;
 
-          // ===== API 데이터로 챌린지 업데이트 =====
+          // API 데이터로 챌린지 업데이트
           return {
             ...challenge,
             current: apiChallenge.point, // 진행률 업데이트

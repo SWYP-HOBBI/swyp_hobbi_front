@@ -2,6 +2,7 @@ import { AuthState } from '@/types/auth';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { authApi } from '@/api/auth';
+import { reissueAxiosInstance } from '@/api/axios_instance';
 
 /**
  * 인증 상태 초기값
@@ -214,40 +215,23 @@ export const useAuthStore = create<AuthState>()(
             return false;
           }
 
-          // ===== API 기본 URL 가져오기 =====
-          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-          // ===== 토큰 재발급 API 호출 =====
-          const response = await fetch(`${API_BASE_URL}/token/reissue`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              refreshToken: `${refreshToken}`,
+          const response = await reissueAxiosInstance.post(
+            '/token/reissue',
+            null,
+            {
+              headers: {
+                refreshToken,
+              },
             },
-          });
-
-          // ===== 401 상태 코드 처리 =====
-          // 401 상태 코드일 경우 리프레시 토큰이 만료된 것
-          if (response.status === 401) {
-            set(initialState);
-            window.location.href = '/';
-            return false;
-          }
-
-          // ===== 기타 에러 상태 코드 처리 =====
-          if (!response.ok) {
-            throw new Error('토큰 재발급 실패');
-          }
-
-          // ===== 응답 데이터 파싱 =====
-          const data = await response.json();
+          );
 
           // ===== 액세스 토큰 업데이트 =====
+          const { accessToken } = response.data;
           // accessToken만 새로 받아서 업데이트
-          if (data.accessToken) {
+          if (accessToken) {
             set((state) => ({
               ...state,
-              accessToken: data.accessToken,
+              accessToken,
               isAuthenticated: true,
             }));
             return true;
@@ -255,8 +239,13 @@ export const useAuthStore = create<AuthState>()(
 
           // ===== 응답 형식 오류 처리 =====
           throw new Error('토큰 재발급 응답 형식 오류');
-        } catch (error) {
-          console.error('❌ 토큰 재발급 에러:', error);
+        } catch (error: any) {
+          if (error.response?.status === 401) {
+            set(initialState);
+            window.location.href = '/';
+            return false;
+          }
+
           set(initialState);
           window.location.href = '/';
           return false;

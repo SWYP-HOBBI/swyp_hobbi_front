@@ -1,5 +1,11 @@
 export type ChallengeStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
+export enum ChallengeType {
+  SHOWOFF = 'SHOWOFF',
+  ROUTINER = 'ROUTINER',
+  RICH = 'RICH',
+}
+
 export interface Challenge {
   id: string;
   title: string;
@@ -8,6 +14,7 @@ export interface Challenge {
   description: string;
   reward: string;
   status: ChallengeStatus;
+  challengeType: ChallengeType;
 }
 
 export interface ChallengeState {
@@ -16,18 +23,19 @@ export interface ChallengeState {
   weekStartDate: Date | null; // 주의 시작일
 }
 
+// 새로운 API 응답 타입
 export interface ChallengeApiResponse {
-  challenge1: {
+  hobbyShowOff: {
     started: boolean;
     achieved: boolean;
     point: number;
   };
-  challenge2: {
+  hobbyRoutiner: {
     started: boolean;
     achieved: boolean;
     point: number;
   };
-  challenge3: {
+  hobbyRich: {
     started: boolean;
     achieved: boolean;
     point: number;
