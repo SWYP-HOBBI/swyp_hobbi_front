@@ -1,11 +1,8 @@
 export interface SearchParams {
-  keyword_user?: string;
-  keyword_text?: string;
-  mbti?: string[];
-  hobby_tags?: string[];
-  cursor_created_at?: string | null;
-  cursor_id?: number | null;
-  limit?: number;
+  titleAndContent?: string;
+  author?: string;
+  // hobbyTags?: string[];
+  // mbti?: string;
 }
 
 export interface SearchState {
@@ -41,13 +38,6 @@ export interface SearchPost {
   postImageUrls: string[];
   postHobbyTags: string[];
   matchedFields: string[];
-}
-
-export interface SearchPostResponse {
-  posts: SearchPost[];
-  next_cursor_created_at: string | null;
-  next_cursor_post_id: number | null;
-  has_more: boolean;
 }
 
 export interface SearchPostCardProps {
