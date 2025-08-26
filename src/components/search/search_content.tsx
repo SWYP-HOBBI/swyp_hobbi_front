@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import Loader from '@/components/common/loader';
 import Tag from '@/components/common/tag';
-import { SearchPostResponse } from '@/types/search';
+import { SearchPost } from '@/types/search';
 import SearchCard from '@/components/search/search_card';
 import SearchCardSkeleton from './search_card_skeleton';
 import { searchApi } from '@/api/search';
@@ -145,24 +145,32 @@ export default function SearchContent() {
     queryKey: ['search', searchParams.toString()],
     queryFn: async ({ pageParam }: { pageParam: PageParam }) => {
       // ===== URL 검색 파라미터 파싱 =====
-      const keywordText = searchParams.get('keyword_text') || '';
-      const keywordUser = searchParams.get('keyword_user') || '';
+      const titleAndContent = searchParams.get('keyword_text') || '';
+      const author = searchParams.get('keyword_user') || '';
       const mbti = searchParams.getAll('mbti') || [];
       const hobbyTags = searchParams.getAll('hobby_tags') || [];
 
-      // ===== 검색 API 호출 =====
-      return await searchApi.getSearchPosts({
-        keyword_text: keywordText,
-        keyword_user: keywordUser,
-        mbti,
-        hobby_tags: hobbyTags,
-        cursor_created_at: pageParam?.createdAt ?? null,
-        cursor_id: pageParam?.postId ?? null,
-        limit: 15,
-      });
+      // ===== 검색 타입에 따른 API 호출 =====
+      const apiParams: any = {
+        hobbyTags: hobbyTags,
+        mbti: mbti.length > 0 ? mbti.join('') : '',
+        lastId: pageParam?.postId ?? null,
+        pageSize: 15,
+      };
+
+      if (titleAndContent) {
+        apiParams.titleAndContent = titleAndContent;
+        return await searchApi.getSearchByTitleContent(apiParams);
+      } else if (author) {
+        apiParams.author = author;
+        return await searchApi.getSearchByAuthor(apiParams);
+      } else {
+        // 검색 조건이 없는 경우 빈 결과 반환
+        return { posts: [], has_more: false };
+      }
     },
     initialPageParam: undefined as PageParam,
-    getNextPageParam: (lastPage: SearchPostResponse): PageParam => {
+    getNextPageParam: (lastPage): PageParam => {
       // ===== 다음 페이지 파라미터 결정 로직 =====
       if (!lastPage.has_more) return undefined;
       return {
@@ -295,7 +303,7 @@ export default function SearchContent() {
             <div className="space-y-3">
               {/* ===== 페이지별 검색 결과 렌더링 ===== */}
               {data?.pages.map((page) =>
-                page.posts.map((post) => (
+                page.posts.map((post: SearchPost) => (
                   <div key={post.postId}>
                     <SearchCard
                       postId={String(post.postId)}

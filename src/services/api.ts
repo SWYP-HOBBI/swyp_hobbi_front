@@ -43,7 +43,7 @@ import {
 } from '@/types/notification';
 import { ChallengeApiResponse } from '@/types/challenge';
 
-import { SearchParams } from '@/types/search';
+import { SearchPost } from '@/types/search';
 import { Rank } from '@/types/rank';
 
 // 환경 변수에서 API URL 가져오기
@@ -738,32 +738,66 @@ export const searchService = {
    * 다양한 조건으로 게시글을 검색합니다.
    * 키워드, 사용자명, MBTI, 취미 태그, 커서 기반 페이지네이션을 지원합니다.
    *
+   * 제목 + 내용으로 게시글 검색
+   *
    * @param params - 검색 파라미터
-   * @returns Promise<any> - 검색 결과
+   * @param lastId - 마지막으로 조회한 게시글 ID (페이지네이션용)
+   * @param pageSize - 한 번에 조회할 게시글 수
+   * @returns Promise<SearchPost[]> - 검색 결과
    */
-  getSearchPosts: async (params: SearchParams) => {
+  getTitleAndContent: async (
+    query: string,
+    lastId?: number,
+    pageSize: number = 15,
+  ): Promise<SearchPost[]> => {
+    const searchParams = new URLSearchParams({
+      titleAndContent: query,
+      ...(lastId && { lastId: lastId.toString() }),
+      pageSize: pageSize.toString(),
+    });
     // 공개 API 엔드포인트 사용 (인증 불필요)
-    const url = `${API_BASE_URL_PUBLIC}/search/`;
+    const url = `${API_BASE_URL_PUBLIC}/search/title-content?${searchParams.toString()}`;
 
     const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        keyword_text: params.keyword_text || '', // 게시글 내용 검색 키워드
-        keyword_user: params.keyword_user || '', // 사용자명 검색 키워드
-        mbti: params.mbti ?? [], // MBTI 필터
-        hobby_tags: params.hobby_tags ?? [], // 취미 태그 필터
-        cursor_created_at: params.cursor_created_at ?? null, // 생성일 기준 커서
-        cursor_id: params.cursor_id ?? null, // ID 기준 커서
-        limit: params.limit ?? 15, // 한 번에 조회할 결과 수
-      }),
+      method: 'GET',
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || '검색 중 오류 ');
+      throw new Error(errorText || '제목 + 내용 검색 중 오류 ');
+    }
+
+    return await response.json();
+  },
+
+  /**
+   * 작성자로 게시글 검색
+   *
+   * @param author - 검색 파라미터
+   * @param lastId - 마지막으로 조회한 게시글 ID (페이지네이션용)
+   * @param pageSize - 한 번에 조회할 게시글 수
+   * @returns Promise<SearchPost[]> - 검색 결과
+   */
+  getAuthor: async (
+    author: string,
+    lastId?: number,
+    pageSize: number = 15,
+  ): Promise<SearchPost[]> => {
+    const searchParams = new URLSearchParams({
+      author,
+      ...(lastId && { lastId: lastId.toString() }),
+      pageSize: pageSize.toString(),
+    });
+    // 공개 API 엔드포인트 사용 (인증 불필요)
+    const url = `${API_BASE_URL_PUBLIC}/search/author?${searchParams.toString()}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || '작성자 검색 중 오류 ');
     }
 
     return await response.json();
