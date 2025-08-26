@@ -150,15 +150,24 @@ export default function SearchContent() {
       const mbti = searchParams.getAll('mbti') || [];
       const hobbyTags = searchParams.getAll('hobby_tags') || [];
 
-      // ===== 검색 API 호출 =====
-      return await searchApi.getSearchPosts({
-        titleAndContent,
-        author,
-        // mbti,
-        // hobby_tags: hobbyTags,
-        // lastId: pageParam ?? null,
-        // pageSize: 15,
-      });
+      // ===== 검색 타입에 따른 API 호출 =====
+      const apiParams: any = {
+        hobbyTags: hobbyTags,
+        mbti: mbti.length > 0 ? mbti.join('') : '',
+        lastId: pageParam?.postId ?? null,
+        pageSize: 15,
+      };
+
+      if (titleAndContent) {
+        apiParams.titleAndContent = titleAndContent;
+        return await searchApi.getSearchByTitleContent(apiParams);
+      } else if (author) {
+        apiParams.author = author;
+        return await searchApi.getSearchByAuthor(apiParams);
+      } else {
+        // 검색 조건이 없는 경우 빈 결과 반환
+        return { posts: [], has_more: false };
+      }
     },
     initialPageParam: undefined as PageParam,
     getNextPageParam: (lastPage): PageParam => {

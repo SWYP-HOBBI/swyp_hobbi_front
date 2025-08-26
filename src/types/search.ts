@@ -1,8 +1,10 @@
 export interface SearchParams {
   titleAndContent?: string;
   author?: string;
-  // hobbyTags?: string[];
-  // mbti?: string;
+  hobbyTags?: string[];
+  mbti?: string;
+  lastId?: number | null;
+  pageSize?: number;
 }
 
 export interface SearchState {
