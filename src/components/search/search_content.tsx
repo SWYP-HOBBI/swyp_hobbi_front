@@ -150,6 +150,14 @@ export default function SearchContent() {
       const mbti = searchParams.getAll('mbti') || [];
       const hobbyTags = searchParams.getAll('hobby_tags') || [];
 
+      console.log('Search params:', {
+        titleAndContent,
+        author,
+        mbti,
+        hobbyTags,
+        searchParamsString: searchParams.toString(),
+      });
+
       // ===== 검색 타입에 따른 API 호출 =====
       const apiParams: any = {
         hobbyTags: hobbyTags,
@@ -162,16 +170,31 @@ export default function SearchContent() {
         apiParams.lastId = pageParam.postId;
       }
 
-      if (titleAndContent) {
-        apiParams.titleAndContent = titleAndContent;
-        const response = await searchApi.getSearchByTitleContent(apiParams);
-        return { posts: response, has_more: response.length === 15 };
-      } else if (author) {
-        apiParams.author = author;
-        const response = await searchApi.getSearchByAuthor(apiParams);
-        return { posts: response, has_more: response.length === 15 };
+      console.log('API params:', apiParams);
+
+      // 검색 조건이 있으면 API 호출
+      if (
+        titleAndContent ||
+        author ||
+        mbti.length > 0 ||
+        hobbyTags.length > 0
+      ) {
+        if (titleAndContent) {
+          apiParams.titleAndContent = titleAndContent;
+          const response = await searchApi.getSearchByTitleContent(apiParams);
+          return { posts: response, has_more: response.length === 15 };
+        } else if (author) {
+          apiParams.author = author;
+          const response = await searchApi.getSearchByAuthor(apiParams);
+          return { posts: response, has_more: response.length === 15 };
+        } else {
+          // MBTI나 취미 태그만 있는 경우 제목+내용 검색으로 처리
+          const response = await searchApi.getSearchByTitleContent(apiParams);
+          return { posts: response, has_more: response.length === 15 };
+        }
       } else {
         // 검색 조건이 없는 경우 빈 결과 반환
+        console.log('No search conditions found, returning empty result');
         return { posts: [], has_more: false };
       }
     },
