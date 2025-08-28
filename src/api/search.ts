@@ -13,16 +13,22 @@ export const searchApi = {
       queryParams.append('pageSize', params.pageSize.toString());
     }
 
+    const url = `/search/title-content?${queryParams.toString()}`;
+    const requestData = {
+      titleAndContent: params.titleAndContent || '',
+      hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
+      mbti: Array.isArray(params.mbti)
+        ? params.mbti.join('')
+        : params.mbti || '',
+    };
+
+    console.log('getSearchByTitleContent - URL:', url);
+    console.log('getSearchByTitleContent - Data:', requestData);
+
     return request<any>({
-      url: `/search/title-content?${queryParams.toString()}`,
+      url,
       method: 'GET',
-      data: {
-        titleAndContent: params.titleAndContent || '',
-        hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
-        mbti: Array.isArray(params.mbti)
-          ? params.mbti.join('')
-          : params.mbti || '',
-      },
+      data: requestData,
     });
   },
 
@@ -37,16 +43,22 @@ export const searchApi = {
       queryParams.append('pageSize', params.pageSize.toString());
     }
 
+    const url = `/search/author?${queryParams.toString()}`;
+    const requestData = {
+      author: params.author || '',
+      hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
+      mbti: Array.isArray(params.mbti)
+        ? params.mbti.join('')
+        : params.mbti || '',
+    };
+
+    console.log('getSearchByAuthor - URL:', url);
+    console.log('getSearchByAuthor - Data:', requestData);
+
     return request<any>({
-      url: `/search/author?${queryParams.toString()}`,
+      url,
       method: 'GET',
-      data: {
-        author: params.author || '',
-        hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
-        mbti: Array.isArray(params.mbti)
-          ? params.mbti.join('')
-          : params.mbti || '',
-      },
+      data: requestData,
     });
   },
 };
