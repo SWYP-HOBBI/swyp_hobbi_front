@@ -158,6 +158,8 @@ export default function SearchContent() {
         searchParamsString: searchParams.toString(),
       });
 
+      console.log('PageParam:', pageParam);
+
       // ===== 검색 타입에 따른 API 호출 =====
       const apiParams: any = {
         hobbyTags: hobbyTags,
@@ -168,6 +170,9 @@ export default function SearchContent() {
       // lastId가 있을 때만 추가
       if (pageParam?.postId) {
         apiParams.lastId = pageParam.postId;
+        console.log('Adding lastId:', pageParam.postId);
+      } else {
+        console.log('No lastId found in pageParam');
       }
 
       console.log('API params:', apiParams);
@@ -182,14 +187,17 @@ export default function SearchContent() {
         if (titleAndContent) {
           apiParams.titleAndContent = titleAndContent;
           const response = await searchApi.getSearchByTitleContent(apiParams);
+          console.log('API Response:', response);
           return { posts: response, has_more: response.length === 15 };
         } else if (author) {
           apiParams.author = author;
           const response = await searchApi.getSearchByAuthor(apiParams);
+          console.log('API Response:', response);
           return { posts: response, has_more: response.length === 15 };
         } else {
           // MBTI나 취미 태그만 있는 경우 제목+내용 검색으로 처리
           const response = await searchApi.getSearchByTitleContent(apiParams);
+          console.log('API Response:', response);
           return { posts: response, has_more: response.length === 15 };
         }
       } else {
@@ -201,13 +209,22 @@ export default function SearchContent() {
     initialPageParam: undefined as PageParam,
     getNextPageParam: (lastPage): PageParam => {
       // ===== 다음 페이지 파라미터 결정 로직 =====
-      if (!lastPage.has_more) return undefined;
+      console.log('getNextPageParam - lastPage:', lastPage);
+
+      if (!lastPage.has_more) {
+        console.log('No more pages available');
+        return undefined;
+      }
+
       // 마지막 게시글의 ID를 다음 페이지 커서로 사용
       const lastPost = lastPage.posts[lastPage.posts.length - 1];
-      return {
+      const nextPageParam = {
         createdAt: lastPost?.createdAt || null,
         postId: lastPost?.postId || null,
       };
+
+      console.log('getNextPageParam - nextPageParam:', nextPageParam);
+      return nextPageParam;
     },
   });
 
