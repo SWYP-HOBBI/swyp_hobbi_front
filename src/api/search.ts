@@ -15,7 +15,8 @@ export const searchApi = {
 
     const url = `/search/title-content?${queryParams.toString()}`;
     const requestData = {
-      titleAndContent: params.titleAndContent || '',
+      titleAndContent: params.titleAndContent || null,
+      author: null, // 제목+내용 검색에서는 author는 null
       hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
       mbti: Array.isArray(params.mbti)
         ? params.mbti.join('')
@@ -45,7 +46,8 @@ export const searchApi = {
 
     const url = `/search/author?${queryParams.toString()}`;
     const requestData = {
-      author: params.author || '',
+      titleAndContent: null, // 작성자 검색에서는 titleAndContent는 null
+      author: params.author || null,
       hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
       mbti: Array.isArray(params.mbti)
         ? params.mbti.join('')
