@@ -154,9 +154,13 @@ export default function SearchContent() {
       const apiParams: any = {
         hobbyTags: hobbyTags,
         mbti: mbti.length > 0 ? mbti.join('') : '',
-        lastId: pageParam?.postId ?? null,
         pageSize: 15,
       };
+
+      // lastId가 있을 때만 추가
+      if (pageParam?.postId) {
+        apiParams.lastId = pageParam.postId;
+      }
 
       if (titleAndContent) {
         apiParams.titleAndContent = titleAndContent;

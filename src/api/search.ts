@@ -6,7 +6,7 @@ export const searchApi = {
   getSearchByTitleContent: async (params: SearchParams) => {
     const queryParams = new URLSearchParams();
 
-    if (params.lastId) {
+    if (params.lastId && params.lastId !== null) {
       queryParams.append('lastId', params.lastId.toString());
     }
     if (params.pageSize) {
@@ -28,7 +28,7 @@ export const searchApi = {
   getSearchByAuthor: async (params: SearchParams) => {
     const queryParams = new URLSearchParams();
 
-    if (params.lastId) {
+    if (params.lastId && params.lastId !== null) {
       queryParams.append('lastId', params.lastId.toString());
     }
     if (params.pageSize) {
