@@ -25,6 +25,7 @@ export const searchApi = {
 
     console.log('getSearchByTitleContent - URL:', url);
     console.log('getSearchByTitleContent - Data:', requestData);
+    console.log('getSearchByTitleContent - Method: GET');
 
     return request<any>({
       url,
@@ -56,6 +57,7 @@ export const searchApi = {
 
     console.log('getSearchByAuthor - URL:', url);
     console.log('getSearchByAuthor - Data:', requestData);
+    console.log('getSearchByAuthor - Method: GET');
 
     return request<any>({
       url,
