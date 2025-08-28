@@ -18,8 +18,10 @@ export const searchApi = {
       method: 'GET',
       data: {
         titleAndContent: params.titleAndContent || '',
-        hobbyTags: params.hobbyTags || [],
-        mbti: params.mbti || '',
+        hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
+        mbti: Array.isArray(params.mbti)
+          ? params.mbti.join('')
+          : params.mbti || '',
       },
     });
   },
@@ -40,8 +42,10 @@ export const searchApi = {
       method: 'GET',
       data: {
         author: params.author || '',
-        hobbyTags: params.hobbyTags || [],
-        mbti: params.mbti || '',
+        hobbyTags: Array.isArray(params.hobbyTags) ? params.hobbyTags : [],
+        mbti: Array.isArray(params.mbti)
+          ? params.mbti.join('')
+          : params.mbti || '',
       },
     });
   },

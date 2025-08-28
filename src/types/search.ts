@@ -2,7 +2,7 @@ export interface SearchParams {
   titleAndContent?: string;
   author?: string;
   hobbyTags?: string[];
-  mbti?: string;
+  mbti?: string[];
   lastId?: number | null;
   pageSize?: number;
 }

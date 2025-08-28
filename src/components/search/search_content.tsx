@@ -153,7 +153,7 @@ export default function SearchContent() {
       // ===== 검색 타입에 따른 API 호출 =====
       const apiParams: any = {
         hobbyTags: hobbyTags,
-        mbti: mbti.length > 0 ? mbti.join('') : '',
+        mbti: mbti,
         pageSize: 15,
       };
 
