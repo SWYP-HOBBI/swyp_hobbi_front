@@ -16,7 +16,7 @@ export const searchApi = {
     return request<any>({
       url: `/search/title-content?${queryParams.toString()}`,
       method: 'GET',
-      params: {
+      data: {
         titleAndContent: params.titleAndContent || '',
         hobbyTags: params.hobbyTags || [],
         mbti: params.mbti || '',
@@ -38,7 +38,7 @@ export const searchApi = {
     return request<any>({
       url: `/search/author?${queryParams.toString()}`,
       method: 'GET',
-      params: {
+      data: {
         author: params.author || '',
         hobbyTags: params.hobbyTags || [],
         mbti: params.mbti || '',

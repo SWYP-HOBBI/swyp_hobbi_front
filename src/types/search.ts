@@ -39,7 +39,8 @@ export interface SearchPost {
   likeCount: number;
   postImageUrls: string[];
   postHobbyTags: string[];
-  matchedFields: string[];
+  searchWord?: string;
+  userLevel: number;
 }
 
 export interface SearchPostCardProps {

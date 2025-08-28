@@ -160,10 +160,12 @@ export default function SearchContent() {
 
       if (titleAndContent) {
         apiParams.titleAndContent = titleAndContent;
-        return await searchApi.getSearchByTitleContent(apiParams);
+        const response = await searchApi.getSearchByTitleContent(apiParams);
+        return { posts: response, has_more: response.length === 15 };
       } else if (author) {
         apiParams.author = author;
-        return await searchApi.getSearchByAuthor(apiParams);
+        const response = await searchApi.getSearchByAuthor(apiParams);
+        return { posts: response, has_more: response.length === 15 };
       } else {
         // 검색 조건이 없는 경우 빈 결과 반환
         return { posts: [], has_more: false };
@@ -173,9 +175,11 @@ export default function SearchContent() {
     getNextPageParam: (lastPage): PageParam => {
       // ===== 다음 페이지 파라미터 결정 로직 =====
       if (!lastPage.has_more) return undefined;
+      // 마지막 게시글의 ID를 다음 페이지 커서로 사용
+      const lastPost = lastPage.posts[lastPage.posts.length - 1];
       return {
-        createdAt: lastPage.next_cursor_created_at,
-        postId: lastPage.next_cursor_post_id,
+        createdAt: lastPost?.createdAt || null,
+        postId: lastPost?.postId || null,
       };
     },
   });
