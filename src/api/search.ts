@@ -23,13 +23,9 @@ export const searchApi = {
         : params.mbti || '',
     };
 
-    console.log('getSearchByTitleContent - URL:', url);
-    console.log('getSearchByTitleContent - Data:', requestData);
-    console.log('getSearchByTitleContent - Method: GET');
-
     return request<any>({
       url,
-      method: 'GET',
+      method: 'POST',
       data: requestData,
     });
   },
@@ -55,13 +51,9 @@ export const searchApi = {
         : params.mbti || '',
     };
 
-    console.log('getSearchByAuthor - URL:', url);
-    console.log('getSearchByAuthor - Data:', requestData);
-    console.log('getSearchByAuthor - Method: GET');
-
     return request<any>({
       url,
-      method: 'GET',
+      method: 'POST',
       data: requestData,
     });
   },

@@ -150,16 +150,6 @@ export default function SearchContent() {
       const mbti = searchParams.getAll('mbti') || [];
       const hobbyTags = searchParams.getAll('hobby_tags') || [];
 
-      console.log('Search params:', {
-        titleAndContent,
-        author,
-        mbti,
-        hobbyTags,
-        searchParamsString: searchParams.toString(),
-      });
-
-      console.log('PageParam:', pageParam);
-
       // ===== 검색 타입에 따른 API 호출 =====
       const apiParams: any = {
         hobbyTags: hobbyTags,
@@ -170,12 +160,7 @@ export default function SearchContent() {
       // lastId가 있을 때만 추가
       if (pageParam?.postId) {
         apiParams.lastId = pageParam.postId;
-        console.log('Adding lastId:', pageParam.postId);
-      } else {
-        console.log('No lastId found in pageParam');
       }
-
-      console.log('API params:', apiParams);
 
       // 검색 조건이 있으면 API 호출
       if (
@@ -187,32 +172,27 @@ export default function SearchContent() {
         if (titleAndContent) {
           apiParams.titleAndContent = titleAndContent;
           const response = await searchApi.getSearchByTitleContent(apiParams);
-          console.log('API Response:', response);
           return { posts: response, has_more: response.length === 15 };
         } else if (author) {
           apiParams.author = author;
           const response = await searchApi.getSearchByAuthor(apiParams);
-          console.log('API Response:', response);
           return { posts: response, has_more: response.length === 15 };
         } else {
           // MBTI나 취미 태그만 있는 경우 제목+내용 검색으로 처리
           const response = await searchApi.getSearchByTitleContent(apiParams);
-          console.log('API Response:', response);
+
           return { posts: response, has_more: response.length === 15 };
         }
       } else {
         // 검색 조건이 없는 경우 빈 결과 반환
-        console.log('No search conditions found, returning empty result');
         return { posts: [], has_more: false };
       }
     },
     initialPageParam: undefined as PageParam,
     getNextPageParam: (lastPage): PageParam => {
       // ===== 다음 페이지 파라미터 결정 로직 =====
-      console.log('getNextPageParam - lastPage:', lastPage);
 
       if (!lastPage.has_more) {
-        console.log('No more pages available');
         return undefined;
       }
 
@@ -223,7 +203,6 @@ export default function SearchContent() {
         postId: lastPost?.postId || null,
       };
 
-      console.log('getNextPageParam - nextPageParam:', nextPageParam);
       return nextPageParam;
     },
   });
